@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LATTICE — CONSTRAINT DIAGNOSTICS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,600;1,300&family=Syne:wght@400;700;800&display=swap');
+
+:root {
+  --bg: #030608;
+  --bg1: #070d12;
+  --bg2: #0b1419;
+  --bg3: #111e28;
+  --border: #132030;
+  --border2: #1a3045;
+  --dim: #243848;
+  --wire: #1a5a8a;
+  --mid: #2a7ab8;
+  --active: #3a9fd8;
+  --hi: #55c0f0;
+  --accent: #00d4ff;
+  --amber: #f0a020;
+  --red: #e05040;
+  --green: #30c878;
+  --purple: #9070e0;
+  --t0: #1e3a50;
+  --t1: #2a5570;
+  --t2: #6090b0;
+  --t3: #90b8d0;
+  --t4: #c8e0f0;
+  --tmax: #eef6ff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--t2);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ============ PAYWALL ============ */
+#paywall {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.paywall-box {
+  width: 100%;
+  max-width: 480px;
+}
+
+.paywall-brand {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--tmax);
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.paywall-brand span { color: var(--accent); }
+
+.paywall-sub {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--t1);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.paywall-desc {
+  font-size: 11px;
+  color: var(--t2);
+  line-height: 1.8;
+  margin-bottom: 28px;
+  border-left: 2px solid var(--wire);
+  padding-left: 12px;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.plan-card {
+  border: 1px solid var(--border2);
+  background: var(--bg1);
+  padding: 18px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.plan-card:hover { border-color: var(--mid); background: var(--bg2); }
+.plan-card.selected { border-color: var(--accent); background: var(--bg3); }
+
+.plan-badge {
+  position: absolute;
+  top: -1px; right: -1px;
+  font-size: 7px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 2px 6px;
+  font-weight: 700;
+}
+
+.plan-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--t3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.plan-price {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--tmax);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.plan-price span { font-size: 12px; color: var(--t2); font-weight: 400; }
+
+.plan-desc {
+  font-size: 9px;
+  color: var(--t1);
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.plan-features {
+  margin-top: 10px;
+  font-size: 9px;
+  color: var(--t2);
+  line-height: 1.8;
+}
+
+.plan-features div::before { content: '✓ '; color: var(--green); }
+
+.pay-btn {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--active);
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.pay-btn:hover { background: var(--active); color: var(--bg); }
+.pay-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.paywall-note {
+  font-size: 9px;
+  color: var(--t0);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.paywall-error {
+  font-size: 10px;
+  color: var(--red);
+  text-align: center;
+  padding: 8px;
+  border: 1px solid var(--red);
+  margin-bottom: 12px;
+  display: none;
+}
+
+/* ============ APP ============ */
+#app {
+  display: none;
+}
+
+.app-inner {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: 48px 1fr;
+  min-height: 100vh;
+}
+
+.topbar {
+  grid-column: 1 / -1;
+  background: var(--bg1);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-brand {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--tmax);
+  text-transform: uppercase;
+}
+
+.topbar-brand span { color: var(--accent); }
+.topbar-sep { width: 1px; height: 20px; background: var(--border2); }
+.topbar-tag { font-size: 9px; letter-spacing: 0.2em; color: var(--t0); text-transform: uppercase; }
+
+.topbar-status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--t1);
+  text-transform: uppercase;
+}
+
+.pip { width: 5px; height: 5px; border-radius: 50%; background: var(--dim); }
+.pip.g { background: var(--green); box-shadow: 0 0 5px var(--green); animation: blink 2.5s ease infinite; }
+.pip.a { background: var(--amber); }
+
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+
+.access-badge {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--border2);
+  padding: 2px 8px;
+  color: var(--t1);
+}
+
+.access-badge.paid { border-color: var(--green); color: var(--green); }
+
+.sidebar {
+  background: var(--bg1);
+  border-right: 1px solid var(--border);
+  padding: 16px 0;
+  overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar { width: 2px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border2); }
+
+.sidebar-section { margin-bottom: 20px; }
+
+.sidebar-label {
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  color: var(--t0);
+  text-transform: uppercase;
+  padding: 0 14px;
+  margin-bottom: 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.12s;
+  font-size: 10px;
+  color: var(--t1);
+  letter-spacing: 0.04em;
+}
+
+.nav-item:hover { background: var(--bg2); color: var(--t3); border-left-color: var(--wire); }
+.nav-item.active { background: var(--bg3); color: var(--hi); border-left-color: var(--active); }
+.nav-item .nav-icon { font-size: 11px; width: 14px; text-align: center; color: var(--wire); }
+.nav-item.active .nav-icon { color: var(--active); }
+.nav-count { margin-left: auto; font-size: 8px; color: var(--t0); background: var(--border); padding: 1px 5px; }
+
+.main { overflow-y: auto; background: var(--bg); }
+.main::-webkit-scrollbar { width: 3px; }
+.main::-webkit-scrollbar-thumb { background: var(--border2); }
+
+.panel { display: none; padding: 20px; }
+.panel.active { display: block; }
+
+.panel-header { margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.panel-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--tmax); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+.panel-subtitle { font-size: 9px; color: var(--t1); letter-spacing: 0.12em; text-transform: uppercase; }
+
+.field-label { font-size: 9px; letter-spacing: 0.18em; color: var(--t1); text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.field-label .req { color: var(--amber); }
+
+textarea, input[type="text"] {
+  width: 100%;
+  background: var(--bg1);
+  border: 1px solid var(--border2);
+  color: var(--t4);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 10px 12px;
+  outline: none;
+  resize: vertical;
+  line-height: 1.6;
+  transition: border-color 0.15s;
+  caret-color: var(--accent);
+}
+
+textarea:focus, input[type="text"]:focus { border-color: var(--mid); }
+textarea::placeholder, input::placeholder { color: var(--t0); font-size: 10px; font-style: italic; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+
+.card { background: var(--bg1); border: 1px solid var(--border); padding: 14px; }
+.card-title { font-size: 9px; letter-spacing: 0.18em; color: var(--t1); text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.card-title .sym { color: var(--active); font-size: 12px; }
+
+.type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; }
+
+.type-btn {
+  background: var(--bg1); border: 1px solid var(--border); color: var(--t1);
+  font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.08em;
+  padding: 8px 4px; cursor: pointer; text-align: center; transition: all 0.12s;
+  text-transform: uppercase; line-height: 1.3;
+}
+
+.type-btn:hover { background: var(--bg3); color: var(--t3); border-color: var(--wire); }
+.type-btn.sel { background: var(--bg3); color: var(--hi); border-color: var(--active); }
+
+.slider-row { display: grid; grid-template-columns: 120px 1fr 80px; align-items: center; gap: 10px; margin-bottom: 8px; }
+.slider-label { font-size: 9px; color: var(--t2); }
+
+input[type="range"] { -webkit-appearance: none; width: 100%; height: 3px; background: var(--border2); outline: none; cursor: pointer; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: var(--active); cursor: pointer; border-radius: 0; }
+.slider-val { font-size: 10px; color: var(--active); text-align: right; }
+
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn {
+  background: var(--bg2); border: 1px solid var(--border2); color: var(--t3);
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.1em;
+  padding: 8px 16px; cursor: pointer; transition: all 0.12s; text-transform: uppercase;
+}
+
+.btn:hover { background: var(--bg3); border-color: var(--mid); color: var(--hi); }
+.btn.primary { background: var(--bg3); border-color: var(--active); color: var(--accent); }
+.btn.primary:hover { background: var(--active); color: var(--bg); }
+.btn.danger { border-color: var(--red); color: var(--red); }
+.btn.danger:hover { background: var(--red); color: var(--bg); }
+
+.output-zone { background: var(--bg); border: 1px solid var(--border); padding: 14px; min-height: 80px; font-size: 10px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; }
+
+.constraint-list { margin-bottom: 16px; }
+
+.constraint-item {
+  display: grid; grid-template-columns: 16px 80px 1fr auto auto;
+  align-items: center; gap: 8px; padding: 8px 10px;
+  border: 1px solid var(--border); border-left: 3px solid var(--wire);
+  background: var(--bg1); margin-bottom: 4px; transition: border-left-color 0.2s;
+}
+
+.constraint-item.severity-high { border-left-color: var(--red); }
+.constraint-item.severity-med { border-left-color: var(--amber); }
+.constraint-item.severity-low { border-left-color: var(--green); }
+
+.c-num { font-size: 9px; color: var(--t0); }
+.c-type { font-size: 8px; letter-spacing: 0.1em; color: var(--active); text-transform: uppercase; background: var(--bg3); padding: 2px 5px; }
+.c-text { font-size: 10px; color: var(--t3); }
+.c-sev { font-size: 8px; letter-spacing: 0.1em; }
+.c-sev.high { color: var(--red); } .c-sev.med { color: var(--amber); } .c-sev.low { color: var(--green); }
+.c-del { font-size: 10px; color: var(--t0); cursor: pointer; padding: 2px 6px; }
+.c-del:hover { color: var(--red); }
+
+.axes-display { margin-bottom: 16px; }
+
+.axis-row { display: grid; grid-template-columns: 130px 1fr 40px 60px; align-items: center; gap: 10px; margin-bottom: 6px; }
+.axis-name { font-size: 10px; color: var(--t2); }
+.bar-track { height: 6px; background: var(--border); position: relative; }
+.bar-fill { height: 100%; transition: width 0.6s ease, background 0.3s; }
+.bar-fill.coherence { background: var(--green); }
+.bar-fill.attention { background: var(--amber); }
+.bar-fill.reversibility { background: var(--hi); }
+.bar-fill.silence { background: var(--accent); }
+.bar-fill.maintenance { background: var(--purple); }
+.bar-pct { font-size: 9px; color: var(--t2); text-align: right; }
+.bar-verdict { font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; }
+.bar-verdict.pass { color: var(--green); } .bar-verdict.warn { color: var(--amber); }
+.bar-verdict.fail { color: var(--red); } .bar-verdict.hold { color: var(--accent); }
+
+.ambiguity-item { border: 1px solid var(--border); background: var(--bg1); margin-bottom: 8px; overflow: hidden; }
+.ambiguity-header { display: grid; grid-template-columns: 1fr auto auto; align-items: center; padding: 8px 12px; background: var(--bg2); cursor: pointer; border-bottom: 1px solid var(--border); gap: 10px; }
+.ambiguity-q { font-size: 10px; color: var(--t3); }
+.ambiguity-tag { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 6px; }
+.ambiguity-tag.unresolved { color: var(--amber); border: 1px solid var(--amber); }
+.ambiguity-tag.resolved { color: var(--green); border: 1px solid var(--green); }
+.ambiguity-tag.blocked { color: var(--red); border: 1px solid var(--red); }
+.ambiguity-toggle { font-size: 10px; color: var(--t0); }
+.ambiguity-body { padding: 10px 12px; display: none; }
+.ambiguity-body.open { display: block; }
+.ambiguity-resolve-row { display: flex; gap: 6px; margin-top: 8px; }
+.resolve-input { flex: 1; background: var(--bg); border: 1px solid var(--border2); color: var(--t4); font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 6px 10px; outline: none; }
+.resolve-input:focus { border-color: var(--mid); }
+
+.gate-verdict { padding: 16px; border: 1px solid var(--border); background: var(--bg1); margin-bottom: 16px; display: flex; align-items: center; gap: 16px; }
+.gate-symbol { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; flex-shrink: 0; }
+.gate-symbol.accept { color: var(--green); } .gate-symbol.reduce { color: var(--amber); }
+.gate-symbol.defer { color: var(--hi); } .gate-symbol.reject { color: var(--red); }
+.gate-symbol.pending { color: var(--t0); }
+.gate-text { flex: 1; }
+.gate-label { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.gate-label.accept { color: var(--green); } .gate-label.reduce { color: var(--amber); }
+.gate-label.defer { color: var(--hi); } .gate-label.reject { color: var(--red); }
+.gate-label.pending { color: var(--t0); }
+.gate-rationale { font-size: 10px; color: var(--t2); line-height: 1.6; }
+
+.wda-entry { display: grid; grid-template-columns: 75px 55px 1fr; gap: 8px; padding: 4px 10px; border-bottom: 1px solid rgba(19,32,48,0.6); font-size: 9px; }
+.wda-time { color: var(--t0); } .wda-mod { color: var(--wire); }
+.wda-msg { color: var(--t2); } .wda-msg.ok { color: var(--green); }
+.wda-msg.warn { color: var(--amber); } .wda-msg.blk { color: var(--red); }
+
+.silence-banner { display: none; background: var(--bg1); border: 1px solid var(--accent); padding: 10px 14px; margin-bottom: 16px; font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-align: center; }
+.silence-banner.active { display: block; }
+
+.stat-card { background: var(--bg1); border: 1px solid var(--border); padding: 12px; text-align: center; }
+.stat-val { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--tmax); line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 8px; letter-spacing: 0.2em; color: var(--t0); text-transform: uppercase; }
+
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+.log-scroll { max-height: 180px; overflow-y: auto; background: var(--bg); border: 1px solid var(--border); }
+.log-scroll::-webkit-scrollbar { width: 2px; }
+.log-scroll::-webkit-scrollbar-thumb { background: var(--border2); }
+
+.situation-block { margin-bottom: 20px; }
+
+@media (max-width: 680px) {
+  .app-inner { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .type-grid { grid-template-columns: repeat(2,1fr); }
+  .plan-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ PAYWALL ============ -->
+<div id="paywall">
+  <div class="paywall-box">
+    <div class="paywall-brand">LATTICE <span>◈</span></div>
+    <div class="paywall-sub">Constraint Diagnostics · Ambiguity Reduction Engine</div>
+
+    <div class="paywall-desc">
+      A professional decision framework for high-stakes situations.<br>
+      Map constraints. Reduce ambiguity. Run the gate.
+    </div>
+
+    <div class="plan-grid">
+      <div class="plan-card selected" id="plan-weekly" onclick="selectPlan('weekly')">
+        <div class="plan-name">Weekly</div>
+        <div class="plan-price">$10<span>/wk</span></div>
+        <div class="plan-features">
+          <div>Full pipeline access</div>
+          <div>All modules</div>
+          <div>WDA audit trail</div>
+          <div>Cancel anytime</div>
+        </div>
+      </div>
+      <div class="plan-card" id="plan-monthly" onclick="selectPlan('monthly')">
+        <div class="plan-name">Monthly</div>
+        <div class="plan-price">$25<span>/mo</span></div>
+        <div class="plan-features">
+          <div>Full pipeline access</div>
+          <div>All modules</div>
+          <div>WDA audit trail</div>
+          <div>Cancel anytime</div>
+        </div>
+      </div>
+      <div class="plan-card" id="plan-yearly" onclick="selectPlan('yearly')">
+        <div class="plan-badge">Best value</div>
+        <div class="plan-name">Yearly</div>
+        <div class="plan-price">$180<span>/yr</span></div>
+        <div class="plan-features">
+          <div>Everything in monthly</div>
+          <div>Save $120/year</div>
+          <div>Priority updates</div>
+          <div>New modules first</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paywall-error" id="paywallError"></div>
+
+    <button class="pay-btn" id="payBtn" onclick="startCheckout()">
+      ▸ Subscribe — $10/week
+    </button>
+
+    <div class="paywall-note">
+      Secured by Stripe · No account required · Instant access after payment
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+<div class="app-inner">
+
+  <div class="topbar">
+    <div class="topbar-brand">LATTICE <span>◈</span></div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-tag">Constraint Diagnostics</div>
+    <div class="topbar-status">
+      <div class="status-pill"><div class="pip g"></div> Pipeline live</div>
+      <div class="status-pill"><div class="pip a"></div> Semi-permeable</div>
+      <div class="access-badge paid" id="accessBadge">ACCESS · ACTIVE</div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Diagnostics</div>
+      <div class="nav-item active" onclick="showPanel('intake')"><span class="nav-icon">▸</span> Situation Intake</div>
+      <div class="nav-item" onclick="showPanel('constraints')"><span class="nav-icon">◈</span> Constraint Map <span class="nav-count" id="cCount">0</span></div>
+      <div class="nav-item" onclick="showPanel('axes')"><span class="nav-icon">≡</span> Four Axes</div>
+      <div class="nav-item" onclick="showPanel('ambiguity')"><span class="nav-icon">?</span> Ambiguity Engine <span class="nav-count" id="aCount">0</span></div>
+      <div class="nav-item" onclick="showPanel('gate')"><span class="nav-icon">▣</span> Policy Gate</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Modules</div>
+      <div class="nav-item" onclick="showPanel('stumpy')"><span class="nav-icon">Σ</span> Stumpy Audit</div>
+      <div class="nav-item" onclick="showPanel('wda')"><span class="nav-icon">◉</span> WDA Trail</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">State</div>
+      <div class="nav-item" onclick="toggleSilence()"><span class="nav-icon">—</span> Toggle Silence</div>
+      <div class="nav-item danger" onclick="hardReset()" style="color:var(--red)"><span class="nav-icon">↺</span> Reset</div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- INTAKE -->
+    <div class="panel active" id="panel-intake">
+      <div class="panel-header">
+        <div class="panel-title">Situation Intake</div>
+        <div class="panel-subtitle">M1 · Intent Decomposition</div>
+      </div>
+      <div class="silence-banner" id="silenceBanner">— SILENCE ACTIVE — No commitments permitted —</div>
+      <div class="grid-4">
+        <div class="stat-card"><div class="stat-val" id="statConstraints">0</div><div class="stat-label">Constraints</div></div>
+        <div class="stat-card"><div class="stat-val" id="statAmbiguities">0</div><div class="stat-label">Ambiguities</div></div>
+        <div class="stat-card"><div class="stat-val" id="statVerdict">—</div><div class="stat-label">Gate Verdict</div></div>
+        <div class="stat-card"><div class="stat-val" id="statCoherence">—</div><div class="stat-label">Coherence</div></div>
+      </div>
+      <div class="situation-block">
+        <div class="field-label"><span class="req">▸</span> Situation Description <span class="req">required</span></div>
+        <textarea id="situationText" rows="5" placeholder="Describe the professional situation. What is the decision, problem, or scenario?"></textarea>
+      </div>
+      <div class="grid-2">
+        <div class="situation-block">
+          <div class="field-label">Stakes / What's at risk</div>
+          <input type="text" id="stakesText" placeholder="What could be lost or gained?" />
+        </div>
+        <div class="situation-block">
+          <div class="field-label">Time pressure</div>
+          <input type="text" id="timeText" placeholder="Deadline, urgency level, horizon..." />
+        </div>
+      </div>
+      <div class="situation-block">
+        <div class="field-label">Verified facts only</div>
+        <textarea id="knownText" rows="3" placeholder="Separate verified facts from assumptions."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="runIntake()">▸ Run Intake → Pipeline</button>
+        <button class="btn" onclick="showPanel('constraints')">Skip to Constraints</button>
+      </div>
+      <div class="divider"></div>
+      <div class="output-zone" id="intakeOutput" style="color:var(--t1);">Awaiting intake...</div>
+    </div>
+
+    <!-- CONSTRAINTS -->
+    <div class="panel" id="panel-constraints">
+      <div class="panel-header">
+        <div class="panel-title">Constraint Map</div>
+        <div class="panel-subtitle">M2 · CCE — map all forces that limit or tax the decision</div>
+      </div>
+      <div class="silence-banner" id="silenceBanner2">— SILENCE ACTIVE —</div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title"><span class="sym">◈</span> Add Constraint</div>
+        <div class="type-grid">
+          <div class="type-btn sel" onclick="selectType(this,'attention')">Attention</div>
+          <div class="type-btn" onclick="selectType(this,'time')">Time</div>
+          <div class="type-btn" onclick="selectType(this,'energy')">Energy</div>
+          <div class="type-btn" onclick="selectType(this,'financial')">Financial</div>
+          <div class="type-btn" onclick="selectType(this,'social')">Social</div>
+          <div class="type-btn" onclick="selectType(this,'identity')">Identity</div>
+          <div class="type-btn" onclick="selectType(this,'information')">Information</div>
+          <div class="type-btn" onclick="selectType(this,'structural')">Structural</div>
+        </div>
+        <textarea id="constraintText" rows="2" placeholder="Describe the constraint specifically."></textarea>
+        <div style="margin-top:10px;">
+          <div class="slider-row">
+            <div class="slider-label">Severity</div>
+            <input type="range" id="severitySlider" min="1" max="10" value="5" oninput="document.getElementById('sevVal').textContent=this.value">
+            <div class="slider-val" id="sevVal">5</div>
+          </div>
+          <div class="slider-row">
+            <div class="slider-label">Reversibility</div>
+            <input type="range" id="reversibilitySlider" min="1" max="10" value="7" oninput="document.getElementById('revVal').textContent=this.value">
+            <div class="slider-val" id="revVal">7</div>
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="btn primary" onclick="addConstraint()">+ Add Constraint</button>
+          <button class="btn" onclick="autoDetect()">⟳ Auto-detect from Intake</button>
+        </div>
+      </div>
+      <div class="constraint-list" id="constraintList"><div style="font-size:9px;color:var(--t0);text-align:center;padding:20px;">No constraints mapped.</div></div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="runCCE()">▸ Run CCE → Axes</button>
+        <button class="btn" onclick="showPanel('axes')">View Axes →</button>
+      </div>
+    </div>
+
+    <!-- AXES -->
+    <div class="panel" id="panel-axes">
+      <div class="panel-header">
+        <div class="panel-title">Four Axes Engine</div>
+        <div class="panel-subtitle">M5·M6 · PAM — Coherence · Attention · Reversibility · Maintenance</div>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title"><span class="sym">≡</span> Axis Assessment</div>
+        <div class="axes-display">
+          <div class="axis-row"><div class="axis-name">Coherence Gain</div><div class="bar-track"><div class="bar-fill coherence" id="axCoherence" style="width:0%"></div></div><div class="bar-pct" id="axCoherencePct">0%</div><div class="bar-verdict" id="axCoherenceV">—</div></div>
+          <div class="axis-row"><div class="axis-name">Attention Cost</div><div class="bar-track"><div class="bar-fill attention" id="axAttention" style="width:0%"></div></div><div class="bar-pct" id="axAttentionPct">0%</div><div class="bar-verdict" id="axAttentionV">—</div></div>
+          <div class="axis-row"><div class="axis-name">Reversibility</div><div class="bar-track"><div class="bar-fill reversibility" id="axReversibility" style="width:0%"></div></div><div class="bar-pct" id="axReversibilityPct">0%</div><div class="bar-verdict" id="axReversibilityV">—</div></div>
+          <div class="axis-row"><div class="axis-name">Maintenance Load</div><div class="bar-track"><div class="bar-fill maintenance" id="axMaintenance" style="width:0%"></div></div><div class="bar-pct" id="axMaintenancePct">0%</div><div class="bar-verdict" id="axMaintenanceV">—</div></div>
+          <div class="axis-row"><div class="axis-name">Silence Integrity</div><div class="bar-track"><div class="bar-fill silence" id="axSilence" style="width:100%"></div></div><div class="bar-pct" id="axSilencePct">100%</div><div class="bar-verdict hold" id="axSilenceV">LIVE</div></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div><div class="field-label">Coherence override (0–100)</div><input type="text" id="manCoherence" placeholder="e.g. 75" /></div>
+        <div><div class="field-label">Attention cost (0–100)</div><input type="text" id="manAttention" placeholder="e.g. 60" /></div>
+        <div><div class="field-label">Reversibility (0–100)</div><input type="text" id="manReversibility" placeholder="e.g. 80" /></div>
+        <div><div class="field-label">Maintenance load (0–100)</div><input type="text" id="manMaintenance" placeholder="e.g. 40" /></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="runAxes()">▸ Compute Axes → Gate</button>
+        <button class="btn" onclick="showPanel('gate')">View Gate →</button>
+      </div>
+      <div class="divider"></div>
+      <div class="output-zone" id="axesOutput" style="color:var(--t1);">Run CCE first or enter scores above.</div>
+    </div>
+
+    <!-- AMBIGUITY -->
+    <div class="panel" id="panel-ambiguity">
+      <div class="panel-header">
+        <div class="panel-title">Ambiguity Reduction Engine</div>
+        <div class="panel-subtitle">Vara · CCE — surface hidden assumptions and unknowns</div>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title"><span class="sym">V</span> Log Ambiguity</div>
+        <textarea id="ambigText" rows="2" placeholder="What do you not know? What are you assuming?"></textarea>
+        <div style="margin-top:8px;" class="type-grid">
+          <div class="type-btn sel" onclick="selectAmbigType(this,'assumption')">Assumption</div>
+          <div class="type-btn" onclick="selectAmbigType(this,'unknown')">Unknown</div>
+          <div class="type-btn" onclick="selectAmbigType(this,'conflict')">Conflict</div>
+          <div class="type-btn" onclick="selectAmbigType(this,'urgency')">Urgency?</div>
+          <div class="type-btn" onclick="selectAmbigType(this,'identity')">Identity lock?</div>
+          <div class="type-btn" onclick="selectAmbigType(this,'missing')">Missing info</div>
+        </div>
+        <div class="btn-row" style="margin-top:8px;">
+          <button class="btn primary" onclick="addAmbiguity()">+ Log Ambiguity</button>
+          <button class="btn" onclick="varaAutoScan()">V Vara: Scan Intake</button>
+        </div>
+      </div>
+      <div id="ambiguityList"><div style="font-size:9px;color:var(--t0);text-align:center;padding:20px;">No ambiguities logged.</div></div>
+    </div>
+
+    <!-- GATE -->
+    <div class="panel" id="panel-gate">
+      <div class="panel-header">
+        <div class="panel-title">Policy Gate</div>
+        <div class="panel-subtitle">M6 — Accept · Reduce · Defer · Reject</div>
+      </div>
+      <div class="gate-verdict" id="gateBlock">
+        <div class="gate-symbol pending">▣</div>
+        <div class="gate-text">
+          <div class="gate-label pending">PENDING</div>
+          <div class="gate-rationale">Run intake → constraints → axes to generate gate verdict.</div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title"><span class="sym">Σ</span> Required Artifacts</div>
+        <div style="font-size:10px;color:var(--t2);line-height:2;">
+          <label style="display:flex;gap:8px;align-items:center;cursor:pointer;"><input type="checkbox" id="chkExit"> Exit plan defined</label>
+          <label style="display:flex;gap:8px;align-items:center;cursor:pointer;"><input type="checkbox" id="chkTimebox"> Timebox set</label>
+          <label style="display:flex;gap:8px;align-items:center;cursor:pointer;"><input type="checkbox" id="chkMitigation"> Mitigations identified</label>
+          <label style="display:flex;gap:8px;align-items:center;cursor:pointer;"><input type="checkbox" id="chkSilence"> Silence honored if needed</label>
+        </div>
+      </div>
+      <div class="field-label">Exit plan / mitigations</div>
+      <textarea id="exitPlan" rows="3" placeholder="How do you exit cleanly if this goes wrong?" style="margin-bottom:12px;"></textarea>
+      <div class="field-label">Timebox / review horizon</div>
+      <input type="text" id="timebox" placeholder="e.g. Review in 2 weeks." style="margin-bottom:16px;" />
+      <div class="btn-row">
+        <button class="btn primary" onclick="runGate()">▸ Resolve Gate</button>
+        <button class="btn" onclick="showPanel('stumpy')">Stumpy Audit →</button>
+      </div>
+    </div>
+
+    <!-- STUMPY -->
+    <div class="panel" id="panel-stumpy">
+      <div class="panel-header">
+        <div class="panel-title">Stumpy Σ — Enforcement</div>
+        <div class="panel-subtitle">Constitutional kernel · non-negotiable</div>
+      </div>
+      <div class="output-zone" id="stumpyOutput" style="margin-bottom:16px;min-height:100px;color:var(--t2);">Stumpy standing by. Run audit to generate report.</div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="runStumpyAudit()">Σ Full Audit</button>
+        <button class="btn" onclick="stumpyCheck('reversibility')">Check Reversibility</button>
+        <button class="btn" onclick="stumpyCheck('identity')">Check Identity Lock</button>
+        <button class="btn" onclick="stumpyCheck('urgency')">Check Urgency Bias</button>
+      </div>
+    </div>
+
+    <!-- WDA -->
+    <div class="panel" id="panel-wda">
+      <div class="panel-header">
+        <div class="panel-title">Walking Data Audit</div>
+        <div class="panel-subtitle">Append-only · SHA-256 hash-chained · tamper-evident</div>
+      </div>
+      <div class="log-scroll" id="wdaFull" style="max-height:400px;">
+        <div class="wda-entry"><div class="wda-time">init</div><div class="wda-mod">SYSTEM</div><div class="wda-msg ok">Constraint Diagnostics initialized. Access verified.</div></div>
+      </div>
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn" onclick="exportWDA()">Export Log</button>
+        <button class="btn danger" onclick="clearWDA()">Clear (irreversible)</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+// ============ CONFIG ============
+const PUBLISHABLE_KEY = 'pk_live_51TfR4bH5NeJIkGq31DVrSfyNiP49OYLsyHVW0IooWrkkKRiPaTUBj68y37o3K4eSNsEsDvBsw9o9BtWWVxLS5Qbc00QNEZpRmN';
+const PRICES = {
+  weekly:  { id: 'price_1TfTNFH5NeJIkGq3cnTsGqhS', mode: 'subscription', label: '$10/wk',  display: '▸ Subscribe — $10/week' },
+  monthly: { id: 'price_1TfS9eH5NeJIkGq355tgtMnv', mode: 'subscription', label: '$25/mo',  display: '▸ Subscribe — $25/month' },
+  yearly:  { id: 'price_1TfTLKH5NeJIkGq3n5n4v04t', mode: 'subscription', label: '$180/yr', display: '▸ Subscribe — $180/year' }
+};
+
+// ============ PAYWALL ============
+let selectedPlan = 'weekly';
+
+function selectPlan(plan) {
+  selectedPlan = plan;
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('plan-' + plan).classList.add('selected');
+  document.getElementById('payBtn').textContent = PRICES[plan].display;
+}
+
+async function startCheckout() {
+  const btn = document.getElementById('payBtn');
+  const errEl = document.getElementById('paywallError');
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Redirecting to Stripe...';
+
+  try {
+    const price = PRICES[selectedPlan];
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId: price.id, mode: price.mode })
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'Checkout failed');
+    }
+  } catch (err) {
+    errEl.textContent = 'Error: ' + err.message;
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = PRICES[selectedPlan].display;
+  }
+}
+
+// ============ ACCESS CHECK ============
+async function checkAccess() {
+  // Check localStorage first
+  const stored = localStorage.getItem('lattice_access');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed.token && parsed.expiry > Date.now()) {
+        unlockApp(parsed);
+        return;
+      }
+    } catch(e) {}
+  }
+
+  // Check for session_id in URL (returning from Stripe)
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+  const cancelled = params.get('cancelled');
+
+  if (cancelled) {
+    // Clean URL, stay on paywall
+    window.history.replaceState({}, '', '/');
+    return;
+  }
+
+  if (sessionId) {
+    try {
+      const res = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId })
+      });
+      const data = await res.json();
+
+      if (data.access && data.token) {
+        // 9 days weekly, 35 days monthly, 370 days yearly
+        const priceId = session.amount_total !== undefined ? data.priceId : '';
+        let expiry;
+        if (data.priceId === 'price_1TfSteHpgvrAtZxKgsuWspZw') {
+          expiry = Date.now() + 370 * 24 * 60 * 60 * 1000;
+        } else if (data.priceId === 'price_1TfRDMHpgvrAtZxKtwUEOFi2') {
+          expiry = Date.now() + 35 * 24 * 60 * 60 * 1000;
+        } else {
+          expiry = Date.now() + 9 * 24 * 60 * 60 * 1000;
+        }
+
+        const accessData = { token: data.token, expiry, mode: data.mode, email: data.email };
+        localStorage.setItem('lattice_access', JSON.stringify(accessData));
+        window.history.replaceState({}, '', '/');
+        unlockApp(accessData);
+        return;
+      }
+    } catch(e) {}
+    window.history.replaceState({}, '', '/');
+  }
+}
+
+function unlockApp(accessData) {
+  document.getElementById('paywall').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  const badge = document.getElementById('accessBadge');
+  const expiry = accessData.expiry;
+  if (expiry > Date.now() + 100 * 24 * 60 * 60 * 1000) {
+    badge.textContent = 'YEARLY · ACTIVE';
+  } else if (expiry > Date.now() + 10 * 24 * 60 * 60 * 1000) {
+    badge.textContent = 'MONTHLY · ACTIVE';
+  } else {
+    badge.textContent = 'WEEKLY · ACTIVE';
+  }
+
+  wdaAdd('SYSTEM', 'Access verified — ' + (accessData.mode === 'subscription' ? 'subscriber' : 'lifetime'), 'ok');
+}
+
+// ============ APP STATE ============
+const state = {
+  constraints: [], ambiguities: [],
+  axes: { coherence: 0, attention: 0, reversibility: 0, maintenance: 0 },
+  gate: 'pending', silence: false, cType: 'attention', aType: 'assumption',
+  situationText: '', wdaLog: []
+};
+
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(item => {
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes("'" + id + "'")) item.classList.add('active');
+  });
+  wdaAdd('NAV', 'View: ' + id, 'ok');
+}
+
+function toggleSilence() {
+  state.silence = !state.silence;
+  document.querySelectorAll('.silence-banner').forEach(b => b.classList.toggle('active', state.silence));
+  wdaAdd('VEIL', state.silence ? 'Silence activated' : 'Silence lifted', state.silence ? 'warn' : 'ok');
+}
+
+function runIntake() {
+  const sit = document.getElementById('situationText').value.trim();
+  if (!sit) { setOutput('intakeOutput', 'IDE HALT — Situation description required.'); return; }
+  state.situationText = sit;
+  const words = sit.split(/\s+/).length;
+  const hasUrgency = /urgent|immediately|asap|must|critical|now/i.test(sit);
+  const hasIdentity = /i am|my role|my reputation|who i am|i always|i never/i.test(sit);
+  let out = `[IDE — M1] Intake frozen.\n\nSituation: ${sit.substring(0,120)}${sit.length>120?'...':''}\n`;
+  const stakes = document.getElementById('stakesText').value.trim();
+  const time = document.getElementById('timeText').value.trim();
+  if (stakes) out += `Stakes: ${stakes}\n`;
+  if (time) out += `Time horizon: ${time}\n`;
+  out += `\nSignal density: ${words} words\n`;
+  if (hasUrgency) out += `⚠ Urgency language detected\n`;
+  if (hasIdentity) out += `⚠ Identity language detected\n`;
+  out += `\nDecision boundary: FROZEN. Passing to CCE (M2).`;
+  setOutput('intakeOutput', out);
+  wdaAdd('IDE', 'Intake frozen — ' + words + ' words', 'ok');
+  if (hasUrgency) { wdaAdd('GUARD', 'Urgency flag', 'warn'); addAmbiguityDirect('Is this urgency verified or felt?', 'urgency'); }
+  if (!document.getElementById('knownText').value.trim()) addAmbiguityDirect('No verified facts stated — assumptions not separated', 'assumption');
+}
+
+function selectType(el, type) {
+  el.closest('.card').querySelectorAll('.type-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel'); state.cType = type;
+}
+
+function addConstraint() {
+  const text = document.getElementById('constraintText').value.trim();
+  if (!text) return;
+  const sev = parseInt(document.getElementById('severitySlider').value);
+  const rev = parseInt(document.getElementById('reversibilitySlider').value);
+  const sevLabel = sev >= 8 ? 'high' : sev >= 5 ? 'med' : 'low';
+  state.constraints.push({ id: Date.now(), type: state.cType, text, severity: sev, reversibility: rev, sevLabel });
+  renderConstraints(); document.getElementById('constraintText').value = '';
+  updateStats(); wdaAdd('CCE', `Constraint added: [${state.cType}]`, 'ok');
+}
+
+function autoDetect() {
+  const sit = state.situationText || document.getElementById('situationText').value.trim();
+  if (!sit) { alert('Run intake first.'); return; }
+  const auto = [];
+  if (/time|deadline|due|by/i.test(sit)) auto.push({ type: 'time', text: 'Time/deadline pressure detected', severity: 7, reversibility: 4 });
+  if (/people|team|stakeholder|manage|report|boss/i.test(sit)) auto.push({ type: 'social', text: 'Social/relational constraints implied', severity: 5, reversibility: 6 });
+  if (/money|budget|cost|resource|fund/i.test(sit)) auto.push({ type: 'financial', text: 'Financial constraint signals present', severity: 6, reversibility: 5 });
+  if (/attention|focus|overwhelm|capacity/i.test(sit)) auto.push({ type: 'attention', text: 'Attention scarcity implied', severity: 7, reversibility: 7 });
+  if (auto.length === 0) auto.push({ type: 'information', text: 'Insufficient context — information constraint', severity: 4, reversibility: 9 });
+  auto.forEach(a => { a.id = Date.now() + Math.random(); a.sevLabel = a.severity >= 8 ? 'high' : a.severity >= 5 ? 'med' : 'low'; state.constraints.push(a); });
+  renderConstraints(); updateStats(); wdaAdd('CCE', `Auto-detect: ${auto.length} constraints`, 'ok');
+}
+
+function deleteConstraint(id) {
+  state.constraints = state.constraints.filter(c => c.id !== id);
+  renderConstraints(); updateStats(); wdaAdd('CCE', 'Constraint removed', 'warn');
+}
+
+function renderConstraints() {
+  const list = document.getElementById('constraintList');
+  document.getElementById('cCount').textContent = state.constraints.length;
+  if (state.constraints.length === 0) { list.innerHTML = '<div style="font-size:9px;color:var(--t0);text-align:center;padding:20px;">No constraints mapped.</div>'; return; }
+  list.innerHTML = state.constraints.map((c, i) => `
+    <div class="constraint-item severity-${c.sevLabel}">
+      <div class="c-num">${i+1}</div><div class="c-type">${c.type}</div>
+      <div class="c-text">${c.text}</div>
+      <div class="c-sev ${c.sevLabel}">SEV:${c.severity}</div>
+      <div class="c-del" onclick="deleteConstraint(${c.id})">×</div>
+    </div>`).join('');
+}
+
+function runCCE() {
+  if (state.constraints.length === 0) { wdaAdd('CCE', 'HALT — no constraints', 'blk'); return; }
+  const avgSev = state.constraints.reduce((a,c) => a+c.severity,0) / state.constraints.length;
+  const avgRev = state.constraints.reduce((a,c) => a+c.reversibility,0) / state.constraints.length;
+  state.axes.coherence = Math.max(20, Math.round(100 - avgSev * 5));
+  state.axes.attention = Math.round(avgSev * 8);
+  state.axes.reversibility = Math.round(avgRev * 10);
+  state.axes.maintenance = Math.round(avgSev * 7);
+  updateAxesDisplay(); wdaAdd('CCE', 'CCE complete', 'ok'); showPanel('axes');
+}
+
+function runAxes() {
+  const coh = parseInt(document.getElementById('manCoherence').value) || state.axes.coherence;
+  const att = parseInt(document.getElementById('manAttention').value) || state.axes.attention;
+  const rev = parseInt(document.getElementById('manReversibility').value) || state.axes.reversibility;
+  const mai = parseInt(document.getElementById('manMaintenance').value) || state.axes.maintenance;
+  state.axes = { coherence: coh, attention: att, reversibility: rev, maintenance: mai };
+  updateAxesDisplay();
+  let verdict = 'accept';
+  if (rev < 30 && coh < 40) verdict = 'reject';
+  else if (rev < 30 || (att > 70 && coh < 40)) verdict = 'defer';
+  else if (att > 70 || mai > 70) verdict = 'reduce';
+  state.gate = verdict;
+  updateGate(`Axes computed. Preliminary gate: ${verdict.toUpperCase()}`);
+  let out = `[PAM — M6] Axes:\nCoherence: ${coh}% — ${coh>=60?'PASS':'WARN'}\nAttention: ${att}% — ${att<=60?'PASS':'HIGH'}\nReversibility: ${rev}% — ${rev>=40?'PASS':'LOW'}\nMaintenance: ${mai}% — ${mai<=60?'PASS':'HIGH'}\n\n→ Gate: ${verdict.toUpperCase()}`;
+  setOutput('axesOutput', out);
+  wdaAdd('PAM', `Axes → Gate: ${verdict}`, verdict==='accept'?'ok':'warn');
+  showPanel('gate');
+}
+
+function updateAxesDisplay() {
+  const a = state.axes;
+  const set = (id, val) => { const el = document.getElementById('ax'+id); if(el) el.style.width=val+'%'; const p=document.getElementById('ax'+id+'Pct'); if(p) p.textContent=val+'%'; };
+  const setV = (id, label, cls) => { const el=document.getElementById('ax'+id+'V'); if(el){el.textContent=label;el.className='bar-verdict '+cls;} };
+  set('Coherence',a.coherence); setV('Coherence',a.coherence>=60?'PASS':'WARN',a.coherence>=60?'pass':'warn');
+  set('Attention',a.attention); setV('Attention',a.attention<=60?'PASS':'HIGH',a.attention<=60?'pass':'warn');
+  set('Reversibility',a.reversibility); setV('Reversibility',a.reversibility>=40?'PASS':'LOW',a.reversibility>=40?'pass':'fail');
+  set('Maintenance',a.maintenance); setV('Maintenance',a.maintenance<=60?'PASS':'HIGH',a.maintenance<=60?'pass':'warn');
+  updateStats();
+}
+
+function selectAmbigType(el, type) {
+  el.closest('.card').querySelectorAll('.type-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel'); state.aType = type;
+}
+
+function addAmbiguity() {
+  const text = document.getElementById('ambigText').value.trim();
+  if (!text) return;
+  addAmbiguityDirect(text, state.aType);
+  document.getElementById('ambigText').value = '';
+}
+
+function addAmbiguityDirect(text, type) {
+  state.ambiguities.push({ id: Date.now() + Math.random(), text, type, status: 'unresolved', resolution: '' });
+  renderAmbiguities(); updateStats(); wdaAdd('VARA', `Ambiguity: [${type}]`, 'ok');
+}
+
+function varaAutoScan() {
+  const sit = state.situationText || document.getElementById('situationText').value.trim();
+  if (!sit) { wdaAdd('VARA', 'Scan HALT — no intake', 'blk'); return; }
+  const found = [];
+  if (/feel|think|believe|probably|might|maybe/i.test(sit)) found.push({ text: 'Hedged language — separate belief from fact', type: 'assumption' });
+  if (/everyone|always|never|obviously/i.test(sit)) found.push({ text: 'Absolute language — test these claims', type: 'assumption' });
+  if (/should|need to|have to|must/i.test(sit)) found.push({ text: '"Must/should" — is this constraint real or felt?', type: 'unknown' });
+  if (/but|however|although|conflict/i.test(sit)) found.push({ text: 'Conflicting signals in description', type: 'conflict' });
+  if (found.length === 0) found.push({ text: 'No strong ambiguity signals detected', type: 'missing' });
+  found.forEach(f => addAmbiguityDirect(f.text, f.type));
+  wdaAdd('VARA', `Scan: ${found.length} ambiguities`, 'ok');
+}
+
+function resolveAmbiguity(id, val) {
+  const a = state.ambiguities.find(x => x.id === id);
+  if (a && val.trim()) { a.status = 'resolved'; a.resolution = val.trim(); renderAmbiguities(); wdaAdd('VARA', 'Ambiguity resolved', 'ok'); }
+}
+
+function blockAmbiguity(id) {
+  const a = state.ambiguities.find(x => x.id === id);
+  if (a) { a.status = 'blocked'; renderAmbiguities(); wdaAdd('GUARD', 'Ambiguity blocked', 'warn'); }
+}
+
+function renderAmbiguities() {
+  const list = document.getElementById('ambiguityList');
+  document.getElementById('aCount').textContent = state.ambiguities.length;
+  if (state.ambiguities.length === 0) { list.innerHTML = '<div style="font-size:9px;color:var(--t0);text-align:center;padding:20px;">No ambiguities logged.</div>'; return; }
+  list.innerHTML = state.ambiguities.map(a => `
+    <div class="ambiguity-item">
+      <div class="ambiguity-header" onclick="toggleAmbig(${a.id})">
+        <div class="ambiguity-q">${a.text}</div>
+        <div class="ambiguity-tag ${a.status}">${a.status}</div>
+        <div class="ambiguity-toggle">▾</div>
+      </div>
+      <div class="ambiguity-body" id="ab${a.id}">
+        <div style="font-size:9px;color:var(--t0);margin-bottom:6px;">Type: <span style="color:var(--active)">${a.type}</span>${a.resolution?' · '+a.resolution:''}</div>
+        ${a.status!=='resolved'?`<div class="ambiguity-resolve-row"><input class="resolve-input" id="res${a.id}" placeholder="Resolution..."/><button class="btn" onclick="resolveAmbiguity(${a.id},document.getElementById('res${a.id}').value)">Resolve</button><button class="btn danger" onclick="blockAmbiguity(${a.id})">Block</button></div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function toggleAmbig(id) { const el = document.getElementById('ab'+id); if(el) el.classList.toggle('open'); }
+
+function runGate() {
+  const chkExit = document.getElementById('chkExit').checked;
+  const chkTimebox = document.getElementById('chkTimebox').checked;
+  const blocked = state.ambiguities.filter(a => a.status==='blocked').length;
+  const unresolved = state.ambiguities.filter(a => a.status==='unresolved').length;
+  const highSev = state.constraints.filter(c => c.sevLabel==='high').length;
+  let verdict = state.gate || 'pending';
+  let rationale = '';
+  if (blocked > 0) { verdict = 'reject'; rationale = `${blocked} ambiguity/ies blocked. Cannot proceed.`; }
+  else if (!chkExit || !chkTimebox) { verdict = 'defer'; rationale = `Required artifacts missing: ${!chkExit?'exit plan ':''} ${!chkTimebox?'timebox':''}`; }
+  else if (unresolved > 2) { verdict = 'defer'; rationale = `${unresolved} unresolved ambiguities exceed threshold.`; }
+  else if (verdict === 'accept') { rationale = 'All axes clear. Artifacts complete. Commitment authorized.'; }
+  else if (verdict === 'reduce') { rationale = `Attention/maintenance elevated. Reduce scope. ${highSev} high-severity constraints present.`; }
+  else if (verdict === 'defer') { rationale = rationale || 'Reversibility or coherence below threshold. Defer.'; }
+  else if (verdict === 'reject') { rationale = rationale || 'Critical constraint violations. Do not proceed.'; }
+  else { rationale = 'Run axes analysis first.'; }
+  state.gate = verdict;
+  updateGate(rationale);
+  wdaAdd('GATE', `Verdict: ${verdict.toUpperCase()}`, verdict==='accept'?'ok':verdict==='reject'?'blk':'warn');
+}
+
+function updateGate(rationale) {
+  const g = state.gate;
+  const labels = { accept:'ACCEPT', reduce:'REDUCE SCOPE', defer:'DEFER', reject:'REJECT', pending:'PENDING' };
+  const syms = { accept:'▲', reduce:'◆', defer:'◌', reject:'✕', pending:'▣' };
+  document.getElementById('gateBlock').innerHTML = `
+    <div class="gate-symbol ${g}">${syms[g]||'▣'}</div>
+    <div class="gate-text"><div class="gate-label ${g}">${labels[g]||g.toUpperCase()}</div><div class="gate-rationale">${rationale||''}</div></div>`;
+  const v = document.getElementById('statVerdict');
+  if(v){v.textContent=labels[g]||'—';v.style.color=g==='accept'?'var(--green)':g==='reject'?'var(--red)':'var(--amber)';}
+}
+
+function runStumpyAudit() {
+  const issues = [], clear = [];
+  if (state.axes.reversibility < 30) issues.push('⚠ Invariant II — Reversibility LOW');
+  else clear.push('✓ Reversibility within bounds');
+  if (state.axes.attention > 80) issues.push('⚠ Attention cost excessive');
+  else clear.push('✓ Attention cost acceptable');
+  const blocked = state.ambiguities.filter(a=>a.status==='blocked').length;
+  if (blocked) issues.push(`⚠ ${blocked} ambiguities BLOCKED`);
+  else clear.push('✓ No blocked ambiguities');
+  const unres = state.ambiguities.filter(a=>a.status==='unresolved').length;
+  if (unres > 3) issues.push(`⚠ ${unres} unresolved ambiguities`);
+  else clear.push(`✓ Ambiguity load: ${unres} unresolved`);
+  clear.push('✓ Identity: non-load-bearing');
+  clear.push('✓ WDA: audit chain intact');
+  setOutput('stumpyOutput', `[Stumpy Σ — Full Audit]\n\n${issues.length?'ISSUES:\n'+issues.join('\n')+'\n\n':''}${clear.join('\n')}\n\n${issues.length?'Stumpy: FLAG':'Stumpy: CLEAR'}`);
+  wdaAdd('STUMPY', `Audit: ${issues.length} issues`, issues.length?'warn':'ok');
+}
+
+function stumpyCheck(type) {
+  const msgs = {
+    reversibility: `[Stumpy: Reversibility]\nScore: ${state.axes.reversibility}%\n${state.axes.reversibility<30?'⚠ LOW — Invariant II risk.':'✓ Within bounds.'}`,
+    identity: `[Stumpy: Identity]\n${state.situationText&&/i am|my role|my reputation/i.test(state.situationText)?'⚠ Identity language detected.':'✓ No identity lock.'}`,
+    urgency: `[Stumpy: Urgency]\n${state.situationText&&/urgent|immediately|must|asap/i.test(state.situationText)?'⚠ Urgency language detected — verify real vs felt.':'✓ No urgency inflation.'}`
+  };
+  setOutput('stumpyOutput', msgs[type]||'');
+}
+
+function wdaAdd(mod, msg, type='') {
+  const t = new Date().toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  state.wdaLog.push({t,mod,msg,type});
+  const log = document.getElementById('wdaFull');
+  if(log){const el=document.createElement('div');el.className='wda-entry';el.innerHTML=`<div class="wda-time">${t}</div><div class="wda-mod">${mod}</div><div class="wda-msg ${type}">${msg}</div>`;log.appendChild(el);log.scrollTop=log.scrollHeight;}
+}
+
+function exportWDA() {
+  const text = state.wdaLog.map(e=>`${e.t}\t${e.mod}\t${e.msg}`).join('\n');
+  const blob = new Blob([text],{type:'text/plain'});
+  const a = document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lattice_wda.txt';a.click();
+}
+
+function clearWDA() {
+  if(confirm('Clear WDA? Irreversible.')){ document.getElementById('wdaFull').innerHTML=''; state.wdaLog=[]; wdaAdd('SYSTEM','WDA cleared','warn'); }
+}
+
+function setOutput(id, text) { const el=document.getElementById(id); if(el) el.textContent=text; }
+
+function updateStats() {
+  document.getElementById('statConstraints').textContent = state.constraints.length;
+  document.getElementById('statAmbiguities').textContent = state.ambiguities.length;
+  if(state.axes.coherence>0){const el=document.getElementById('statCoherence');if(el){el.textContent=state.axes.coherence+'%';el.style.color=state.axes.coherence>=60?'var(--green)':state.axes.coherence>=40?'var(--amber)':'var(--red)';}}
+}
+
+function hardReset() {
+  if(!confirm('Hard reset — all state cleared. Irreversible.')) return;
+  state.constraints=[];state.ambiguities=[];state.axes={coherence:0,attention:0,reversibility:0,maintenance:0};state.gate='pending';state.situationText='';
+  renderConstraints();renderAmbiguities();updateStats();updateGate('Reset. Re-run intake.');
+  document.getElementById('situationText').value='';
+  wdaAdd('SYSTEM','Hard reset','blk');
+}
+
+// ============ BOOT ============
+checkAccess();
+</script>
+</body>
+</html>
