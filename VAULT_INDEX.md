@@ -1,117 +1,199 @@
-# VAULT_INDEX — Canonical Vault Registry
-
-**Operator:** LiminalJermo
-**Repo:** canonical-vault
-**Status:** Active
-**Last Updated:** 2026-06-15
-
----
-
-## Vault Invariants
-
-| ID | Invariant | Definition |
-|---|---|---|
-| I·COH | Coherence | Every artifact must increase or preserve system coherence. Incoherent artifacts are not stored. |
-| II·REV | Reversibility | All vault entries are append-only. No silent overwrites. Deprecation links replace deletion. |
-| III·ATT | Attention | Every artifact must justify its attention cost. Low-signal artifacts are pruned. |
-| IV·SIL | Silence | The vault does not speak unless queried. Noise is a vault failure mode. |
-| V·DEC | Decay | Artifacts that are not actively referenced decay toward archival status. Persistence is not assumed. |
-| VI·SIG | Signal | Weak signals are stored at full standing. Magnitude is not assessed at intake. |
+# VAULT INDEX
+**Version:** 2.0 (Post-Population)
+**Author:** LiminalJermo
+**Date:** 2026-06-17
+**Status:** Canonical — reflects full repo state after Canonical Lattice spec population
+**Lineage:** Lattice_Cognitive_Constitution_v1.1.md · Lattice_Unified_Spec.md · Lattice_Invariants_v1.md
 
 ---
 
-## Directory Index
+## CORE INVARIANTS (I·COH through VI·SIG)
 
-### 00_governance/
-| File | Status | Date | Notes |
-|---|---|---|---|
-| `constitution/Lattice_Cognitive_Constitution_v1.1.md` | CANON | 2026-05-22 | Supreme governing instrument. Fixed core: Preamble. |
-| `constitution/VARA-CONST-P0_Constitutional_Clauses.md` | CANON | 2026-06-02 | P0 clauses C01, C03, C06 |
-| `operator_manual/Operator_Manual_v0.2.md` | STABLE | 2026-05-22 | MVL 2.0. Anchor block for Operator Manual chain. |
-| `playbook/Operator_Playbook_Omega-12.pdf` | CANON | 2026-05-29 | Ω-12 Principle of Emergent Sequence |
-
-### 01_sovereignty/
-| File | Status | Date | Notes |
-|---|---|---|---|
-| `SICA-001.md` | PRE-TRANSMISSION | 2026-05-31 | Primary sovereignty doc. Controlled distribution. |
-
-### 02_epistemic_substrate/
-| File | Status | Date | Notes |
-|---|---|---|---|
-| `Bilateralism_and_Truth_Routing.md` | CANON | 2026-06-14 | Most recent doc. Triple-gate architecture. |
-| `Bilateral_Runtime_Patterns.md` | CANON | 2026-06-08 | Eight canonical runtime patterns. |
-| `Neuralese_Lexicon.docx` | ACTIVE DEVELOPMENT | 2026-05-10 | 26-letter lexicon. Binary: Drive source. |
-| `Empirical_Doctrine.pdf` | CANON | 2026-01-30 | Binary: Drive source. |
-
-### 03_vault_pipeline/
-| File | Status | Date | Notes |
-|---|---|---|---|
-| `Vault_Chain_Spec.md` | CANON | 2026-06-08 | Storage, versioning, retrieval architecture. |
-| `Orchestration_Contract_Veil_Pipeline_Vault.md` | CANON | 2026-06-05 | Ω-11. Five-stage orchestration loop. |
-| `Vara_Vault_Index.md` | REFERENCE | 2026-05-18 | Sourced from Drive. |
-| `VARA-COGOV-001_Vara-Scan_Distilled_Briefing.md` | REFERENCE | 2026-05-24 | Sourced from Drive. |
-| `VARA-GAP-001_OWASP_ASI_Top10_Gap_Analysis.docx` | REFERENCE | 2026-06-02 | Binary. Sourced from Drive. |
-| `VaraScan_Full_Operator_Report_2026-06-04.md` | REFERENCE | 2026-06-04 | Sourced from Drive. |
-
-### 04_system_spec/
-| File | Status | Date | Notes |
-|---|---|---|---|
-| `Lattice_Unified_Spec.md` | AUTHORITATIVE | 2026-06-11 | Root anchor. Supersedes all prior individual specs. |
-| `Lattice_System_Architecture.md` | REFERENCE | 2026-05-27 | Sourced from Drive. |
-| `Canon_Vara_Scan_Operator_Architecture_v0.1.0.md` | REFERENCE | 2026-06-01 | Sourced from Drive. |
-| `Unified_Document_Briefing_Canonical.md` | REFERENCE | 2026-06-06 | Sourced from Drive. |
-| `lattice_initiation.md` | REFERENCE | 2026-06-13 | Sourced from Drive. Empty on read — pending re-pull. |
-| `appendices/Lattice_Adversarial_Audit_Report.pdf` | REFERENCE | 2026-05-19 | Binary. |
-| `appendices/Lattice_Governance_Architecture.pdf` | REFERENCE | 2026-05-15 | Binary. |
-| `appendices/Technical_Continuum_v2.pdf` | SUPERSEDED | 2026-04-07 | Absorbed into Unified Spec. |
-| `appendices/Portability_Spec.pdf` | SUPERSEDED | 2026-05-19 | Absorbed into Unified Spec. |
-| `appendices/System_Appendix.pdf` | SUPERSEDED | 2026-05-19 | Absorbed into Unified Spec. |
-| `appendices/Red_Team_Appendix.pdf` | SUPERSEDED | 2026-05-19 | Absorbed into Unified Spec. |
-| `appendices/Flow_State_Spec.pdf` | SUPERSEDED | 2026-05-19 | Absorbed into Unified Spec. |
-| `appendices/Usage_Playbook.pdf` | SUPERSEDED | 2026-05-19 | Absorbed into Unified Spec. |
-
-### 05_runtime/
-| File | Status | Date | Notes |
-|---|---|---|---|
-| `lattice_runtime.py` | STABLE | 2026-05-19 | Core: Vault, Echo, Sentinel, Pulse, Threshold, Veil, Rift, Vara, Stumpy, Agent, Lattice, CommandParser |
-| `lattice_cli_project/` | PENDING UNZIP | 2026-05-19 | Sourced from Drive zip. |
-| `lattice_runtime_cli/` | PENDING UNZIP | 2026-05-19 | Sourced from Drive zip. |
-| `LMES_v1.1/` | PENDING UNZIP | 2026-05-19 | Lattice Memory/Module Execution System v1.1 |
-
-### 06_ip_legal/
-| File | Status | Date | Notes |
-|---|---|---|---|
-| `IP_Attorney_Brief.md` | CONFIDENTIAL | 2026-06-11 | Attorney-client privileged. FTO + provisional patent strategy. |
-| `Case_Law_and_Prevent_Registry.md` | REFERENCE | 2026-06-11 | Sourced from Drive. |
-
-### 07_content_engine/
-| File | Status | Date | Notes |
-|---|---|---|---|
-| `Threshold_Tuesday_Operator_Edition.md` | REFERENCE | 2026-06-09 | Sourced from Drive. |
-
-### exports/
-| File | Notes |
-|---|---|
-| `SICA-001.pdf` | PDF export of `01_sovereignty/SICA-001.md` |
+| Code | Name | Definition | Defined In |
+|------|------|-----------|-----------|
+| I·COH | Coherence Primacy | All output must be non-contradictory with active Vault content | `00_governance/invariants/Lattice_Invariants_v1.md` |
+| II·REV | Reversibility | Vault is append-only; no destructive edits; snapshot before ANCHOR writes | `00_governance/invariants/Lattice_Invariants_v1.md` |
+| III·ATT | Attention Budget | Attention cost is finite; every activation has a cost; G2 enforces the budget | `00_governance/invariants/Lattice_Invariants_v1.md` |
+| IV·SIL | Silence Mandate | System outputs null rather than fabricate; silence is valid and honest | `00_governance/invariants/Lattice_Invariants_v1.md` |
+| V·DEC | Decay Mandate | Unreferenced content must decay and eventually be pruned | `00_governance/invariants/Lattice_Invariants_v1.md` |
+| VI·SIG | Weak Signal Parity | Weak signals are preserved in Veil and eligible for Vault promotion | `00_governance/invariants/Lattice_Invariants_v1.md` |
 
 ---
 
-## Pending Actions
+## DIRECTORY MAP
 
-- [ ] Pull and unzip `lattice_cli_project.zip` → `05_runtime/lattice_cli_project/`
-- [ ] Pull and unzip `lattice_runtime_cli.zip` → `05_runtime/lattice_runtime_cli/`
-- [ ] Pull and unzip `LMES_v1.1.zip` → `05_runtime/LMES_v1.1/`
-- [ ] Pull binary files from Drive: Neuralese_Lexicon.docx, Empirical_Doctrine.pdf, all appendices
-- [ ] Re-pull `lattice_initiation` (empty on read)
-- [ ] Pull remaining Drive docs: Vara_Vault_Index, VARA-COGOV-001, VaraScan Report, Case Law doc, Threshold Tuesday
-- [ ] Reconcile runtime zips against `lattice_runtime.py` — consolidate into single source
-- [ ] Add VARA-CONST-P0 once pulled from Drive
+### `00_governance/` — Constitutional and Governance Documents
+
+| File | Status | Description |
+|------|--------|-------------|
+| `constitution/Lattice_Cognitive_Constitution_v1.1.md` | Exists | Primary constitutional document. 8 Axioms, 6 Principles, Module Authority Table (9 ranks), Amendment Protocol. Ratified 2026-05-22. |
+| `invariants/Lattice_Invariants_v1.md` | NEW | Full 6-invariant specification (I·COH-VI·SIG) with enforcement rules, failure modes, enforcement matrix, and amendment protocol. |
+| `operator_manual/Operator_Manual_v0.2.md` | Exists | MVL 2.0 framework. Module Index (IDE/CCE/CFC/MTM/PAM/EGG/WDA). Neuralese Protocol (Appendix C). |
+| `operator_manual/Operator_Playbook.md` | NEW | Practical daily operator SOPs. Morning routine, Pre-work snapshot, 7 SOPs, Amendment Protocol, Neuralese Quick Reference, COL Quick Reference (16 commands), Runbook Index (RB-001-RB-008). |
+| `Sync_contract.md.pdf` | Exists (binary) | Sync contract document. Binary PDF — not indexable. |
+| `playbook/` | Exists (dir) | Legacy playbook directory. See `Operator_Playbook.md` for current version. |
 
 ---
 
-## Lineage Anchor
+### `01_sovereignty/` — Sovereignty and Architecture
 
-All artifacts in this vault trace lineage to:
-- `00_governance/constitution/Lattice_Cognitive_Constitution_v1.1.md` (January 20, 2026 — primary priority date)
-- `00_governance/operator_manual/Operator_Manual_v0.2.md` (anchor block)
-- `03_vault_pipeline/Vault_Chain_Spec.md` (storage protocol)
+| File | Status | Description |
+|------|--------|-------------|
+| `SICA-001.md` | Exists | Substrate-Independent Cognitive Architecture spec. 6 components (Lattice, Vara, Stumpy, Neuralese, COL, 4D Framework). 3 failure classes. 4-phase transmission status. |
+
+---
+
+### `02_epistemic_substrate/` — Epistemic Foundations
+
+| File | Status | Description |
+|------|--------|-------------|
+| `Bilateral_Runtime_Patterns.md` | Exists | Runtime pattern documentation for bilateral cognition. |
+| `Bilateralism_and_Truth_Routing.md` | Exists | Truth routing architecture in bilateral system. |
+| `Neuralese lexicon.docx` | Exists (binary) | Neuralese vocabulary reference. Binary .docx — not indexable via raw. See Operator_Manual_v0.2 Appendix C for protocol definition. |
+| `The_Lattice_Empirical_Doctrine.pdf` | Exists (binary) | Empirical doctrine document. Binary PDF — not indexable. |
+
+---
+
+### `03_vault_pipeline/` — Vault and Pipeline Operations
+
+| File | Status | Description |
+|------|--------|-------------|
+| `Vault_Chain_Spec.md` | Exists | Chain specification for Vault Node linkage. |
+| `Orchestration_Contract_Veil_Pipeline_Vault.md` | Exists | Veil-to-Vault orchestration contract. Promotion pipeline specification. |
+| `VARA-COGOV-001_Vara-Scan_Distilled_Briefing.md` | Exists | Vara Cognitive Governance scan briefing report. |
+| `VARA-GAP-001_OWASP_ASI_Top10_Gap_Analysis.md` | Exists | OWASP ASI Top 10 gap analysis from Vara scan. |
+| `VaraScan_Full_Operator_Report_2026-06-04.md` | Exists | Full Vara scan operator report dated 2026-06-04. |
+| `Vara_Vault_Index.md` | Exists | Vara-specific vault index. |
+
+---
+
+### `04_system_spec/` — System Specifications (Core Spec Layer)
+
+#### Root Level
+
+| File | Status | Description |
+|------|--------|-------------|
+| `Lattice_Unified_Spec.md` | Exists | Root anchor specification document. Sections 0-7 complete. Sections 8-15 were stubs. |
+| `Lattice_Unified_Spec_Sections_8-15.md` | NEW | Completes the Unified Spec. Section 8 Module Interaction Protocol, Section 9 Neuralese Full Grammar, Section 10 Error Taxonomy, Section 11 Snapshot Protocol, Section 12 Operator Interface Spec, Section 13 Runtime Deployment, Section 14 Amendment Procedures, Section 15 Appendices/Glossary. |
+| `MODULE_REGISTRY.md` | NEW | All 9 modules catalogued with full field tables: ID, Rank, File, Role, Interfaces, Invariant Bindings, Activation Condition, Failure Mode, Owner. |
+| `Lattice_Node_Model.md` | NEW | Complete Node schema (14 fields), 4 lifecycle states with transition rules, classification rules (ANCHOR/STANDARD/VARA_PROMOTED/OPERATOR_DIRECTIVE/AUDIT_RECORD). |
+| `Pulse_Cycle_Spec.md` | NEW | Full 5-stage cycle anatomy (PULSE, ACTIVATION, EVALUATION, DECAY, SILENCE) with module responsibilities, inputs/outputs, invariant checkpoint
+
+#### `04_system_spec/modules/` — Per-Module Specifications
+
+| File | Status | Module | Rank | Python File |
+|------|--------|--------|------|-------------|
+| `Sentinel_Spec.md` | NEW | Sentinel | 4 | `sentinel.py` |
+| `Veil_Spec.md` | NEW | Veil | 5 | `veil.py` |
+| `Vara_Spec.md` | NEW | Vara | 6 | `vara.py` |
+| `Stumpy_Spec.md` | NEW | Stumpy | 7 | `stumpy.py` |
+| `Crossroad_Spec.md` | NEW | Crossroad | 8 | `rift.py` |
+| `SBM_Spec.md` | NEW | SBM / Echo | 9 | `echo.py` |
+
+---
+
+### `05_runtime/` — Python Runtime Implementation
+
+#### Root Python Files
+
+| File | Module | Description |
+|------|--------|-------------|
+| `vault.py` | Vault (R3) | Vault state management and chain operations |
+| `sentinel.py` | Sentinel (R4) | Gate evaluation (G1/G2/G3) and Omega-LOCK |
+| `veil.py` | Veil (R5) | Quarantine queue management |
+| `vara.py` | Vara (R6) | Weak-signal scanning and entropy monitoring |
+| `stumpy.py` | Stumpy (R7) | Omega audit and decay lifecycle |
+| `rift.py` | Crossroad (R8) | Path resolution and scoring |
+| `echo.py` | SBM (R9) | Semantic binding and output formatting |
+| `pulse.py` | Pulse | Cycle orchestration |
+| `lattice_core.py` | Core | Core initialization and Constitution loading |
+| `lattice_runtime.py` | Runtime | Runtime execution layer |
+| `threshold.py` | Sentinel support | Gate threshold configuration |
+| `agent.py` | Agent | Agent execution layer |
+| `cli.py` | CLI | Command-line interface |
+
+#### `05_runtime/` Subdirectories
+
+| Directory | Status | Description |
+|-----------|--------|-------------|
+| `CCE/` | PENDING UNZIP | Cognitive Context Engine — zip archive present; requires manual extraction |
+| `CFC/` | PENDING UNZIP | Constraint and Flow Controller — zip archive present; requires manual extraction |
+| `IDE/` | Present | Integrated Development Environment module |
+| `LMES/` | PENDING UNZIP | Lattice Module Execution System — zip archive present; requires manual extraction |
+| `Lmes/` | Present | Lattice Module Execution System (alternate) |
+| `lattice-app/` | Present | Lattice application layer |
+| `lattice_cli_project/` | Present | CLI project files |
+| `lattice_runtime_cli/` | Present | Runtime CLI interface |
+
+**ACTION REQUIRED:** Unzip archives before CCE, CFC, LMES are functional:
+- `CCE/*.zip`, `CFC/*.zip`, `LMES/*.zip`
+
+---
+
+### `06_ip_legal/` — Intellectual Property and Legal
+
+| File | Status | Description |
+|------|--------|-------------|
+| `IP Attorney Brief` | Exists (privileged) | Attorney-client privileged IP brief. Not indexed further. |
+
+---
+
+### `07_content_engine/` — Content Engine
+
+| File | Status | Description |
+|------|--------|-------------|
+| (FLDA + Content Engine bootstrap) | Exists | Content Engine bootstrap file per 2026-06-17 commit. |
+
+---
+
+## FILES REQUIRING OPERATOR ACTION
+
+### 1. Empty / Stub Files
+| File | Issue | Action |
+|------|-------|--------|
+| `lattice_initiation.md` | Flagged as empty in prior index | Operator must populate with initiation protocol or confirm removal |
+
+### 2. Binary Files
+| File | Type | Action |
+|------|------|--------|
+| `02_epistemic_substrate/Neuralese lexicon.docx` | Binary .docx | Review; export to Markdown if text needed |
+| `02_epistemic_substrate/The_Lattice_Empirical_Doctrine.pdf` | Binary PDF | No action required unless text extraction needed |
+| `00_governance/Sync_contract.md.pdf` | Binary PDF | No action required unless text extraction needed |
+
+### 3. Pending Unzip Directories
+| Directory | Action |
+|-----------|--------|
+| `05_runtime/CCE/` | `cd 05_runtime && unzip CCE/*.zip -d CCE/` |
+| `05_runtime/CFC/` | `cd 05_runtime && unzip CFC/*.zip -d CFC/` |
+| `05_runtime/LMES/` | `cd 05_runtime && unzip LMES/*.zip -d LMES/` |
+
+---
+
+## FILE GENERATION LOG — 2026-06-17
+
+| # | File | Size | Description |
+|---|------|------|-------------|
+| 1 | `00_governance/invariants/Lattice_Invariants_v1.md` | 7,147 bytes | Full 6-invariant specification |
+| 2 | `04_system_spec/MODULE_REGISTRY.md` | 10,809 bytes | All 9-module registry |
+| 3 | `04_system_spec/Lattice_Node_Model.md` | 8,523 bytes | Node schema and lifecycle states |
+| 4 | `04_system_spec/Pulse_Cycle_Spec.md` | 9,622 bytes | Full 5-stage Pulse Cycle anatomy |
+| 5 | `04_system_spec/Governance_Gates.md` | 8,616 bytes | G1/G2/G3 scoring and decision matrix |
+| 6 | `04_system_spec/SNAPSHOT_REGISTRY.md` | 5,187 bytes | 6 snapshot types and retention policy |
+| 7 | `04_system_spec/modules/Sentinel_Spec.md` | 7,427 bytes | Rank 4 — Gate enforcement and Lock protocol |
+| 8 | `04_system_spec/modules/Veil_Spec.md` | 6,643 bytes | Rank 5 — Quarantine and promotion pipeline |
+| 9 | `04_system_spec/modules/Stumpy_Spec.md` | 7,835 bytes | Rank 7 — Omega auditor and decay lifecycle |
+| 10 | `04_system_spec/modules/Vara_Spec.md` | 7,894 bytes | Rank 6 — Weak-signal scanner |
+| 11 | `04_system_spec/modules/Crossroad_Spec.md` | 7,270 bytes | Rank 8 — Path resolution |
+| 12 | `04_system_spec/modules/SBM_Spec.md` | 9,348 bytes | Rank 9 — Neuralese-NL translation and COL grammar |
+| 13 | `00_governance/operator_manual/Operator_Playbook.md` | 11,194 bytes | Daily SOPs and COL reference |
+| 14 | `04_system_spec/Lattice_Unified_Spec_Sections_8-15.md` | 26,748 bytes | Completes Sections 8-15 of Unified Spec |
+| 15 | `VAULT_INDEX.md` | (this file) | Updated root index v2.0 |
+
+**Total files generated:** 15 | **Total bytes added:** ~124,263
+
+---
+
+*Operator: LiminalJermo | Index Class: ROOT_ANCHOR | Last Updated: 2026-06-17*
+*This index is maintained manually. Update after any file addition, rename, or removal.*s, failure behavior per stage. |
+| `Governance_Gates.md` | NEW | G1/G2/G3 complete: scoring (G1: 0.0-1.0, threshold 0.75), G2 attention cost formula, G2 60-second operator override window, G3 chain validation, decision matrix, all Sentinel decision codes. |
+| `SNAPSHOT_REGISTRY.md` | NEW | 6 snapshot types (AUTO_CYCLE, OPERATOR_MANUAL, PRE_AMENDMENT, VARA_PROMOTION, SENTINEL_INCIDENT, DECAY_PURGE). Snapshot schema, procedures, restore semantics, retention/decay policy, SHA-256 integrity. |
