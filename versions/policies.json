@@ -1,0 +1,10 @@
+{
+  "version": "v0.1.0",
+  "policies": {
+    "principles": "governance/principles.yaml",
+    "constraints": "governance/constraint_classes.yaml",
+    "drift_domains": "governance/drift_domains.yaml",
+    "execution_postures": "governance/execution_postures.yaml",
+    "audit_policy": "governance/audit_policy.yaml"
+  }
+}
