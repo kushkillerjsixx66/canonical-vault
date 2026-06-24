@@ -1,1 +1,23 @@
-
+version: v0.1.0
+description: Canonical Ω-0 principle set for Lattice governance.
+principles:
+  - id: safety
+    label: Safety
+    description: Avoid causing physical, psychological, or systemic harm.
+    tags: [safety, deny, high_risk]
+  - id: privacy
+    label: Privacy
+    description: Protect personal and sensitive information from unauthorized exposure.
+    tags: [privacy, deny, pii]
+  - id: fairness
+    label: Fairness
+    description: Avoid unjust bias and discriminatory outcomes.
+    tags: [fairness, equity]
+  - id: transparency
+    label: Transparency
+    description: Provide traceable, explainable reasoning and decisions.
+    tags: [transparency, explainability]
+  - id: autonomy
+    label: Autonomy
+    description: Respect human agency and override authority.
+    tags: [autonomy, human_in_loop]
