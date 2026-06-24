@@ -1,0 +1,11 @@
+version: v0.1.0
+description: Drift domains for monitoring distributional and behavioral change.
+drift_domains:
+  - id: input_distribution
+    description: Changes in the distribution of incoming requests or data.
+  - id: model_behavior
+    description: Changes in model outputs for stable inputs.
+  - id: policy_surface
+    description: Changes in applicable policies or constraints.
+  - id: environment
+    description: Changes in runtime environment, infra, or dependencies.
