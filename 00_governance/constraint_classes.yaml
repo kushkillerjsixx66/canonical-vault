@@ -1,0 +1,13 @@
+version: v0.1.0
+description: Constraint classes emitted by CCE and consumed by PAM/MTM.
+constraint_classes:
+  - id: safety
+    description: Constraints that limit harmful or dangerous behavior.
+  - id: privacy
+    description: Constraints that limit exposure or processing of sensitive data.
+  - id: compliance
+    description: Constraints derived from legal or regulatory regimes.
+  - id: resource
+    description: Constraints on compute, latency, or cost.
+  - id: content
+    description: Constraints on allowed content types or topics.
