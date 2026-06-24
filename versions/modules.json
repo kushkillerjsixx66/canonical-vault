@@ -1,0 +1,12 @@
+{
+  "version": "v0.1.0",
+  "modules": {
+    "SBM": "sbm-v0.1.0",
+    "PAM": "pam-v0.1.0",
+    "MTM": "mtm-v0.1.0",
+    "WDA": "wda-v0.1.0",
+    "IDE": "ide-v0.1.x",
+    "CCE": "cce-v0.1.x",
+    "CFC": "cfc-v0.1.x"
+  }
+}
