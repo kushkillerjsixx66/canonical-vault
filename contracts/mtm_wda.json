@@ -1,0 +1,16 @@
+{
+  "version": "v0.1.0",
+  "from": "MTM",
+  "to": "WDA",
+  "mechanism_plan_contract": {
+    "fields": {
+      "mechanism": "string",
+      "steps": "array<object>",
+      "constraints.pam_verdict": "string"
+    },
+    "guarantees": [
+      "mechanism is stable for identical intent and constraints",
+      "steps are ordered and executable by runtime"
+    ]
+  }
+}
