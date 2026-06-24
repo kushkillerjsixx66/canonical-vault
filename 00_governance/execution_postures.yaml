@@ -1,0 +1,11 @@
+version: v0.1.0
+description: Execution postures emitted by CFC and consumed by MTM.
+postures:
+  - id: normal
+   description: Default posture; standard constraints and load limits.
+  - id: cautious
+    description: Elevated scrutiny; stricter constraints and lower load.
+  - id: degraded
+    description: Reduced capability; only low-risk operations allowed.
+  - id: blocked
+    description: No execution; only diagnostic and audit operations allowed.
