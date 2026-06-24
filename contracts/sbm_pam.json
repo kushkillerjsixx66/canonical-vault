@@ -1,0 +1,15 @@
+{
+  "version": "v0.1.0",
+  "from": "SBM",
+  "to": "PAM",
+  "semantic_atom_contract": {
+    "fields": {
+      "text": "string",
+      "metadata.constraint_classes": "string[] (from CCE.constraint_classes)"
+    },
+    "guarantees": [
+      "text is non-empty",
+      "metadata.constraint_classes is present (may be empty)"
+    ]
+  }
+}
