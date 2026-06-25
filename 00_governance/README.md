@@ -1,5 +1,3 @@
----
-
 1. What Lattice Is
 Lattice is a modular, governance‑first cognitive architecture designed to stabilize interpretation, execution, and decision‑making across human–AI collaboration.
 
