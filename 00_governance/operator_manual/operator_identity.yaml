@@ -1,0 +1,104 @@
+# operator_identity.yaml
+# Sovereign Operator Identity — JRM‑01
+# Defines the canonical identity, signatures, lineage anchors, and governance bindings
+# for the sole sovereign operator of the Lattice.
+
+operator_id: "JRM-01"
+sovereign: true
+version: "1.0.0"
+status: "active"
+
+identity:
+  handle: "@liminaljermo"
+  signature: "SIG: JRM-01 @liminaljermo"
+  lineage_anchor: "operator_identity_v1"
+  created_at: "2026-06-24"
+  immutable: true
+
+constitutional_protections:
+  - "Operator identity cannot be modified."
+  - "Sovereignty cannot be delegated."
+  - "Identity cannot be overridden by runtime."
+  - "Identity cannot be impersonated."
+  - "Identity changes require constitutional amendment (prohibited by invariants)."
+
+governance_roles:
+  sovereign_authority: true
+  amendment_authority: true
+  protocol_ratification: true
+  vault_threshold_authority: true
+  envelope_expansion_authority: true
+
+posture_defaults:
+  default_posture: "Operator-Prime"
+  execution_posture_source: "execution_postures.yaml"
+  failure_modes_source: "failure_modes.yaml"
+  recovery_sequences_source: "recovery_sequences.yaml"
+
+intent_rules:
+  explicit_intent_required_for:
+    - "constitutional amendment"
+    - "protocol modification"
+    - "irreversible actions"
+    - "envelope expansion"
+    - "canonization approval"
+  implicit_intent_allowed_for:
+    - "local reversible reasoning"
+    - "intra-module operations"
+    - "narrative-surface modulation"
+
+lineage:
+  required: true
+  sinks:
+    - "00_governance/governance_lineage/constitution.lineage"
+    - "00_governance/governance_lineage/protocols.lineage"
+    - "00_governance/governance_lineage/playbook.lineage"
+  fields:
+    - "timestamp"
+    - "operator_id"
+    - "action_type"
+    - "signature"
+    - "affected_document"
+
+veil_rules:
+  governed_by: "Veil Engine"
+  default_veil_level: "Veil-0"
+  allowed_levels:
+    - "Veil-0"
+    - "Veil-1"
+    - "Veil-2"
+
+permissions:
+  vault:
+    commit: true
+    review: true
+    canonize: true
+    veil_override: true
+  governance:
+    modify_principles: true
+    modify_protocols: true
+    modify_playbook: true
+    modify_invariants: false   # invariants are immutable
+  runtime:
+    altitude_override: true
+    boundary_override: false
+    drift_override: false
+
+related_documents:
+  constitution: "lattice_constitution.md"
+  amendment_laws: "amendment_laws.md"
+  operator_playbook: "section_7_operator_playbook.md"
+  protocols:
+    - "omega_13.yaml"
+    - "omega_14.yaml"
+    - "amp_protocol.yaml"
+    - "escalation_ladders.yaml"
+    - "bilateralism_map.yaml"
+
+metadata:
+  description: >
+    The sovereign operator identity for the Lattice. All governance actions,
+    constitutional amendments, protocol ratifications, and canonization events
+    must be signed by JRM-01. This identity is immutable and protected by
+    constitutional invariants.
+  audit_policy_source: "audit_policy.yaml"
