@@ -1,0 +1,158 @@
+{
+  "id": "contract.sbm_pam",
+  "version": "1.0.0",
+  "scope": "SBM→PAM",
+  "description": "Structured handoff from Story/Brief Module (SBM) into Planning/Architecture Module (PAM).",
+  "artifact_spec": {
+    "input_module": "SBM",
+    "output_module": "PAM",
+    "artifact_type": "sbm_brief",
+    "schema_version": "1.0.0",
+    "fields": {
+      "brief_id": "string",
+      "title": "string",
+      "problem_statement": "string",
+      "context": "string",
+      "constraints": "array<string>",
+      "stakeholders": "array<string>",
+      "success_criteria": "array<string>",
+      "risk_register": "array<object>",
+      "timestamp_issued": "string"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "brief_id",
+        "title",
+        "problem_statement",
+        "constraints",
+        "success_criteria",
+        "timestamp_issued"
+      ],
+      "max_length": {
+        "problem_statement": 2000,
+        "context": 4000
+      }
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R2",
+    "description": "SBM outputs are revisable until PAM locks the planning envelope.",
+    "rollback_window_minutes": 120,
+    "rollback_conditions": [
+      "Operator flags misalignment with Constitution invariants.",
+      "Stakeholder set changes materially.",
+      "Risk register updated with high-severity items."
+    ],
+    "irreversible_events": [
+      "pam_plan_locked",
+      "pam_architecture_published"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "Brief must reference at least one Constitution principle.",
+      "Constraints must be tagged with governance classes (G, T, O)."
+    ],
+    "structure": [
+      "Risk register entries must include severity, likelihood, and mitigation.",
+      "Stakeholders list must not be empty."
+    ],
+    "safety": [
+      "No brief may instruct violation of governance envelope.",
+      "No brief may omit risk assessment for high-impact initiatives."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.sbm_pam",
+    "dimensions": [
+      "scope",
+      "risk",
+      "stakeholder_set",
+      "timeline"
+    ],
+    "tolerances": {
+      "scope": "±20% change in feature set",
+      "risk": "no more than one severity level increase without re-approval",
+      "stakeholder_set": "±2 stakeholders without governance review",
+      "timeline": "±15% schedule shift"
+    },
+    "monitoring": {
+      "signals": [
+        "brief_revision_count",
+        "risk_severity_delta",
+        "stakeholder_delta"
+      ],
+      "alert_thresholds": {
+        "brief_revision_count": 5,
+        "risk_severity_delta": 2,
+        "stakeholder_delta": 3
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P1_clarity_of_intent",
+      "P3_governed_risk",
+      "P5_operator_legibility"
+    ],
+    "policies": [
+      "policy.briefing.standard",
+      "policy.risk_register.minimal"
+    ],
+    "regimes": [
+      "internal_governance",
+      "ai_governance"
+    ],
+    "evidence_requirements": [
+      "Signed-off brief by operator.",
+      "Risk register attached to artifact.",
+      "Stakeholder list confirmed."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "brief_id",
+      "sbm_session_id"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "title",
+        "problem_statement",
+        "constraints",
+        "success_criteria"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "author",
+        "operator_id",
+        "creation_timestamp",
+        "last_modified_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "PAM",
+    "expected_use": [
+      "Derive architecture options.",
+      "Define planning constraints.",
+      "Seed risk posture."
+    ],
+    "interfaces": [
+      "pam_cli ingest-brief",
+      "vault lineage-anchor"
+    ],
+    "failure_modes": [
+      "Brief missing constraints.",
+      "Risk register incomplete.",
+      "Stakeholders undefined."
+    ],
+    "fallbacks": [
+      "Request SBM revision.",
+      "Escalate to Operator Playbook.",
+      "Flag governance envelope for review."
+    ]
+  }
+}
