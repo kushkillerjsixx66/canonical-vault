@@ -3,7 +3,7 @@
 1. What Lattice Is
 Lattice is a modular, governance‑first cognitive architecture designed to stabilize interpretation, execution, and decision‑making across human–AI collaboration.
 
-It is built on a three‑module kernel:
+It is built on a three module kernel:
 
 - IDE — Interpretive Dynamics Engine  
 - CCE — Constraint Cartography Engine  
