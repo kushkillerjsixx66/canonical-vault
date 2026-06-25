@@ -1,0 +1,151 @@
+{
+  "id": "contract.stumpy_bridge",
+  "version": "1.0.0",
+  "scope": "Stumpy subsystem ↔ Lattice kernel/Vault",
+  "description": "Defines the Stumpy subsystem’s bridge into the Lattice kernel and Vault.",
+  "artifact_spec": {
+    "bridge_id": "string",
+    "fields": {
+      "kernel_bindings": "array<object>",
+      "vault_bindings": "array<object>",
+      "governance_hooks": "array<object>",
+      "safety_controls": "array<object>",
+      "telemetry_streams": "array<object>"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "kernel_bindings",
+        "vault_bindings",
+        "governance_hooks",
+        "safety_controls"
+      ],
+      "rules": [
+        "Every kernel binding must define entry and exit points.",
+        "Vault bindings must define artifact types and anchors."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R4",
+    "description": "Bridge reversible until kernel and Vault bindings locked.",
+    "rollback_window_minutes": 720,
+    "rollback_conditions": [
+      "Kernel bindings misaligned.",
+      "Vault bindings incomplete.",
+      "Governance hooks missing."
+    ],
+    "irreversible_events": [
+      "bridge_locked",
+      "kernel_binding_sealed",
+      "vault_binding_sealed"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "Bridge must respect governance envelope.",
+      "Kernel bindings must align with Lattice architecture."
+    ],
+    "structure": [
+      "Telemetry streams must define metrics and frequencies.",
+      "Safety controls must define triggers and actions."
+    ],
+    "safety": [
+      "No bridge may permit unsafe kernel operations.",
+      "No Vault access without governance hooks."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.stumpy_bridge",
+    "dimensions": [
+      "binding_density",
+      "telemetry_coverage",
+      "safety_control_coverage",
+      "governance_hook_completeness"
+    ],
+    "tolerances": {
+      "binding_density": "no reduction below minimum per subsystem",
+      "telemetry_coverage": "≥99% critical metrics covered",
+      "safety_control_coverage": "≥99% high-risk operations covered",
+      "governance_hook_completeness": "≥99% operations hooked"
+    },
+    "monitoring": {
+      "signals": [
+        "binding_count",
+        "coverage_ratio",
+        "hook_coverage_ratio"
+      ],
+      "alert_thresholds": {
+        "binding_count": 10,
+        "coverage_ratio": 0.99,
+        "hook_coverage_ratio": 0.99
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P3_governed_risk",
+      "P4_safe_deployment",
+      "P6_traceable_decisions"
+    ],
+    "policies": [
+      "policy.stumpy.bridge",
+      "policy.telemetry.minimum"
+    ],
+    "regimes": [
+      "internal_governance",
+      "operations_governance"
+    ],
+    "evidence_requirements": [
+      "Bridge definition stored in Vault.",
+      "Telemetry logs.",
+      "Safety control records."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "bridge_id",
+      "kernel_binding_id",
+      "vault_binding_id"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "kernel_bindings",
+        "vault_bindings",
+        "governance_hooks"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "bridge_author_id",
+        "operator_id",
+        "creation_timestamp",
+        "lock_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "lattice_kernel",
+    "expected_use": [
+      "Integrate Stumpy subsystem.",
+      "Route telemetry to Vault.",
+      "Apply governance and safety controls."
+    ],
+    "interfaces": [
+      "stumpy_cli",
+      "kernel bridge-loader",
+      "vault telemetry-ingest"
+    ],
+    "failure_modes": [
+      "Missing kernel bindings.",
+      "Incomplete Vault bindings.",
+      "Governance hooks missing."
+    ],
+    "fallbacks": [
+      "Disable bridge.",
+      "Escalate via Operator Playbook.",
+      "Trigger governance envelope review."
+    ]
+  }
+}
