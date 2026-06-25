@@ -1,0 +1,45 @@
+{
+  "id": "vault_runtime_state",
+  "version": "1.0.0",
+  "description": "Canonical runtime state for the Lattice Vault subsystem. Tracks reversible windows, lifecycle state, lineage counters, and drift posture.",
+
+  "state": {
+    "initialized": true,
+    "last_commit_timestamp": null,
+    "last_lock_timestamp": null,
+    "last_archive_timestamp": null,
+    "last_delete_timestamp": null,
+
+    "reversibility": {
+      "active_reversible_commits": [],
+      "windows": {
+        "short_term": 60,
+        "standard": 240,
+        "long_term": 0
+      }
+    },
+
+    "lineage": {
+      "total_edges": 0,
+      "last_edge_timestamp": null
+    },
+
+    "drift": {
+      "active_domains": [],
+      "last_drift_event": null,
+      "posture": "stable"
+    }
+  },
+
+  "meta": {
+    "created": "INITIALIZE",
+    "last_updated": "INITIALIZE",
+    "schema": {
+      "initialized": "boolean",
+      "timestamps": "nullable<string>",
+      "reversibility": "object",
+      "lineage": "object",
+      "drift": "object"
+    }
+  }
+}
