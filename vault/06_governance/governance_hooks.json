@@ -1,0 +1,72 @@
+{
+  "id": "vault_governance_hooks",
+  "version": "1.0.0",
+  "description": "Canonical governance event hooks for the Lattice Vault subsystem. Defines the events, callbacks, and governance integration points required by the Constitution Binding and Governance Envelope.",
+
+  "events": {
+    "vault_commit": {
+      "description": "Triggered after a successful commit operation.",
+      "callbacks": [
+        "governance_envelope.on_vault_commit",
+        "lineage_engine.on_commit",
+        "drift_monitor.on_commit",
+        "audit_logger.on_commit"
+      ]
+    },
+
+    "vault_lock": {
+      "description": "Triggered when a record transitions from committed → locked.",
+      "callbacks": [
+        "governance_envelope.on_vault_lock",
+        "audit_logger.on_lock"
+      ]
+    },
+
+    "vault_archive": {
+      "description": "Triggered when a record transitions from locked → archived.",
+      "callbacks": [
+        "governance_envelope.on_vault_archive",
+        "audit_logger.on_archive"
+      ]
+    },
+
+    "vault_delete": {
+      "description": "Triggered when a record transitions from archived → deleted.",
+      "callbacks": [
+        "governance_envelope.on_vault_delete",
+        "audit_logger.on_delete"
+      ]
+    }
+  },
+
+  "drift_notifications": {
+    "enabled": true,
+    "on_commit": [
+      "drift_monitor.evaluate_commit",
+      "drift_monitor.update_drift_state"
+    ],
+    "on_governance_event": [
+      "drift_monitor.evaluate_governance_action"
+    ]
+  },
+
+  "envelope_callbacks": {
+    "on_commit_validation": [
+      "governance_envelope.validate_governance_tags",
+      "governance_envelope.validate_operator_posture",
+      "governance_envelope.validate_reversibility_window"
+    ],
+    "on_commit_applied": [
+      "governance_envelope.update_state",
+      "governance_envelope.record_commit_metadata"
+    ]
+  },
+
+  "audit_triggers": {
+    "on_commit": true,
+    "on_lock": true,
+    "on_archive": true,
+    "on_delete": true,
+    "on_override": true
+  }
+}
