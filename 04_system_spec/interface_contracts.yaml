@@ -1,0 +1,29 @@
+# interface_contracts.yaml
+# Governed interface contracts between modules
+
+contracts:
+
+  IDE_to_CCE:
+    reversible: true
+    requirements:
+      - "intent_declared"
+      - "payload_integrity"
+      - "semantic_integrity"
+
+  CCE_to_CFC:
+    reversible: true
+    requirements:
+      - "constraint_map_valid"
+      - "drift_within_bounds"
+
+  CFC_to_MTM:
+    reversible: true
+    requirements:
+      - "coherence_valid"
+      - "structure_complete"
+
+  MTM_to_Pipeline:
+    reversible: false
+    requirements:
+      - "review_metadata_present"
+      - "veil_level_declared"
