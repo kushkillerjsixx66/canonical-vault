@@ -1,0 +1,11 @@
+# veil_constraints.yaml
+# Non-negotiable constraints for the Veil subsystem
+
+constraints:
+  - "No unredacted public exposure."
+  - "No bypassing veil enforcement."
+  - "No silent veil level changes."
+  - "No irreversible redaction without intent."
+  - "No cross-surface exposure without profile compliance."
+  - "No narrative exposure without compression."
+  - "No operator-facing content may be downgraded without lineage."
