@@ -1,0 +1,15 @@
+# veil_enforcement.yaml
+# Enforcement rules for the Veil subsystem
+
+enforcement_rules:
+  - "All artifacts must declare veil level."
+  - "No artifact may exceed its profile's allowed levels."
+  - "No downward redaction without lineage."
+  - "No upward visibility without operator intent."
+  - "No cross-surface exposure without enforcement check."
+  - "No narrative exposure without compression."
+  - "No public exposure without redaction."
+
+omega_table_integration:
+  column: "Veil Enforcement Column"
+  purpose: "Track veil level, enforcement state, and violations."
