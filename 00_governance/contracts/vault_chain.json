@@ -1,0 +1,153 @@
+{
+  "id": "contract.vault_chain",
+  "version": "1.0.0",
+  "scope": "Vault subsystem ↔ modules",
+  "description": "Defines how Vault binds to lineage, governance, and module outputs.",
+  "artifact_spec": {
+    "vault_id": "string",
+    "supported_modules": [
+      "SBM",
+      "PAM",
+      "MTM",
+      "WDA"
+    ],
+    "fields": {
+      "artifact_anchor": "object",
+      "governance_tags": "array<string>",
+      "lineage_links": "array<object>",
+      "retention_policy": "object",
+      "access_control": "object"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "artifact_anchor",
+        "governance_tags",
+        "lineage_links",
+        "retention_policy",
+        "access_control"
+      ],
+      "rules": [
+        "Every artifact must have at least one governance tag.",
+        "Access control must define operator roles."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R3",
+    "description": "Vault entries reversible until locked by governance.",
+    "rollback_window_minutes": 720,
+    "rollback_conditions": [
+      "Incorrect governance tagging.",
+      "Broken lineage links.",
+      "Access control misconfigured."
+    ],
+    "irreversible_events": [
+      "vault_entry_locked",
+      "governance_retention_enforced"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "All artifacts must be tagged with Constitution principles.",
+      "Lineage links must reflect module sequence."
+    ],
+    "structure": [
+      "Artifact anchors must include module id and artifact type.",
+      "Retention policy must define duration and deletion rules."
+    ],
+    "safety": [
+      "No artifact may be deleted without governance approval.",
+      "No unauthorized access to governed artifacts."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.vault_chain",
+    "dimensions": [
+      "tag_density",
+      "lineage_link_integrity",
+      "access_control_strictness",
+      "retention_policy_coverage"
+    ],
+    "tolerances": {
+      "tag_density": "no reduction below minimum tag count",
+      "lineage_link_integrity": "no broken links allowed",
+      "access_control_strictness": "no downgrade without approval",
+      "retention_policy_coverage": "≥99% artifacts covered"
+    },
+    "monitoring": {
+      "signals": [
+        "tag_count",
+        "link_status",
+        "access_violation_count"
+      ],
+      "alert_thresholds": {
+        "tag_count": 3,
+        "link_status": 1,
+        "access_violation_count": 0
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P3_governed_risk",
+      "P6_traceable_decisions",
+      "P7_responsible_retention"
+    ],
+    "policies": [
+      "policy.vault.retention",
+      "policy.vault.access"
+    ],
+    "regimes": [
+      "internal_governance",
+      "data_governance"
+    ],
+    "evidence_requirements": [
+      "Retention policy stored in Vault.",
+      "Access control logs.",
+      "Lineage links verified."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "vault_id",
+      "artifact_anchor"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "governance_tags",
+        "lineage_links"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "vault_operator_id",
+        "creation_timestamp",
+        "lock_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "lineage_engine",
+    "expected_use": [
+      "Resolve artifact provenance.",
+      "Enforce retention and access.",
+      "Support operator audits."
+    ],
+    "interfaces": [
+      "vault_cli anchor-artifact",
+      "lineage_engine resolve-anchor"
+    ],
+    "failure_modes": [
+      "Missing governance tags.",
+      "Broken lineage links.",
+      "Access control misconfigured."
+    ],
+    "fallbacks": [
+      "Escalate via Operator Playbook.",
+      "Trigger governance envelope review.",
+      "Lock affected artifacts."
+    ]
+  }
+}
