@@ -1,0 +1,92 @@
+{
+  "$id": "contract.schema.json",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "scope",
+    "description",
+    "artifact_spec",
+    "reversibility_boundary",
+    "invariants",
+    "drift_domain",
+    "compliance_mapping",
+    "lineage_requirements",
+    "downstream_consumption"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "version": { "type": "string" },
+    "scope": { "type": "string" },
+    "description": { "type": "string" },
+
+    "artifact_spec": {
+      "type": "object",
+      "required": ["fields"],
+      "properties": {
+        "fields": { "type": "object" },
+        "quality_gates": { "type": "object" }
+      }
+    },
+
+    "reversibility_boundary": {
+      "type": "object",
+      "required": ["class", "irreversible_events"],
+      "properties": {
+        "class": { "type": "string" },
+        "rollback_window_minutes": { "type": "number" },
+        "rollback_conditions": { "type": "array" },
+        "irreversible_events": { "type": "array" }
+      }
+    },
+
+    "invariants": {
+      "type": "object",
+      "required": ["alignment", "structure", "safety"],
+      "properties": {
+        "alignment": { "type": "array" },
+        "structure": { "type": "array" },
+        "safety": { "type": "array" }
+      }
+    },
+
+    "drift_domain": {
+      "type": "object",
+      "required": ["id", "dimensions", "tolerances"],
+      "properties": {
+        "id": { "type": "string" },
+        "dimensions": { "type": "array" },
+        "tolerances": { "type": "object" },
+        "monitoring": { "type": "object" }
+      }
+    },
+
+    "compliance_mapping": {
+      "type": "object",
+      "required": ["constitution_principles"],
+      "properties": {
+        "constitution_principles": { "type": "array" },
+        "policies": { "type": "array" },
+        "regimes": { "type": "array" },
+        "evidence_requirements": { "type": "array" }
+      }
+    },
+
+    "lineage_requirements": {
+      "type": "object",
+      "required": ["anchors"],
+      "properties": {
+        "anchors": { "type": "array" },
+        "hashing": { "type": "object" },
+        "provenance": { "type": "object" }
+      }
+    },
+
+    "downstream_consumption": {
+      "type": "object",
+      "required": ["consumer_module", "expected_use"],
+      "properties": {
+        "consumer_module": { "type": "string" },
+        "expected_use": { "type": "array" },
+        "interfaces": { "type": "array" },
+        "failure
