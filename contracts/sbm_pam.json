@@ -1,0 +1,105 @@
+{
+  "version": "v1.0.0",
+  "from": "SBM",
+  "to": "PAM",
+  "description": "Contract governing the handoff of semantic atoms from the Semantic Buffer Module to the Principle Alignment Module.",
+  "semantic_atom_contract": {
+    "schema": {
+      "type": "object",
+      "required": ["id", "text", "metadata"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the semantic atom."
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Non-empty normalized text of the semantic atom."
+        },
+        "metadata": {
+          "type": "object",
+          "required": ["constraint_classes", "source_intent_id", "timestamp"],
+          "properties": {
+            "constraint_classes": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Constraint class tags from CCE.constraint_classes. May be empty array."
+            },
+            "source_intent_id": {
+              "type": "string",
+              "description": "ID of the originating intent from IDE."
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "iso8601",
+              "description": "UTC timestamp of atom creation."
+            },
+            "veil_level": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5,
+              "description": "Epistemic veil level assigned by CFC. 0 = fully transparent."
+            },
+            "drift_score": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Semantic drift score from CCE. 0.0 = no drift."
+            }
+          }
+        }
+      }
+    },
+    "guarantees": [
+      "text is non-empty after normalization.",
+      "metadata.constraint_classes is present (may be empty array).",
+      "metadata.source_intent_id is a valid IDE intent ID.",
+      "metadata.timestamp is a valid UTC ISO-8601 timestamp.",
+      "metadata.veil_level is an integer in [0, 5].",
+      "metadata.drift_score is a float in [0.0, 1.0].",
+      "Atom id is globally unique within a session."
+    ],
+    "violations": {
+      "ATOM_TEXT_EMPTY": {
+        "code": "SBM_PAM_001",
+        "description": "Atom text is empty or whitespace only.",
+        "action": "REJECT",
+        "escalation": "Log and emit SBM_ERROR event. Do not forward to PAM."
+      },
+      "MISSING_CONSTRAINT_CLASSES": {
+        "code": "SBM_PAM_002",
+        "description": "metadata.constraint_classes field is absent.",
+        "action": "REJECT",
+        "escalation": "Log and emit SBM_ERROR event. Do not forward to PAM."
+      },
+      "INVALID_SOURCE_INTENT": {
+        "code": "SBM_PAM_003",
+        "description": "metadata.source_intent_id does not reference a known IDE intent.",
+        "action": "REJECT",
+        "escalation": "Log and emit SBM_ERROR event. Do not forward to PAM."
+      },
+      "DRIFT_ABOVE_THRESHOLD": {
+        "code": "SBM_PAM_004",
+        "description": "metadata.drift_score exceeds system_constraints.yaml drift_limit.",
+        "action": "FLAG",
+        "escalation": "Forward to PAM with DRIFT_FLAGGED annotation. PAM must account for flag in PAIG evaluation."
+      }
+    },
+    "timeout": {
+      "max_ms": 500,
+      "on_timeout": "ABORT_AND_LOG",
+      "retry_policy": {
+        "max_retries": 2,
+        "backoff_ms": 100
+      }
+    },
+    "routing": {
+      "channel": "internal_pipeline",
+      "priority": "normal",
+      "ordering": "strict_fifo",
+      "batch_allowed": false
+    }
+  }
+}
