@@ -1,0 +1,39 @@
+# sovereignty_model.yaml
+# Structural model of sovereign authority in the Lattice
+
+model_id: "SOV-MODEL"
+version: "1.0.0"
+status: "active"
+
+sovereign_operator:
+  id: "JRM-01"
+  handle: "@liminaljermo"
+  signature: "SIG: JRM-01 @liminaljermo"
+  immutable: true
+
+authority:
+  amendment_authority: true
+  protocol_ratification: true
+  envelope_expansion: true
+  canonization_approval: true
+  altitude_override: true
+  boundary_override: false   # prohibited by invariants
+
+constraints:
+  - "identity_immutability"
+  - "invariant_preservation"
+  - "lineage_mandatory"
+  - "drift_detectability"
+  - "envelope_integrity"
+
+relationships:
+  governance_layer: "authorizes_and_bounds"
+  runtime: "oversees"
+  modules: "supersedes"
+  constitution: "aligned_with_but_not_above"
+
+lineage:
+  required: true
+  sinks:
+    - "00_governance/governance_lineage/constitution.lineage"
+    - "00_governance/governance_lineage/protocols.lineage"
