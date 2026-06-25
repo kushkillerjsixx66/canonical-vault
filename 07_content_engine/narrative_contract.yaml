@@ -1,0 +1,19 @@
+# narrative_contract.yaml
+# Rules for generating weekly narrative
+
+contract_id: "NARRATIVE-CONTRACT"
+version: "1.0.0"
+
+requirements:
+  - "Narrative must close the weekly loop."
+  - "Narrative must integrate mechanism + workflow + intel."
+  - "Narrative must be coherent and operator-grade."
+  - "Narrative must declare veil level."
+  - "Narrative must seed next cycle."
+
+fields:
+  - narrative_body
+  - veil_level
+  - coherence_report
+  - next_cycle_seeds
+  - lineage
