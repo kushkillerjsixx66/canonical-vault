@@ -1,0 +1,19 @@
+# capture_contract.yaml
+# Rules for ingesting raw capture into the pipeline
+
+contract_id: "CAPTURE-CONTRACT"
+version: "1.0.0"
+
+requirements:
+  - "Capture must declare origin."
+  - "Capture must declare intent."
+  - "Capture must emit lineage."
+  - "Capture must be reversible unless declared otherwise."
+  - "Capture must be drift-mapped by Vara."
+
+fields:
+  - origin
+  - intent
+  - payload
+  - drift_map
+  - lineage
