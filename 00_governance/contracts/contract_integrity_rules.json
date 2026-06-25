@@ -1,0 +1,45 @@
+{
+  "integrity_rules_version": "1.0.0",
+  "rules": [
+    {
+      "id": "rule.module_coverage",
+      "description": "Every module must appear as a consumer in at least one contract.",
+      "check": "∀ module ∈ {SBM,PAM,MTM,WDA} → ∃ contract.consumer_module = module"
+    },
+    {
+      "id": "rule.drift_domain_mapping",
+      "description": "Every drift domain must map to exactly one contract.",
+      "check": "∀ drift_domain → count(contract.drift_domain == drift_domain) = 1"
+    },
+    {
+      "id": "rule.reversibility_distribution",
+      "description": "All reversibility classes R2–R5 must appear at least once.",
+      "check": "∀ class ∈ {R2,R3,R4,R5} → ∃ contract.reversibility_class = class"
+    },
+    {
+      "id": "rule.lineage_anchor_continuity",
+      "description": "Lineage anchors must form a continuous chain across module handoffs.",
+      "check": "anchors(SBM→PAM) ⊆ anchors(PAM→MTM) ⊆ anchors(MTM→WDA)"
+    },
+    {
+      "id": "rule.constitution_binding_presence",
+      "description": "Every contract must reference at least one Constitution principle.",
+      "check": "∀ contract → len(contract.compliance_mapping.constitution_principles) ≥ 1"
+    },
+    {
+      "id": "rule.governance_checkpoint_presence",
+      "description": "Pipeline runtime must define governance checkpoints for all modules.",
+      "check": "pipeline_runtime.artifact_spec.governance_checkpoints covers {SBM,PAM,MTM,WDA}"
+    },
+    {
+      "id": "rule.vault_lineage_alignment",
+      "description": "Vault chain lineage anchors must match Lineage Engine anchor definitions.",
+      "check": "vault_chain.lineage_anchors ⊆ lineage_engine.anchors"
+    },
+    {
+      "id": "rule.operator_playbook_alignment",
+      "description": "Every high-risk action in the Operator Playbook must map to a safety control in Veil.",
+      "check": "∀ action.risk=high → ∃ veil.safety_guards[action.id]"
+    }
+  ]
+}
