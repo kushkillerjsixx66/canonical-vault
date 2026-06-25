@@ -1,0 +1,102 @@
+{
+  "version": "v1.0.0",
+  "from": "CCE",
+  "to": "CFC",
+  "description": "Contract governing the handoff of constraint-classified intent envelopes from the Constraint Class Engine to the Constraint Filter Context.",
+  "constraint_envelope_contract": {
+    "schema": {
+      "type": "object",
+      "required": ["intent_id", "intent_type", "normalized_signal", "constraint_classes", "drift_score", "flagged", "timestamp"],
+      "properties": {
+        "intent_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the originating intent from IDE."
+        },
+        "intent_type": {
+          "type": "string",
+          "enum": ["query", "directive", "assertion", "measurement", "operator_identity", "unknown"],
+          "description": "Intent classification carried forward from IDE."
+        },
+        "normalized_signal": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Normalized signal text carried forward from IDE."
+        },
+        "constraint_classes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Constraint class tags assigned by CCE. May be empty array if no constraints apply."
+        },
+        "drift_score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Semantic drift score computed by CCE. 0.0 = no drift."
+        },
+        "flagged": {
+          "type": "boolean",
+          "description": "True if CCE raised any flag on this envelope."
+        },
+        "flag_reason": {
+          "type": "string",
+          "description": "Human-readable reason for flag. Present only when flagged=true."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "iso8601",
+          "description": "UTC timestamp of CCE classification."
+        }
+      }
+    },
+    "guarantees": [
+      "intent_id references a valid IDE intent that passed IDE_CCE contract.",
+      "constraint_classes is present (may be empty array).",
+      "drift_score is a float in [0.0, 1.0].",
+      "flagged is always a boolean.",
+      "flag_reason is present if and only if flagged=true.",
+      "timestamp is a valid UTC ISO-8601 string.",
+      "normalized_signal is non-empty."
+    ],
+    "violations": {
+      "MISSING_CONSTRAINT_CLASSES": {
+        "code": "CCE_CFC_001",
+        "description": "constraint_classes field is absent (null or missing).",
+        "action": "REJECT",
+        "escalation": "Log and emit CCE_ERROR event. Do not forward to CFC."
+      },
+      "DRIFT_SCORE_OUT_OF_RANGE": {
+        "code": "CCE_CFC_002",
+        "description": "drift_score is outside [0.0, 1.0].",
+        "action": "REJECT",
+        "escalation": "Log and emit CCE_ERROR event. Do not forward to CFC."
+      },
+      "DRIFT_ABOVE_THRESHOLD": {
+        "code": "CCE_CFC_003",
+        "description": "drift_score exceeds system_constraints.yaml drift_limit.",
+        "action": "FLAG",
+        "escalation": "Forward to CFC with flagged=true and flag_reason=DRIFT_LIMIT_EXCEEDED."
+      },
+      "INVALID_INTENT_REFERENCE": {
+        "code": "CCE_CFC_004",
+        "description": "intent_id does not reference a known IDE intent in the current session.",
+        "action": "REJECT",
+        "escalation": "Log and emit CCE_ERROR event. Do not forward to CFC."
+      }
+    },
+    "timeout": {
+      "max_ms": 400,
+      "on_timeout": "ABORT_AND_LOG",
+      "retry_policy": {
+        "max_retries": 2,
+        "backoff_ms": 100
+      }
+    },
+    "routing": {
+      "channel": "internal_pipeline",
+      "priority": "normal",
+      "ordering": "strict_fifo",
+      "batch_allowed": false
+    }
+  }
+}
