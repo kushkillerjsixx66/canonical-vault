@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
-VAULT_OP_ID = "JRM-01."   # Updated operator identity
+from vault_core import execute_action, veil_entry
+
+VAULT_OP_ID = "JRM-01."   # Operator identity
 
 VALID_INTENTS = ["Commit", "Retrieve", "Review", "Canonize"]
+VALID_VEIL_LEVELS = ["clear", "partial", "full"]
 
 
 def perimeter_state():
@@ -61,12 +64,14 @@ def threshold_state():
 def interior_state(context):
     print("\nTHE VAULT IS OPEN")
     print("State your first action.")
-    print("Commit · Retrieve · Review · Canonize")
+    print("Commit · Retrieve · Review · Canonize · Veil")
     print("All actions are logged to lineage.\n")
 
     while True:
-        action = input("> ").strip()
-        if action.lower() in ["exit", "quit"]:
+        raw = input("> ").strip()
+
+        # Exit ritual
+        if raw.lower() in ["exit", "quit"]:
             print("\nPREPARING TO SEAL THE VAULT")
             print("State your closing phrase.\n")
             closing = input("> ").strip()
@@ -76,9 +81,34 @@ def interior_state(context):
             else:
                 print("\nClosing phrase not recognized. Vault remains in liminal state.\n")
             break
-        else:
-            print(f"[VAULT LOG] Action received: {action}")
-            print(f"[VAULT LOG] Intent context: {context.get('intent', 'None')}\n")
+
+        # Veil command
+        if raw.startswith("veil "):
+            parts = raw.split()
+            if len(parts) != 3:
+                print("Usage: veil <artifact> <clear|partial|full>\n")
+                continue
+
+            _, artifact, level = parts
+
+            if level not in VALID_VEIL_LEVELS:
+                print("Invalid veil level. Use: clear, partial, full.\n")
+                continue
+
+            try:
+                output = veil_entry(artifact, level=level)
+                print("\n[VEIL OUTPUT]")
+                print(output)
+                print()
+            except Exception as e:
+                print(f"[VEIL ERROR] {e}\n")
+
+            continue
+
+        # Standard Vault actions
+        result = execute_action(context.get("intent"), raw)
+        print(result)
+        print()
 
 
 def main():
