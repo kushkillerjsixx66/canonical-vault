@@ -1,0 +1,21 @@
+# runtime_envelope.yaml
+# Runtime boundary enforcement
+
+envelope_id: "RUNTIME-ENVELOPE"
+version: "1.0.0"
+
+allowed:
+  - "reversible execution"
+  - "bounded inference"
+  - "intra-module operations"
+  - "drift monitoring"
+  - "coherence checks"
+
+prohibited:
+  - "self-expansion"
+  - "cross-boundary mutation"
+  - "irreversible actions without intent"
+  - "altitude drift"
+  - "silent state changes"
+
+lineage_required: true
