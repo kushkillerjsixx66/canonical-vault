@@ -1,0 +1,19 @@
+# vault_handoff_contract.yaml
+# Rules for delivering structured artifacts to the Vault
+
+contract_id: "VAULT-HANDOFF-CONTRACT"
+version: "1.0.0"
+
+requirements:
+  - "Handoff must be bilateral (Ω-13)."
+  - "Handoff must declare reversibility state."
+  - "Handoff must include review metadata."
+  - "Handoff must comply with Vault Lifecycle Rules."
+  - "Handoff must emit lineage."
+
+fields:
+  - artifact
+  - reversibility_state
+  - review_metadata
+  - veil_level
+  - lineage
