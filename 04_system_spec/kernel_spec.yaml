@@ -1,0 +1,40 @@
+# kernel_spec.yaml
+# Specification of the Lattice kernel (IDE, CCE, CFC)
+
+kernel_id: "LATTICE-KERNEL"
+version: "1.0.0"
+status: "active"
+
+modules:
+
+  IDE:
+    name: "Intent Decomposition Engine"
+    purpose: "Decompose operator intent into structured semantic components."
+    invariants:
+      - "intent_explicitness"
+      - "semantic_integrity"
+    outputs:
+      - "intent_map"
+      - "payload_summary"
+
+  CCE:
+    name: "Constraint Cartography Engine"
+    purpose: "Map constraints, boundaries, and drift domains."
+    invariants:
+      - "constraint_integrity"
+      - "boundary_respect"
+    outputs:
+      - "constraint_map"
+      - "drift_assessment"
+
+  CFC:
+    name: "Coherence Formation Core"
+    purpose: "Form coherent structures from constraints and intent."
+    invariants:
+      - "coherence_integrity"
+      - "reversibility_preferred"
+    outputs:
+      - "coherent_structure"
+      - "coherence_report"
+
+lineage_required: true
