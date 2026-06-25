@@ -1,0 +1,33 @@
+# veil_levels.yaml
+# Visibility levels for the Veil subsystem
+
+levels:
+
+  Veil-0:
+    description: "Full visibility. Internal governance surfaces only."
+    allowed_surfaces:
+      - "operator"
+      - "governance"
+      - "vault_internal"
+    reversible: true
+
+  Veil-1:
+    description: "Partial visibility. Internal + trusted surfaces."
+    allowed_surfaces:
+      - "operator"
+      - "runtime"
+      - "trusted_internal"
+    reversible: true
+
+  Veil-2:
+    description: "Compressed visibility. External narrative surfaces."
+    allowed_surfaces:
+      - "narrative_surface"
+      - "content_engine"
+    reversible: true
+
+  Veil-3:
+    description: "Redacted visibility. Public surfaces only."
+    allowed_surfaces:
+      - "public"
+    reversible: false
