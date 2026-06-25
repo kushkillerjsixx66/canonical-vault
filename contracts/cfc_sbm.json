@@ -1,0 +1,40 @@
+{
+  "version": "v1.0.0",
+  "from": "CFC",
+  "to": "SBM",
+  "description": "Contract governing the handoff of filtered constraint envelopes from the Constraint Filter Context to the Semantic Buffer Module.",
+  "filtered_envelope_contract": {
+    "schema": {
+      "type": "object",
+      "required": ["intent_id", "normalized_signal", "constraint_classes", "drift_score", "veil_level", "filtered", "timestamp"],
+      "properties": {
+        "intent_id": { "type": "string", "format": "uuid", "description": "ID of the originating intent from IDE." },
+        "normalized_signal": { "type": "string", "minLength": 1, "description": "Normalized signal text carried forward from IDE via CCE." },
+        "constraint_classes": { "type": "array", "items": { "type": "string" }, "description": "Constraint class tags after CFC filtering. May be a subset of CCE output." },
+        "drift_score": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "Drift score carried forward from CCE." },
+        "veil_level": { "type": "integer", "minimum": 0, "maximum": 5, "description": "Veil operator level applied by CFC. 0 = no veil. 5 = maximum suppression." },
+        "filtered": { "type": "boolean", "description": "True if CFC modified or suppressed any constraint classes from the CCE envelope." },
+        "filter_reason": { "type": "string", "description": "Human-readable reason for filtering. Present only when filtered=true." },
+        "timestamp": { "type": "string", "format": "iso8601", "description": "UTC timestamp of CFC processing." }
+      }
+    },
+    "guarantees": [
+      "intent_id references a valid IDE intent that passed CCE_CFC contract.",
+      "constraint_classes is present (may be empty array after filtering).",
+      "drift_score is a float in [0.0, 1.0].",
+      "veil_level is an integer in [0, 5].",
+      "filtered is always a boolean.",
+      "filter_reason is present if and only if filtered=true.",
+      "timestamp is a valid UTC ISO-8601 string.",
+      "normalized_signal is non-empty."
+    ],
+    "violations": {
+      "VEIL_LEVEL_OUT_OF_RANGE": { "code": "CFC_SBM_001", "description": "veil_level is outside [0, 5].", "action": "REJECT", "escalation": "Log and emit CFC_ERROR event. Do not forward to SBM." },
+      "MISSING_FILTERED_FLAG": { "code": "CFC_SBM_002", "description": "filtered field is absent or null.", "action": "REJECT", "escalation": "Log and emit CFC_ERROR event. Do not forward to SBM." },
+      "VEIL_SUPPRESSION_WITHOUT_FLAG": { "code": "CFC_SBM_003", "description": "veil_level > 0 but filtered=false.", "action": "REJECT", "escalation": "Log and emit CFC_ERROR event. Inconsistent veil/filter state." },
+      "INVALID_INTENT_REFERENCE": { "code": "CFC_SBM_004", "description": "intent_id does not reference a known CCE intent in the current session.", "action": "REJECT", "escalation": "Log and emit CFC_ERROR event. Do not forward to SBM." }
+    },
+    "timeout": { "max_ms": 400, "on_timeout": "ABORT_AND_LOG", "retry_policy": { "max_retries": 2, "backoff_ms": 100 } },
+    "routing": { "channel": "internal_pipeline", "priority": "normal", "ordering": "strict_fifo", "batch_allowed": false }
+  }
+}
