@@ -1,5 +1,118 @@
+🜁 Veil Commands (Visibility Control Layer)
+The Vault includes a governed visibility system called The Veil.  
+It allows the operator to control how much of an artifact is revealed during review, retrieval, or inspection.
 
+The Veil has three levels:
 
+- clear — no redaction  
+- partial — reveals the first 80 characters  
+- full — total redaction  
+
+Each veil action is logged to lineage with your operator signature:
+
+`
+SIG: JRM‑01 @liminaljermo
+`
+
+---
+
+🧩 CLI Usage
+
+Inside the Vault (after crossing the threshold), you may invoke:
+
+`
+veil <artifact> <clear|partial|full>
+`
+
+Examples
+
+Partial veil
+`
+> veil artifact.txt partial
+`
+
+Output:
+`
+[VEIL OUTPUT]
+This is the first 80 characters of the artifact…
+...[VEILED — PARTIAL]...
+`
+
+Full veil
+`
+> veil artifact.txt full
+`
+
+Output:
+`
+[VEIL OUTPUT]
+[REDACTED — VEIL‑2]
+`
+
+Clear veil
+`
+> veil artifact.txt clear
+`
+
+Output:
+`
+[VEIL OUTPUT]
+<full artifact content>
+`
+
+---
+
+📜 Lineage Entries for Veil Actions
+
+Every veil operation is recorded in the artifact’s lineage:
+
+`
+2026‑06‑24T21:12:44Z — veil-partial — SIG: JRM‑01 @liminaljermo
+2026‑06‑24T21:13:02Z — veil-full — SIG: JRM‑01 @liminaljermo
+2026‑06‑24T21:13:27Z — veil-clear — SIG: JRM‑01 @liminaljermo
+`
+
+This ensures a visibility audit trail for all redaction events.
+
+---
+
+📁 Veil Output Storage
+
+Veil outputs are ephemeral and stored in:
+
+`
+vault/veil/
+`
+
+These files:
+
+- are temporary  
+- are not canonized  
+- are not committed  
+- do not replace the original artifact  
+- exist only for operator inspection  
+
+The original artifact remains untouched.
+
+---
+
+🔐 Governance Notes
+
+- Veil commands are only available after threshold crossing  
+- Veil actions never modify the underlying artifact  
+- Veil lineage is attached to the original artifact, not the veil output  
+- Full veil (veil-full) is treated as a sensitive visibility event  
+- Clear veil (veil-clear) is logged to prevent silent exposure  
+
+---
+
+If you want, I can now update:
+
+- the README’s Action Flow section to include Veil  
+- the Constitution appendix with Veil governance rules  
+- the Review Engine to auto‑veil sensitive lineage  
+
+Which one do you want next?
 ---
 
 📁 VAULT SUBSYSTEM — README.md
