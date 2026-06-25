@@ -1,0 +1,24 @@
+# veil_surface_matrix.yaml
+# Matrix mapping veil levels to allowed surfaces
+
+surface_matrix:
+
+  operator_surface:
+    allowed_levels: ["Veil-0", "Veil-1"]
+    notes: "full visibility for sovereign operator"
+
+  runtime_surface:
+    allowed_levels: ["Veil-1"]
+    notes: "internal execution surfaces only"
+
+  narrative_surface:
+    allowed_levels: ["Veil-2"]
+    notes: "compressed visibility"
+
+  public_surface:
+    allowed_levels: ["Veil-3"]
+    notes: "redacted visibility only"
+
+  vault_internal:
+    allowed_levels: ["Veil-0", "Veil-1", "Veil-2"]
+    notes: "reviewers may raise veil level"
