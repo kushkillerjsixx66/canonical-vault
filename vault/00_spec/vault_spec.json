@@ -1,0 +1,8 @@
+{
+  "id": "vault_spec",
+  "version": "1.0.0",
+  "scope": "Vault Subsystem",
+  "description": "Canonical governed specification of the Lattice Vault: purpose, boundaries, lifecycle, access, retention, governance hooks, lineage integration, and operator interactions.",
+
+  "purpose": {
+    "primary": "Provide a governed
