@@ -1,0 +1,19 @@
+# transformation_contract.yaml
+# Rules for transforming capture into structured artifacts
+
+contract_id: "TRANSFORMATION-CONTRACT"
+version: "1.0.0"
+
+requirements:
+  - "Transformation must preserve semantic integrity."
+  - "Transformation must be reversible unless declared otherwise."
+  - "Transformation must expose drift."
+  - "Transformation must comply with epistemic constraints."
+  - "Transformation must pass Stumpy structural checks."
+
+fields:
+  - normalized_payload
+  - structure_map
+  - coherence_report
+  - drift_report
+  - lineage
