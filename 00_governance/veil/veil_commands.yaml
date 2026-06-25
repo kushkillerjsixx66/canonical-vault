@@ -1,0 +1,28 @@
+# veil_commands.yaml
+# Veil commands for Vault CLI and runtime
+
+commands:
+
+  veil:set-level:
+    description: "Set veil level for an artifact."
+    args: ["artifact", "level"]
+
+  veil:inspect:
+    description: "Inspect veil metadata for an artifact."
+    args: ["artifact"]
+
+  veil:compress:
+    description: "Compress artifact for narrative surfaces."
+    args: ["artifact"]
+
+  veil:redact:
+    description: "Redact artifact for public surfaces."
+    args: ["artifact"]
+
+  veil:enforce:
+    description: "Run enforcement checks."
+    args: ["artifact"]
+
+  veil:silence:
+    description: "Activate silence protocol."
+    args: []
