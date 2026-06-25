@@ -1,0 +1,130 @@
+{
+  "id": "vault_commit_pattern",
+  "version": "1.0.0",
+  "description": "Canonical governed rules for committing artifacts into the Vault. Defines commit envelope, metadata, governance requirements, drift signals, safety checks, operator posture, reversibility, and failure modes.",
+
+  "commit_envelope": {
+    "required_fields": [
+      "record_type",
+      "payload",
+      "governance_tags",
+      "lineage_anchors",
+      "provenance",
+      "retention_class",
+      "reversibility_window_minutes"
+    ],
+    "optional_fields": [
+      "drift_signals",
+      "operator_posture",
+      "risk_level",
+      "source_artifact_ids"
+    ]
+  },
+
+  "metadata_requirements": {
+    "provenance": [
+      "operator_id",
+      "module_id",
+      "creation_timestamp",
+      "commit_timestamp"
+    ],
+    "lineage": [
+      "source_artifact_ids",
+      "target_artifact_id",
+      "trace_path_id"
+    ]
+  },
+
+  "governance_requirements": {
+    "tags": [
+      "at least one Constitution principle tag",
+      "at least one governance regime tag (internal, ai, operations, data)"
+    ],
+    "checks": [
+      "record_type must exist in vault_record_types.json",
+      "payload must satisfy record_type schema",
+      "retention_class must match record_type retention_class",
+      "operator role must satisfy access_control.json",
+      "commit must be logged in audit subsystem"
+    ]
+  },
+
+  "drift_signals": {
+    "required_for_high_risk": true,
+    "fields": [
+      "drift_domain_id",
+      "dimensions",
+      "current_values",
+      "tolerances",
+      "alert_state"
+    ]
+  },
+
+  "safety_checks": {
+    "pre_commit": [
+      "validate record_type schema",
+      "validate governance tags",
+      "validate lineage anchors",
+      "validate retention_class",
+      "validate reversibility_window_minutes",
+      "validate operator role permissions",
+      "validate drift signals for high-risk commits"
+    ],
+    "post_commit": [
+      "register lineage edge",
+      "log audit event",
+      "update drift monitor",
+      "notify governance envelope"
+    ]
+  },
+
+  "operator_posture": {
+    "required_for": [
+      "high_risk",
+      "governance_record",
+      "constitution_binding"
+    ],
+    "values": [
+      "read_only",
+      "commit_ready",
+      "governance_mode"
+    ],
+    "rules": [
+      "High-risk commits require governance_mode.",
+      "Operators may not bypass commit validation.",
+      "All operator actions must be auditable."
+    ]
+  },
+
+  "reversibility": {
+    "window_rules": [
+      "short_term → up to 60 minutes",
+      "standard → up to 240 minutes",
+      "long_term → 0 minutes (irreversible except via governance amendment process)"
+    ],
+    "irreversible_events": [
+      "record_locked",
+      "record_archived",
+      "constitution_amendment_applied",
+      "governance_operator_override"
+    ]
+  },
+
+  "failure_modes": {
+    "invalid_commit": [
+      "missing required envelope fields",
+      "invalid record_type",
+      "schema mismatch",
+      "missing governance tags",
+      "missing lineage anchors",
+      "invalid retention class",
+      "operator lacks permission"
+    ],
+    "recovery": [
+      "reject commit",
+      "log audit failure",
+      "notify operator",
+      "notify governance envelope"
+    ]
+  }
+}
