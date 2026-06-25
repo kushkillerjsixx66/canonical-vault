@@ -1,0 +1,108 @@
+# amp_protocol.yaml
+# Altitude Modulation Protocol — AMP
+# Governs abstraction shifts, altitude transitions, and cognitive modulation.
+
+protocol_id: "AMP"
+name: "Altitude Modulation Protocol"
+version: "1.0.0"
+status: "active"
+
+description: >
+  AMP governs how the system transitions between abstraction altitudes,
+  ensuring that altitude shifts are explicit, reversible when possible,
+  lineage-tracked, and compliant with module boundaries. The protocol prevents
+  abstraction collapse, runaway generalization, and altitude drift.
+
+sovereign_operator:
+  op_id: "JRM-01"
+  handle: "@liminaljermo"
+  signature: "SIG: JRM-01 @liminaljermo"
+
+altitudes:
+  defined_levels:
+    - id: "A0"
+      name: "Concrete Execution"
+      description: "Literal, step-level, implementation-focused reasoning."
+    - id: "A1"
+      name: "Mechanistic"
+      description: "System mechanics, module interactions, constraint mapping."
+    - id: "A2"
+      name: "Architectural"
+      description: "System structure, governance envelopes, protocol behavior."
+    - id: "A3"
+      name: "Constitutional"
+      description: "Governance, invariants, sovereignty, amendment logic."
+  rules:
+    - "Altitude shifts must be explicit."
+    - "Each altitude has defined invariants."
+    - "Modules must declare their operating altitude."
+    - "Cross-altitude communication must follow modulation rules."
+
+modulation_rules:
+  explicit_shift_required: true
+  shift_fields:
+    - "source_altitude"
+    - "target_altitude"
+    - "intent"
+    - "rationale"
+    - "operator_signature"
+  reversible_by_default: true
+  irreversible_requirements:
+    - "explicit operator declaration"
+    - "canonization of resulting artifact"
+    - "lineage entry with irreversible flag"
+
+drift_controls:
+  drift_domains_source: "drift_domains.yaml"
+  constraint_classes_source: "constraint_classes.yaml"
+  detection_rules:
+    - "Altitude drift must be detectable."
+    - "Unbounded abstraction is prohibited."
+    - "Cross-altitude bleed must trigger governance fault."
+  correction_actions:
+    - "Revert to last stable altitude."
+    - "Emit drift lineage entry."
+    - "Escalate if drift persists."
+
+lineage:
+  required: true
+  sinks:
+    - "00_governance/governance_lineage/protocols.lineage"
+    - "05_runtime/vault/lineage/"
+  fields:
+    - "timestamp"
+    - "protocol_id"
+    - "source_altitude"
+    - "target_altitude"
+    - "shift_type"
+    - "operator_signature"
+    - "drift_flag"
+
+failure_modes:
+  - id: "AMP-F01"
+    description: "Unauthorized altitude shift detected."
+    action: "Reject shift, log governance fault, escalate."
+  - id: "AMP-F02"
+    description: "Cross-altitude bleed without modulation."
+    action: "Halt operation, emit drift lineage, escalate."
+  - id: "AMP-F03"
+    description: "Irreversible shift attempted without canonization."
+    action: "Reject shift, notify operator."
+
+escalation:
+  ladders_source: "escalation_ladders.yaml"
+  default_path: "AMP-ALTITUDE-BREACH"
+  notify_operator: true
+
+visibility:
+  veil_levels:
+    internal_governance: "clear"
+    external_narrative: "partial"
+    sensitive_mechanics: "full"
+  governed_by: "Veil Engine"
+
+metadata:
+  related_protocols:
+    - "Ω-13"
+    - "Ω-14"
+  audit_policy_source: "audit_policy.yaml"
