@@ -1,0 +1,19 @@
+{
+  "id": "vault_lineage_index",
+  "version": "1.0.0",
+  "description": "Canonical lineage index for the Vault subsystem. Stores all lineage edges created by Vault commits.",
+
+  "edges": [],
+
+  "meta": {
+    "created": "INITIALIZE",
+    "last_updated": "INITIALIZE",
+    "edge_count": 0,
+    "schema": {
+      "record_type": "string",
+      "target_id": "string",
+      "source_ids": "array<string>",
+      "timestamp": "string"
+    }
+  }
+}
