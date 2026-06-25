@@ -1,0 +1,37 @@
+# weekly_spine.yaml
+# The governed weekly content spine
+
+spine:
+  monday:
+    artifact: "Module Monday"
+    purpose: "Extract mechanism from prior week’s narrative + intel"
+    contract: "mechanism_contract.yaml"
+
+  tuesday:
+    artifact: "Threshold Tuesday"
+    purpose: "Define thresholds, tensions, and operator questions"
+    contract: "mechanism_contract.yaml"
+
+  wednesday:
+    artifact: "Workflow Wednesday"
+    purpose: "Operationalize Monday’s mechanism into operator workflow"
+    contract: "workflow_contract.yaml"
+
+  thursday:
+    artifact: "Theory Thursday"
+    purpose: "Abstract mechanism into conceptual or architectural insight"
+    contract: "workflow_contract.yaml"
+
+  friday:
+    artifact: "Field INTEL Friday"
+    purpose: "Interpret audience + analytics signals"
+    contract: "intel_contract.yaml"
+
+  sunday:
+    artifact: "Substack Sunday"
+    purpose: "Produce narrative that closes the loop and seeds next cycle"
+    contract: "narrative_contract.yaml"
+
+cycle:
+  reversible: true
+  lineage_required: true
