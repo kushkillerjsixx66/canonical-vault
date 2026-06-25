@@ -1,0 +1,87 @@
+# protocol_metadata.yaml
+# Unified Protocol Registry for the Lattice Governance Layer
+# Provides metadata, versioning, lineage anchors, and cross‑protocol relationships.
+
+registry_id: "PROTOCOL-REGISTRY"
+version: "1.0.0"
+status: "active"
+
+description: >
+  The Protocol Metadata Registry defines the authoritative metadata for all
+  governance-layer protocols in the Lattice. It provides version control,
+  lineage anchors, cross-protocol relationships, visibility rules, and
+  amendment pathways. All protocols must be registered here to be considered
+  valid within the governance layer.
+
+sovereign_operator:
+  op_id: "JRM-01"
+  handle: "@liminaljermo"
+  signature: "SIG: JRM-01 @liminaljermo"
+
+protocols:
+
+  - protocol_id: "Ω-13"
+    name: "Bilateralism Protocol"
+    file: "omega_13.yaml"
+    version: "1.0.0"
+    purpose: "Govern cross-module bindings, dual validation, and reversible handoff."
+    invariants_preserved:
+      - "boundary_integrity"
+      - "intent_explicitness"
+      - "lineage_mandatory"
+    related_protocols:
+      - "Ω-14"
+      - "AMP"
+    lineage_sink: "00_governance/governance_lineage/protocols.lineage"
+    visibility: "internal_governance"
+
+  - protocol_id: "Ω-14"
+    name: "Governance Envelope Protocol"
+    file: "omega_14.yaml"
+    version: "1.0.0"
+    purpose: "Define the boundary between operator sovereignty and system autonomy."
+    invariants_preserved:
+      - "sovereignty_stability"
+      - "envelope_integrity"
+      - "autonomy_constraints"
+    related_protocols:
+      - "Ω-13"
+      - "AMP"
+    lineage_sink: "00_governance/governance_lineage/protocols.lineage"
+    visibility: "internal_governance"
+
+  - protocol_id: "AMP"
+    name: "Altitude Modulation Protocol"
+    file: "amp_protocol.yaml"
+    version: "1.0.0"
+    purpose: "Govern altitude shifts, abstraction transitions, and cognitive modulation."
+    invariants_preserved:
+      - "altitude_integrity"
+      - "drift_detectability"
+      - "reversibility_preference"
+    related_protocols:
+      - "Ω-13"
+      - "Ω-14"
+    lineage_sink: "00_governance/governance_lineage/protocols.lineage"
+    visibility: "internal_governance"
+
+  - protocol_id: "ESC-LADDERS"
+    name: "Escalation Ladders"
+    file: "escalation_ladders.yaml"
+    version: "1.0.0"
+    purpose: "Define governed response sequences for drift, breaches, and violations."
+    invariants_preserved:
+      - "safe_failure"
+      - "lineage_during_fault"
+      - "operator_notification"
+    related_protocols:
+      - "Ω-13"
+      - "Ω-14"
+      - "AMP"
+    lineage_sink: "00_governance/governance_lineage/protocols.lineage"
+    visibility: "internal_governance"
+
+  - protocol_id: "BILATERALISM-MAP"
+    name: "Cross-Module Binding Map"
+    file: "bilateralism_map.yaml"
+    version
