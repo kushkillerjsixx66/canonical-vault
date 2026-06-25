@@ -1,0 +1,49 @@
+{
+  "id": "vault_retention_policies",
+  "version": "1.0.0",
+  "description": "Canonical retention classes and assignment rules for the Lattice Vault subsystem.",
+
+  "classes": {
+    "short_term": {
+      "description": "Low-risk operational artifacts with rapid decay.",
+      "duration_days": 90,
+      "reversible_window_minutes": 60
+    },
+    "standard": {
+      "description": "Default governed artifacts with normal retention.",
+      "duration_days": 365,
+      "reversible_window_minutes": 240
+    },
+    "long_term": {
+      "description": "Governance, lineage, and constitutional artifacts requiring durable retention.",
+      "duration_days": 3650,
+      "reversible_window_minutes": 0
+    }
+  },
+
+  "assignment_rules": {
+    "brief_record": "standard",
+    "plan_record": "standard",
+    "mechanism_record": "standard",
+    "workflow_record": "standard",
+
+    "governance_record": "long_term",
+    "lineage_record": "long_term",
+    "playbook_record": "long_term",
+
+    "veil_record": "standard",
+    "stumpy_record": "standard",
+
+    "telemetry_record": "short_term"
+  },
+
+  "rules": [
+    {
+      "id": "rule.no_long_term_reversal",
+      "description": "Long-term records are irreversible except via governance amendment.",
+      "constraint": "retention_class == long_term → reversible_window_minutes == 0"
+    },
+    {
+      "id": "rule.retention_must_match_record_type",
+      "description": "Retention class must match the record type’s assignment rule.",
+      "
