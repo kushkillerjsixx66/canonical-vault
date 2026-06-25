@@ -1,0 +1,149 @@
+{
+  "id": "contract.operator_playbook",
+  "version": "1.0.0",
+  "scope": "Operator Playbook ↔ modules/postures",
+  "description": "Defines how the Operator Playbook interfaces with modules, postures, and escalation ladders.",
+  "artifact_spec": {
+    "playbook_id": "string",
+    "postures": "array<object>",
+    "fields": {
+      "actions": "array<object>",
+      "escalation_ladders": "array<object>",
+      "module_bindings": "array<object>",
+      "risk_postures": "array<object>",
+      "checklists": "array<object>"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "actions",
+        "escalation_ladders",
+        "module_bindings",
+        "checklists"
+      ],
+      "rules": [
+        "Every action must map to at least one module.",
+        "Every escalation ladder must define triggers."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R3",
+    "description": "Playbook entries reversible until locked by governance.",
+    "rollback_window_minutes": 720,
+    "rollback_conditions": [
+      "Actions misaligned with governance.",
+      "Escalation ladders incomplete.",
+      "Risk postures undefined."
+    ],
+    "irreversible_events": [
+      "playbook_locked",
+      "governance_approval_sealed"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "Actions must respect Constitution principles.",
+      "Escalation ladders must align with governance envelope."
+    ],
+    "structure": [
+      "Checklists must define steps and verification points.",
+      "Module bindings must specify module and posture."
+    ],
+    "safety": [
+      "No action may bypass safety controls.",
+      "No escalation may skip governance checkpoints."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.operator_playbook",
+    "dimensions": [
+      "action_density",
+      "escalation_frequency",
+      "checklist_completeness",
+      "risk_posture_coverage"
+    ],
+    "tolerances": {
+      "action_density": "no reduction below minimum per module",
+      "escalation_frequency": "no more than defined threshold",
+      "checklist_completeness": "≥95% actions covered",
+      "risk_posture_coverage": "≥99% high-risk actions covered"
+    },
+    "monitoring": {
+      "signals": [
+        "action_count",
+        "escalation_count",
+        "coverage_ratio"
+      ],
+      "alert_thresholds": {
+        "action_count": 10,
+        "escalation_count": 5,
+        "coverage_ratio": 0.95
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P3_governed_risk",
+      "P4_safe_deployment",
+      "P5_operator_legibility"
+    ],
+    "policies": [
+      "policy.operator.playbook",
+      "policy.escalation.standard"
+    ],
+    "regimes": [
+      "internal_governance",
+      "operations_governance"
+    ],
+    "evidence_requirements": [
+      "Playbook stored in Vault.",
+      "Action logs.",
+      "Escalation records."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "playbook_id",
+      "action_id"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "actions",
+        "escalation_ladders",
+        "checklists"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "playbook_author_id",
+        "operator_id",
+        "creation_timestamp",
+        "lock_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "operators",
+    "expected_use": [
+      "Guide module interactions.",
+      "Trigger escalations.",
+      "Verify safety and governance."
+    ],
+    "interfaces": [
+      "operator_cli load-playbook",
+      "runtime apply-posture"
+    ],
+    "failure_modes": [
+      "Missing actions.",
+      "Undefined escalation ladders.",
+      "Incomplete checklists."
+    ],
+    "fallbacks": [
+      "Pause high-risk operations.",
+      "Escalate via governance envelope.",
+      "Trigger Constitution review."
+    ]
+  }
+}
