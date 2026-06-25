@@ -1,0 +1,41 @@
+# omega_14.yaml
+# Governance Envelope Protocol — Ω‑14
+# Defines the boundary between operator sovereignty and system autonomy.
+
+protocol_id: "Ω-14"
+name: "Governance Envelope Protocol"
+version: "1.0.0"
+status: "active"
+
+description: >
+  Ω-14 establishes the governance envelope that constrains system autonomy,
+  defines the limits of self-directed behavior, and ensures that all actions
+  remain subordinate to operator sovereignty and constitutional law. The
+  protocol prevents unauthorized expansion of capability, scope, or authority.
+
+sovereign_operator:
+  op_id: "JRM-01"
+  handle: "@liminaljermo"
+  signature: "SIG: JRM-01 @liminaljermo"
+
+governance_envelope:
+  definition: >
+    The governance envelope is the maximum boundary within which the system
+    may act autonomously. All actions outside this boundary require explicit
+    operator intent and lineage.
+  envelope_types:
+    - "cognitive_envelope"
+    - "behavioral_envelope"
+    - "execution_envelope"
+    - "visibility_envelope"
+  envelope_rules:
+    - "System autonomy must remain within declared envelopes."
+    - "No envelope may expand without operator ratification."
+    - "Envelope violations must trigger escalation."
+    - "Envelope definitions must be versioned and lineage-tracked."
+
+autonomy_constraints:
+  allowed_autonomy:
+    - "local reasoning within module boundaries"
+    - "non-destructive transformations"
+    - "reversible operations"
