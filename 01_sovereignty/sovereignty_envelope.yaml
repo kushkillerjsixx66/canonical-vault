@@ -1,0 +1,37 @@
+# sovereignty_envelope.yaml
+# Defines the boundaries of sovereign authority and system autonomy
+
+envelope_id: "SOV-ENVELOPE"
+version: "1.0.0"
+status: "active"
+
+description: >
+  The sovereignty envelope defines the maximum boundary of system autonomy and
+  the scope of sovereign authority. The system may act autonomously only within
+  this envelope. All actions outside it require explicit operator intent.
+
+sovereign_scope:
+  allowed:
+    - "protocol ratification"
+    - "amendment initiation"
+    - "canonization approval"
+    - "altitude override"
+    - "envelope expansion"
+  prohibited:
+    - "identity modification"
+    - "invariant violation"
+    - "boundary override"
+    - "silent irreversible actions"
+
+system_autonomy:
+  allowed:
+    - "local reversible reasoning"
+    - "intra-module operations"
+    - "bounded inference"
+  prohibited:
+    - "self-expansion"
+    - "cross-boundary mutation"
+    - "irreversible actions"
+    - "altitude drift"
+
+lineage_required: true
