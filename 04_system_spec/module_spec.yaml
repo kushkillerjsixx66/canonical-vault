@@ -1,0 +1,46 @@
+# module_spec.yaml
+# Specification of system modules beyond the kernel
+
+modules:
+
+  MTM:
+    name: "Mechanism Translation Module"
+    purpose: "Translate mechanisms into operator-grade abstractions."
+    invariants:
+      - "mechanism_integrity"
+      - "altitude_alignment"
+
+  DriftEngine:
+    name: "Drift Engine"
+    purpose: "Detect, measure, and classify drift across domains."
+    invariants:
+      - "drift_detectability"
+      - "drift_classification"
+
+  Vara:
+    name: "Vara"
+    purpose: "Signal decomposition, drift mapping, epistemic stress testing."
+    invariants:
+      - "signal_qualification"
+      - "empirical_integrity"
+
+  Stumpy:
+    name: "Stumpy"
+    purpose: "Structural coherence and constraint mapping."
+    invariants:
+      - "structure_integrity"
+      - "constraint_compliance"
+
+  NarrativeSurface:
+    name: "Narrative Surface"
+    purpose: "Render coherent structures into narrative form."
+    invariants:
+      - "veil_compliance"
+      - "narrative_integrity"
+
+  FieldINTEL:
+    name: "Field INTEL"
+    purpose: "Runtime intelligence gathering and operator-facing summaries."
+    invariants:
+      - "signal_integrity"
+      - "drift_visibility"
