@@ -1,0 +1,18 @@
+# signal_qualification.yaml
+# Rules for evaluating and qualifying signals
+
+qualification_rules:
+  - "Signal must have declared origin."
+  - "Signal integrity must be measurable."
+  - "Signal drift must be detectable."
+  - "Signal noise must be quantifiable."
+  - "Signal must be reversible unless declared otherwise."
+  - "Signal must emit lineage."
+
+fields:
+  - origin
+  - integrity
+  - drift
+  - noise
+  - reversibility
+  - lineage
