@@ -5,4 +5,179 @@
   "description": "Canonical governed specification of the Lattice Vault: purpose, boundaries, lifecycle, access, retention, governance hooks, lineage integration, and operator interactions.",
 
   "purpose": {
-    "primary": "Provide a governed
+    "primary": "Provide a governed, durable, lineage-anchored storage substrate for all Lattice artifacts.",
+    "secondary": [
+      "Enforce governance, retention, and access policies.",
+      "Anchor lineage across module boundaries.",
+      "Serve as the single source of truth for governed artifacts.",
+      "Provide reversible and irreversible commit semantics."
+    ]
+  },
+
+  "boundaries": {
+    "includes": [
+      "Governed artifacts from SBM, PAM, MTM, WDA.",
+      "Governance, lineage, playbook, veil, stumpy, and telemetry records.",
+      "Commit envelopes, provenance, drift signals, and governance tags."
+    ],
+    "excludes": [
+      "Ephemeral runtime buffers.",
+      "Non-governed scratch data.",
+      "Untracked operator notes or external documents."
+    ]
+  },
+
+  "artifact_lifecycle": {
+    "states": [
+      "draft",
+      "committed",
+      "locked",
+      "archived",
+      "deleted"
+    ],
+    "transitions": [
+      {
+        "from": "draft",
+        "to": "committed",
+        "conditions": [
+          "Commit envelope validated",
+          "Governance tags present",
+          "Lineage anchors present",
+          "Access control satisfied"
+        ]
+      },
+      {
+        "from": "committed",
+        "to": "locked",
+        "conditions": [
+          "Retention class assigned",
+          "Governance operator approval",
+          "Reversibility window expired"
+        ]
+      },
+      {
+        "from": "locked",
+        "to": "archived",
+        "conditions": [
+          "Retention window expired",
+          "Governance approval",
+          "Audit log written"
+        ]
+      },
+      {
+        "from": "archived",
+        "to": "deleted",
+        "conditions": [
+          "Deletion policy satisfied",
+          "Governance approval",
+          "Lineage engine notified"
+        ]
+      }
+    ]
+  },
+
+  "access_model": {
+    "roles": [
+      "operator",
+      "governance_operator",
+      "system",
+      "auditor"
+    ],
+    "permissions": {
+      "operator": ["read", "commit"],
+      "governance_operator": ["read", "commit", "lock", "archive", "delete"],
+      "system": ["read", "commit", "lock"],
+      "auditor": ["read"]
+    },
+    "rules": [
+      "High-risk records require governance_operator for delete.",
+      "Constitution records are immutable except via amendment process.",
+      "Operators may not modify retention or access policies."
+    ]
+  },
+
+  "retention_model": {
+    "classes": [
+      {
+        "id": "short_term",
+        "description": "Low-risk operational artifacts.",
+        "duration_days": 90
+      },
+      {
+        "id": "standard",
+        "description": "Default governed artifacts.",
+        "duration_days": 365
+      },
+      {
+        "id": "long_term",
+        "description": "Governance, lineage, and constitutional artifacts.",
+        "duration_days": 3650
+      }
+    ],
+    "assignment_rules": [
+      "brief_record → standard",
+      "plan_record → standard",
+      "mechanism_record → standard",
+      "workflow_record → standard",
+      "governance_record → long_term",
+      "lineage_record → long_term",
+      "playbook_record → long_term",
+      "veil_record → standard",
+      "stumpy_record → standard",
+      "telemetry_record → short_term"
+    ]
+  },
+
+  "governance_hooks": {
+    "events": [
+      "vault_commit",
+      "vault_lock",
+      "vault_archive",
+      "vault_delete"
+    ],
+    "callbacks": [
+      "notify_governance_envelope",
+      "update_lineage_engine",
+      "log_operator_action",
+      "update_drift_monitor"
+    ]
+  },
+
+  "safety_rules": {
+    "constraints": [
+      "No delete without audit log.",
+      "No lock without retention class.",
+      "No commit without governance tags.",
+      "No commit without lineage anchors.",
+      "No irreversible transition without governance approval."
+    ]
+  },
+
+  "lineage_integration": {
+    "engine": "lineage_engine",
+    "requirements": [
+      "Every record must have at least one lineage anchor.",
+      "Every commit must produce a lineage edge.",
+      "Lineage index must be updated atomically with commit.",
+      "Lineage must reflect module sequence and artifact ancestry."
+    ]
+  },
+
+  "operator_interactions": {
+    "interfaces": [
+      "vault_cli",
+      "veil commands",
+      "runtime handlers"
+    ],
+    "postures": [
+      "read_only",
+      "commit_ready",
+      "governance_mode"
+    ],
+    "rules": [
+      "High-risk commits require governance_mode.",
+      "Operators may not bypass commit validation.",
+      "All operator actions must be auditable."
+    ]
+  }
+      }
