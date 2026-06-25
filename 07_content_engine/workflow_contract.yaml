@@ -1,0 +1,19 @@
+# workflow_contract.yaml
+# Rules for operationalizing mechanisms into workflows
+
+contract_id: "WORKFLOW-CONTRACT"
+version: "1.0.0"
+
+requirements:
+  - "Workflow must operationalize mechanism."
+  - "Workflow must be executable by operator."
+  - "Workflow must preserve semantic integrity."
+  - "Workflow must declare posture + altitude."
+  - "Workflow must be reversible unless declared otherwise."
+
+fields:
+  - workflow_steps
+  - operator_posture
+  - altitude
+  - coherence_report
+  - lineage
