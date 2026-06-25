@@ -1,0 +1,150 @@
+{
+  "id": "contract.veil_interface",
+  "version": "1.0.0",
+  "scope": "Veil CLI ↔ governed operations/modules",
+  "description": "Defines how Veil commands, CLI actions, and governed operations interact with modules.",
+  "artifact_spec": {
+    "veil_id": "string",
+    "fields": {
+      "commands": "array<object>",
+      "command_classes": "array<object>",
+      "module_bindings": "array<object>",
+      "safety_guards": "array<object>",
+      "audit_hooks": "array<object>"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "commands",
+        "command_classes",
+        "module_bindings",
+        "safety_guards"
+      ],
+      "rules": [
+        "Every command must belong to a command class.",
+        "Safety guards must be defined for high-risk commands."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R3",
+    "description": "Veil interface reversible until command set locked.",
+    "rollback_window_minutes": 720,
+    "rollback_conditions": [
+      "Commands misaligned with governance.",
+      "Safety guards incomplete.",
+      "Audit hooks missing."
+    ],
+    "irreversible_events": [
+      "veil_command_set_locked",
+      "audit_hooks_sealed"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "Commands must respect governance envelope.",
+      "Command classes must map to module scopes."
+    ],
+    "structure": [
+      "Module bindings must define module and action.",
+      "Audit hooks must include operator and timestamps."
+    ],
+    "safety": [
+      "No high-risk command without safety guard.",
+      "No command may bypass governance checkpoints."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.veil_interface",
+    "dimensions": [
+      "command_density",
+      "high_risk_command_count",
+      "safety_guard_coverage",
+      "audit_hook_completeness"
+    ],
+    "tolerances": {
+      "command_density": "no reduction below minimum per module",
+      "high_risk_command_count": "no more than defined threshold",
+      "safety_guard_coverage": "≥99% high-risk commands covered",
+      "audit_hook_completeness": "≥99% commands logged"
+    },
+    "monitoring": {
+      "signals": [
+        "command_count",
+        "high_risk_count",
+        "coverage_ratio",
+        "log_coverage_ratio"
+      ],
+      "alert_thresholds": {
+        "command_count": 10,
+        "high_risk_count": 5,
+        "coverage_ratio": 0.99,
+        "log_coverage_ratio": 0.99
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P3_governed_risk",
+      "P5_operator_legibility",
+      "P6_traceable_decisions"
+    ],
+    "policies": [
+      "policy.veil.commands",
+      "policy.audit.standard"
+    ],
+    "regimes": [
+      "internal_governance",
+      "operations_governance"
+    ],
+    "evidence_requirements": [
+      "Command set stored in Vault.",
+      "Audit logs.",
+      "Safety guard definitions."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "veil_id",
+      "command_id"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "commands",
+        "module_bindings",
+        "safety_guards"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "veil_author_id",
+        "operator_id",
+        "creation_timestamp",
+        "lock_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "operators",
+    "expected_use": [
+      "Execute governed commands.",
+      "Apply safety guards.",
+      "Support audits."
+    ],
+    "interfaces": [
+      "veil_cli",
+      "runtime command-dispatch"
+    ],
+    "failure_modes": [
+      "Missing safety guards.",
+      "Undefined command classes.",
+      "Audit hooks missing."
+    ],
+    "fallbacks": [
+      "Disable high-risk commands.",
+      "Escalate via Operator Playbook.",
+      "Trigger governance envelope review."
+    ]
+  }
+}
