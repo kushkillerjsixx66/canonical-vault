@@ -1,0 +1,12 @@
+# content_engine_constraints.yaml
+# Constraints on content engine behavior
+
+constraints:
+  - "No unqualified signals."
+  - "No unstructured mechanisms."
+  - "No workflows without mechanisms."
+  - "No narratives without intel."
+  - "No irreversible content transformations without intent."
+  - "No drift beyond threshold."
+  - "No bypassing the weekly spine."
+  - "No silent cycle transitions."
