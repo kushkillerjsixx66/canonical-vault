@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-VAULT_OP_ID = "@liminaljermo."
+VAULT_OP_ID = "JRM-01."   # Updated operator identity
 
 VALID_INTENTS = ["Commit", "Retrieve", "Review", "Canonize"]
 
@@ -64,7 +64,6 @@ def interior_state(context):
     print("Commit · Retrieve · Review · Canonize")
     print("All actions are logged to lineage.\n")
 
-    # Simple action loop (stubbed for now)
     while True:
         action = input("> ").strip()
         if action.lower() in ["exit", "quit"]:
