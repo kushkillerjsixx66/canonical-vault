@@ -1,0 +1,210 @@
+{
+  "id": "vault_record_types",
+  "version": "1.0.0",
+  "description": "Canonical governed schema for all Vault record types in the Lattice architecture.",
+
+  "record_types": [
+
+    {
+      "id": "brief_record",
+      "source_module": "SBM",
+      "fields": {
+        "brief_id": "string",
+        "title": "string",
+        "problem_statement": "string",
+        "context": "string",
+        "constraints": "array<object>",
+        "stakeholders": "array<string>",
+        "risk_register": "array<object>",
+        "timestamp_issued": "string"
+      },
+      "invariants": [
+        "brief_id must be unique",
+        "risk_register entries must include severity and mitigation"
+      ],
+      "retention_class": "standard",
+      "lineage_anchors": ["brief_id", "sbm_session_id"],
+      "governance_tags": ["brief", "risk", "stakeholders"],
+      "drift_domain": "drift.sbm_pam"
+    },
+
+    {
+      "id": "plan_record",
+      "source_module": "PAM",
+      "fields": {
+        "plan_id": "string",
+        "brief_id": "string",
+        "architecture_views": "array<object>",
+        "constraints_resolved": "array<object>",
+        "risk_posture": "object",
+        "timeline": "object",
+        "dependencies": "array<object>"
+      },
+      "invariants": [
+        "plan_id must be unique",
+        "at least one architecture view must be canonical"
+      ],
+      "retention_class": "standard",
+      "lineage_anchors": ["plan_id", "brief_id"],
+      "governance_tags": ["plan", "architecture", "risk"],
+      "drift_domain": "drift.pam_mtm"
+    },
+
+    {
+      "id": "mechanism_record",
+      "source_module": "MTM",
+      "fields": {
+        "mechanism_set_id": "string",
+        "plan_id": "string",
+        "topology_graph": "object",
+        "mechanisms": "array<object>",
+        "risk_controls": "array<object>"
+      },
+      "invariants": [
+        "mechanism_set_id must be unique",
+        "every mechanism must have at least one risk control"
+      ],
+      "retention_class": "standard",
+      "lineage_anchors": ["mechanism_set_id", "plan_id"],
+      "governance_tags": ["mechanism", "topology", "risk_control"],
+      "drift_domain": "drift.mtm_wda"
+    },
+
+    {
+      "id": "workflow_record",
+      "source_module": "WDA",
+      "fields": {
+        "workflow_id": "string",
+        "mechanism_set_id": "string",
+        "steps": "array<object>",
+        "deployment_plan": "object",
+        "monitoring_hooks": "array<object>"
+      },
+      "invariants": [
+        "workflow_id must be unique",
+        "no workflow may omit monitoring hooks"
+      ],
+      "retention_class": "standard",
+      "lineage_anchors": ["workflow_id", "mechanism_set_id"],
+      "governance_tags": ["workflow", "deployment", "monitoring"],
+      "drift_domain": "drift.pipeline_runtime"
+    },
+
+    {
+      "id": "governance_record",
+      "source_module": "Governance",
+      "fields": {
+        "envelope_id": "string",
+        "rule_set_id": "string",
+        "rules": "array<object>",
+        "constraint_classes": "array<object>",
+        "drift_domains": "array<object>"
+      },
+      "invariants": [
+        "envelope_id must be unique",
+        "every constraint class must map to at least one rule"
+      ],
+      "retention_class": "long_term",
+      "lineage_anchors": ["envelope_id", "rule_set_id"],
+      "governance_tags": ["governance", "rules", "constraints"],
+      "drift_domain": "drift.governance_envelope"
+    },
+
+    {
+      "id": "lineage_record",
+      "source_module": "LineageEngine",
+      "fields": {
+        "engine_id": "string",
+        "anchor_id": "string",
+        "trace_paths": "array<object>",
+        "verification_rules": "array<object>"
+      },
+      "invariants": [
+        "anchor_id must be unique per engine",
+        "trace paths must be continuous"
+      ],
+      "retention_class": "long_term",
+      "lineage_anchors": ["engine_id", "anchor_id"],
+      "governance_tags": ["lineage", "trace", "audit"],
+      "drift_domain": "drift.lineage_engine"
+    },
+
+    {
+      "id": "playbook_record",
+      "source_module": "OperatorPlaybook",
+      "fields": {
+        "playbook_id": "string",
+        "actions": "array<object>",
+        "escalation_ladders": "array<object>",
+        "checklists": "array<object>"
+      },
+      "invariants": [
+        "playbook_id must be unique",
+        "every high-risk action must have a checklist"
+      ],
+      "retention_class": "long_term",
+      "lineage_anchors": ["playbook_id"],
+      "governance_tags": ["playbook", "operator", "escalation"],
+      "drift_domain": "drift.operator_playbook"
+    },
+
+    {
+      "id": "veil_record",
+      "source_module": "Veil",
+      "fields": {
+        "veil_id": "string",
+        "command_id": "string",
+        "command_class": "string",
+        "safety_guards": "array<object>",
+        "audit_hooks": "array<object>"
+      },
+      "invariants": [
+        "command_id must be unique per veil_id",
+        "no high-risk command may exist without a safety guard"
+      ],
+      "retention_class": "standard",
+      "lineage_anchors": ["veil_id", "command_id"],
+      "governance_tags": ["command", "safety", "audit"],
+      "drift_domain": "drift.veil_interface"
+    },
+
+    {
+      "id": "stumpy_record",
+      "source_module": "Stumpy",
+      "fields": {
+        "bridge_id": "string",
+        "kernel_bindings": "array<object>",
+        "vault_bindings": "array<object>",
+        "governance_hooks": "array<object>"
+      },
+      "invariants": [
+        "bridge_id must be unique",
+        "no kernel binding may exist without a governance hook"
+      ],
+      "retention_class": "standard",
+      "lineage_anchors": ["bridge_id"],
+      "governance_tags": ["stumpy", "kernel_bridge", "vault_bridge"],
+      "drift_domain": "drift.stumpy_bridge"
+    },
+
+    {
+      "id": "telemetry_record",
+      "source_module": "Runtime",
+      "fields": {
+        "stream_id": "string",
+        "source": "string",
+        "metrics": "array<object>",
+        "timestamp_range": "object"
+      },
+      "invariants": [
+        "stream_id must be unique",
+        "metrics must include severity or health indicators"
+      ],
+      "retention_class": "short_term",
+      "lineage_anchors": ["stream_id", "source"],
+      "governance_tags": ["telemetry", "runtime", "health"],
+      "drift_domain": "drift.stumpy_bridge"
+    }
+
+  ]
+}
