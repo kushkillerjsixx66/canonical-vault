@@ -1,0 +1,24 @@
+# scheduler_spec.yaml
+# Governed scheduling rules for runtime execution
+
+scheduler_id: "RUNTIME-SCHEDULER"
+version: "1.0.0"
+
+rules:
+  - "Tasks must declare altitude."
+  - "Tasks must declare reversibility state."
+  - "Tasks must declare drift domain."
+  - "Tasks must be scheduled within envelope."
+  - "Tasks must emit lineage."
+
+priority_classes:
+  - "operator_intent"
+  - "drift_events"
+  - "vault_pipeline"
+  - "module_execution"
+  - "background_tasks"
+
+constraints:
+  - "No silent scheduling."
+  - "No cross-boundary scheduling."
+  - "No irreversible scheduling without intent."
