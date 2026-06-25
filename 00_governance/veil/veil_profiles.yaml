@@ -1,0 +1,31 @@
+# veil_profiles.yaml
+# Profiles for modules, surfaces, and artifact classes
+
+profiles:
+
+  operator_profile:
+    default_level: "Veil-0"
+    allowed_levels: ["Veil-0", "Veil-1"]
+
+  vault_profile:
+    default_level: "Veil-0"
+    allowed_levels: ["Veil-0", "Veil-1", "Veil-2"]
+
+  narrative_profile:
+    default_level: "Veil-2"
+    allowed_levels: ["Veil-2", "Veil-3"]
+
+  public_profile:
+    default_level: "Veil-3"
+    allowed_levels: ["Veil-3"]
+
+  module_profiles:
+    IDE: "Veil-0"
+    CCE: "Veil-0"
+    CFC: "Veil-0"
+    MTM: "Veil-1"
+    DriftEngine: "Veil-1"
+    Vara: "Veil-1"
+    Stumpy: "Veil-1"
+    NarrativeSurface: "Veil-2"
+    FieldINTEL: "Veil-1"
