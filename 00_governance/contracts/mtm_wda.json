@@ -1,0 +1,155 @@
+{
+  "id": "contract.mtm_wda",
+  "version": "1.0.0",
+  "scope": "MTM→WDA",
+  "description": "Handoff from Mechanism/Topology Module (MTM) into Workflow/Deployment/Action Module (WDA).",
+  "artifact_spec": {
+    "input_module": "MTM",
+    "output_module": "WDA",
+    "artifact_type": "mtm_mechanism_set",
+    "schema_version": "1.0.0",
+    "fields": {
+      "mechanism_set_id": "string",
+      "plan_id": "string",
+      "topology_graph": "object",
+      "mechanisms": "array<object>",
+      "risk_controls": "array<object>",
+      "deployment_constraints": "array<object>",
+      "operator_interfaces": "array<object>",
+      "monitoring_hooks": "array<object>"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "mechanism_set_id",
+        "plan_id",
+        "topology_graph",
+        "mechanisms",
+        "deployment_constraints"
+      ],
+      "rules": [
+        "Every mechanism must have at least one risk control.",
+        "Topology graph must be acyclic or explicitly mark cycles."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R4",
+    "description": "Mechanisms are reversible until WDA locks workflows and deployment.",
+    "rollback_window_minutes": 240,
+    "rollback_conditions": [
+      "Deployment constraints violated.",
+      "Monitoring hooks insufficient.",
+      "Operator interfaces missing safety controls."
+    ],
+    "irreversible_events": [
+      "wda_workflow_locked",
+      "wda_deployment_committed"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "Mechanisms must respect Constitution binding from PAM.",
+      "Risk controls must map to governance policies."
+    ],
+    "structure": [
+      "Topology graph must include node types and edge semantics.",
+      "Operator interfaces must expose safety toggles."
+    ],
+    "safety": [
+      "No mechanism may be deployed without monitoring hooks.",
+      "No workflow may bypass risk controls."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.mtm_wda",
+    "dimensions": [
+      "topology_complexity",
+      "mechanism_count",
+      "risk_control_coverage",
+      "deployment_constraints"
+    ],
+    "tolerances": {
+      "topology_complexity": "±20% complexity score",
+      "mechanism_count": "±15% change",
+      "risk_control_coverage": "no reduction below 95%",
+      "deployment_constraints": "no violation without explicit override"
+    },
+    "monitoring": {
+      "signals": [
+        "complexity_score",
+        "mechanism_count",
+        "coverage_ratio"
+      ],
+      "alert_thresholds": {
+        "complexity_score": 85,
+        "mechanism_count": 100,
+        "coverage_ratio": 0.95
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P2_structured_mechanisms",
+      "P4_safe_deployment",
+      "P6_traceable_decisions"
+    ],
+    "policies": [
+      "policy.deployment.safety",
+      "policy.monitoring.minimum"
+    ],
+    "regimes": [
+      "internal_governance",
+      "operations_governance"
+    ],
+    "evidence_requirements": [
+      "Topology graph stored in Vault.",
+      "Risk controls documented.",
+      "Monitoring hooks registered with Lineage Engine."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "mechanism_set_id",
+      "plan_id"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "topology_graph",
+        "mechanisms",
+        "risk_controls"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "mechanism_author",
+        "operator_id",
+        "creation_timestamp",
+        "deployment_approval_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "WDA",
+    "expected_use": [
+      "Compose workflows from mechanisms.",
+      "Define deployment plans.",
+      "Bind monitoring and operator actions."
+    ],
+    "interfaces": [
+      "wda_cli ingest-mechanisms",
+      "vault workflow-anchor"
+    ],
+    "failure_modes": [
+      "Missing risk controls.",
+      "Incomplete topology graph.",
+      "Operator interfaces undefined."
+    ],
+    "fallbacks": [
+      "Return to MTM for refinement.",
+      "Escalate via Operator Playbook.",
+      "Trigger governance envelope review."
+    ]
+  }
+}
