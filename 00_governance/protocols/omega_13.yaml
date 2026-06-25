@@ -1,0 +1,104 @@
+# omega_13.yaml
+# Bilateralism Protocol — Ω‑13
+# Governs cross‑module bindings, dual validation, and reversible handoff.
+
+protocol_id: "Ω-13"
+name: "Bilateralism Protocol"
+version: "1.0.0"
+status: "active"
+
+description: >
+  Ω-13 enforces bilateral validation, reversible handoff, and governed
+  interaction between modules and subsystems. No module may unilaterally
+  mutate shared state or perform cross-boundary actions without explicit,
+  dual-sided agreement and lineage.
+
+sovereign_operator:
+  op_id: "JRM-01"
+  handle: "@liminaljermo"
+  signature: "SIG: JRM-01 @liminaljermo"
+
+invariants:
+  - "All cross-module interactions must be bilateral."
+  - "Sender and receiver must both validate the handoff."
+  - "No unilateral mutation of shared state is permitted."
+  - "All bindings must be declared in the bilateralism map."
+  - "Reversibility is required unless explicitly waived and canonized."
+  - "Every bilateral interaction must emit lineage."
+
+binding_model:
+  declaration_required: true
+  map_source: "bilateralism_map.yaml"
+  reversible_by_default: true
+  canonization_required_for_irreversible: true
+
+validation:
+  sender_validation:
+    required: true
+    must_log_lineage: true
+    fields:
+      - "intent"
+      - "payload_summary"
+      - "target_module"
+      - "constraints_applied"
+  receiver_validation:
+    required: true
+    must_log_lineage: true
+    fields:
+      - "acceptance_state"
+      - "payload_integrity"
+      - "constraints_respected"
+      - "drift_assessment"
+
+lineage:
+  required: true
+  sinks:
+    - "00_governance/governance_lineage/protocols.lineage"
+    - "05_runtime/vault/lineage/"
+  fields:
+    - "timestamp"
+    - "protocol_id"
+    - "binding_id"
+    - "sender_module"
+    - "receiver_module"
+    - "reversibility_state"
+    - "operator_signature"
+
+reversibility:
+  default_state: "reversible"
+  states:
+    - "reversible"
+    - "irreversible_canonized"
+  irreversible_requirements:
+    - "explicit operator intent"
+    - "canonization of resulting artifact"
+    - "documented rationale"
+    - "lineage entry with irreversible flag"
+
+constraints:
+  constraint_classes_source: "constraint_classes.yaml"
+  drift_domains_source: "drift_domains.yaml"
+  audit_policy_source: "audit_policy.yaml"
+
+failure_modes:
+  - id: "OMEGA13-F01"
+    description: "Unilateral mutation attempt detected."
+    action: "Reject interaction, log governance fault, escalate via escalation_ladders.yaml."
+  - id: "OMEGA13-F02"
+    description: "Missing bilateral declaration in bilateralism_map.yaml."
+    action: "Reject interaction, require binding declaration, log lineage."
+  - id: "OMEGA13-F03"
+    description: "Irreversible interaction attempted without canonization."
+    action: "Reject interaction, notify operator, log governance fault."
+
+escalation:
+  ladders_source: "escalation_ladders.yaml"
+  default_path: "OMEGA13-DRIFT"
+  notify_operator: true
+
+visibility:
+  veil_levels:
+    internal_governance: "clear"
+    external_narrative: "partial"
+    sensitive_mechanics: "full"
+  governed_by: "Veil Engine"
