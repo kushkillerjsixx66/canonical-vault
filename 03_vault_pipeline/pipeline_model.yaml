@@ -1,0 +1,34 @@
+# pipeline_model.yaml
+# Structural model of the Vault Pipeline
+
+model_id: "PIPELINE-MODEL"
+version: "1.0.0"
+status: "active"
+
+stages:
+  - capture
+  - normalization
+  - structuring
+  - coherence_check
+  - vault_handoff
+
+governance:
+  protocols:
+    - "Ω-13"
+    - "Ω-14"
+    - "AMP"
+  invariants:
+    - "lineage_mandatory"
+    - "drift_detectability"
+    - "reversibility_preferred"
+    - "boundary_integrity"
+
+integrations:
+  vara: "signal decomposition and drift mapping"
+  stumpy: "structural coherence and constraint mapping"
+
+lineage:
+  required: true
+  sinks:
+    - "00_governance/governance_lineage/protocols.lineage"
+    - "05_runtime/vault/lineage/"
