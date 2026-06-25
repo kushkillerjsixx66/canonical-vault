@@ -1,0 +1,156 @@
+{
+  "id": "contract.pipeline_runtime",
+  "version": "1.0.0",
+  "scope": "SBM→PAM→MTM→WDA end-to-end",
+  "description": "Global pipeline contract defining invariants, runtime guarantees, and cross-module compliance.",
+  "artifact_spec": {
+    "pipeline_id": "string",
+    "modules": [
+      "SBM",
+      "PAM",
+      "MTM",
+      "WDA"
+    ],
+    "fields": {
+      "global_invariants": "array<object>",
+      "runtime_guarantees": "array<object>",
+      "governance_checkpoints": "array<object>",
+      "lineage_chain": "array<object>",
+      "failure_handling": "array<object>"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "global_invariants",
+        "runtime_guarantees",
+        "governance_checkpoints",
+        "lineage_chain"
+      ],
+      "rules": [
+        "Every module must have at least one governance checkpoint.",
+        "Lineage chain must be continuous from SBM to WDA."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R5",
+    "description": "Pipeline-level reversibility until deployment is committed.",
+    "rollback_window_minutes": 480,
+    "rollback_conditions": [
+      "Global invariants violated.",
+      "Lineage chain broken.",
+      "Constitution binding updated."
+    ],
+    "irreversible_events": [
+      "pipeline_deployment_committed",
+      "constitution_amendment_applied_to_pipeline"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "All modules must respect Constitution binding.",
+      "Governance checkpoints must be enforced before high-risk actions."
+    ],
+    "structure": [
+      "Pipeline must define clear module order.",
+      "Lineage chain must include anchors for each module."
+    ],
+    "safety": [
+      "No deployment without risk posture and monitoring.",
+      "No module may bypass governance envelope."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.pipeline_runtime",
+    "dimensions": [
+      "module_order",
+      "governance_checkpoint_density",
+      "lineage_chain_integrity",
+      "runtime_guarantee_coverage"
+    ],
+    "tolerances": {
+      "module_order": "no reordering without explicit governance approval",
+      "governance_checkpoint_density": "no reduction below defined minimum",
+      "lineage_chain_integrity": "no broken links allowed",
+      "runtime_guarantee_coverage": "≥95% of critical paths covered"
+    },
+    "monitoring": {
+      "signals": [
+        "checkpoint_count",
+        "lineage_link_status",
+        "coverage_ratio"
+      ],
+      "alert_thresholds": {
+        "checkpoint_count": 4,
+        "lineage_link_status": 1,
+        "coverage_ratio": 0.95
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P1_clarity_of_intent",
+      "P3_governed_risk",
+      "P4_safe_deployment",
+      "P6_traceable_decisions"
+    ],
+    "policies": [
+      "policy.pipeline.standard",
+      "policy.lineage.minimum"
+    ],
+    "regimes": [
+      "internal_governance",
+      "ai_governance",
+      "operations_governance"
+    ],
+    "evidence_requirements": [
+      "Pipeline definition stored in Vault.",
+      "Lineage chain verified by Lineage Engine.",
+      "Governance checkpoints logged."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "pipeline_id",
+      "module_sequence"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "global_invariants",
+        "runtime_guarantees",
+        "governance_checkpoints"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "pipeline_author",
+        "operator_id",
+        "creation_timestamp",
+        "approval_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "runtime_orchestrator",
+    "expected_use": [
+      "Enforce global invariants.",
+      "Coordinate module execution.",
+      "Verify lineage and governance."
+    ],
+    "interfaces": [
+      "runtime_cli load-pipeline",
+      "vault pipeline-anchor"
+    ],
+    "failure_modes": [
+      "Broken lineage chain.",
+      "Missing governance checkpoints.",
+      "Runtime guarantees undefined."
+    ],
+    "fallbacks": [
+      "Pause pipeline execution.",
+      "Escalate via Operator Playbook.",
+      "Trigger governance envelope review."
+    ]
+  }
+}
