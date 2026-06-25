@@ -1,0 +1,23 @@
+# third_party_register.yaml
+# Registry of third-party assets, dependencies, and their legal terms
+
+register_id: "THIRD-PARTY-REGISTER"
+version: "1.0.0"
+status: "active"
+
+description: >
+  The Third-Party Register records all external libraries, models, datasets,
+  and other assets used by the Lattice, along with their licenses and usage
+  constraints.
+
+entries: []
+# Example entry template:
+#  - id: "TP-001"
+#    name: "Example Library"
+#    type: "library"
+#    license: "MIT"
+#    url: "https://example.com"
+#    usage_scope:
+#      - "development"
+#      - "runtime"
+#    notes: "Attribution required in docs."
