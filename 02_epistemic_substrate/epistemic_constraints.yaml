@@ -1,0 +1,10 @@
+# epistemic_constraints.yaml
+# Constraints on epistemic operations
+
+constraints:
+  - "No unqualified signals."
+  - "No unclassed evidence."
+  - "No irreversible empirical operations without intent."
+  - "No cross-domain drift without escalation."
+  - "No empirical state may bypass decay rules."
+  - "No epistemic mutation without lineage."
