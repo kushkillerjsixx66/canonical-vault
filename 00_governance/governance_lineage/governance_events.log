@@ -1,0 +1,27 @@
+# governance_events.log
+# Canonical Governance Event Ledger
+# Append‑only. Immutable. Machine‑parseable. Sovereign‑anchored.
+
+2026-06-24T21:37:00Z | INIT | GOVERNANCE_LAYER_INITIALIZED | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+
+2026-06-24T21:37:10Z | CREATE | CONSTITUTION:lattice_constitution.md | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:11Z | CREATE | CONSTITUTION:invariants.md | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:12Z | CREATE | CONSTITUTION:governance_principles.md | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:13Z | CREATE | CONSTITUTION:amendment_laws.md | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:14Z | CREATE | CONSTITUTION:constitution_index.md | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+
+2026-06-24T21:37:20Z | CREATE | PROTOCOL:omega_13.yaml | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:21Z | CREATE | PROTOCOL:omega_14.yaml | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:22Z | CREATE | PROTOCOL:amp_protocol.yaml | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:23Z | CREATE | PROTOCOL:escalation_ladders.yaml | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:24Z | CREATE | PROTOCOL:bilateralism_map.yaml | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:25Z | CREATE | PROTOCOL:protocol_metadata.yaml | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+
+2026-06-24T21:37:30Z | CREATE | OPERATOR:operator_identity.yaml | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:31Z | CREATE | OPERATOR:section_7_operator_playbook.md | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:32Z | CREATE | OPERATOR:operator_manual_index.md | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+
+2026-06-24T21:37:40Z | CREATE | INVARIANTS:invariants_index.md | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+2026-06-24T21:37:41Z | CREATE | INVARIANTS:invariants_map.yaml | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+
+2026-06-24T21:37:50Z | READY | GOVERNANCE_LAYER_COMPLETE | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
