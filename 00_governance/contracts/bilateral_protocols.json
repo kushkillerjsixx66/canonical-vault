@@ -1,0 +1,151 @@
+{
+  "id": "contract.bilateral_protocols",
+  "version": "1.0.0",
+  "scope": "Ω-13 / Ω-14 bilateralism",
+  "description": "Encodes cross-module binding maps and reversible negotiation rules.",
+  "artifact_spec": {
+    "protocol_set_id": "string",
+    "pairs": "array<object>",
+    "fields": {
+      "binding_maps": "array<object>",
+      "negotiation_rules": "array<object>",
+      "reversibility_classes": "array<object>",
+      "conflict_resolution": "array<object>",
+      "audit_trails": "array<object>"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "binding_maps",
+        "negotiation_rules",
+        "reversibility_classes",
+        "conflict_resolution"
+      ],
+      "rules": [
+        "Every binding map must define both sides.",
+        "Negotiation rules must define success and failure outcomes."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R4",
+    "description": "Bilateral protocols reversible until commitments are locked.",
+    "rollback_window_minutes": 360,
+    "rollback_conditions": [
+      "Binding maps misaligned.",
+      "Negotiation rules violated.",
+      "Conflict resolution incomplete."
+    ],
+    "irreversible_events": [
+      "bilateral_commitment_locked",
+      "audit_trail_sealed"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "Both sides must respect governance envelope.",
+      "Binding maps must be symmetric or explicitly asymmetric."
+    ],
+    "structure": [
+      "Negotiation rules must define steps and outcomes.",
+      "Conflict resolution must define escalation paths."
+    ],
+    "safety": [
+      "No protocol may permit unsafe commitments.",
+      "No negotiation without audit trail."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.bilateral_protocols",
+    "dimensions": [
+      "binding_map_complexity",
+      "negotiation_frequency",
+      "conflict_rate",
+      "audit_trail_completeness"
+    ],
+    "tolerances": {
+      "binding_map_complexity": "±20% complexity score",
+      "negotiation_frequency": "no more than defined threshold",
+      "conflict_rate": "≤ defined maximum",
+      "audit_trail_completeness": "≥99% negotiations logged"
+    },
+    "monitoring": {
+      "signals": [
+        "complexity_score",
+        "negotiation_count",
+        "conflict_count",
+        "log_coverage_ratio"
+      ],
+      "alert_thresholds": {
+        "complexity_score": 80,
+        "negotiation_count": 20,
+        "conflict_count": 3,
+        "log_coverage_ratio": 0.99
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P3_governed_risk",
+      "P5_operator_legibility",
+      "P6_traceable_decisions"
+    ],
+    "policies": [
+      "policy.bilateral.binding",
+      "policy.negotiation.audit"
+    ],
+    "regimes": [
+      "internal_governance",
+      "ai_governance"
+    ],
+    "evidence_requirements": [
+      "Binding maps stored in Vault.",
+      "Negotiation logs.",
+      "Conflict resolution records."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "protocol_set_id",
+      "pair_id"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "binding_maps",
+        "negotiation_rules",
+        "conflict_resolution"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "protocol_author_id",
+        "operator_id",
+        "creation_timestamp",
+        "lock_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "governance_runtime",
+    "expected_use": [
+      "Coordinate bilateral commitments.",
+      "Enforce negotiation rules.",
+      "Support audits and conflict resolution."
+    ],
+    "interfaces": [
+      "bilateral_cli load-protocols",
+      "runtime apply-bilateral"
+    ],
+    "failure_modes": [
+      "Binding maps incomplete.",
+      "Negotiation rules undefined.",
+      "Audit trails missing."
+    ],
+    "fallbacks": [
+      "Pause bilateral commitments.",
+      "Escalate via Operator Playbook.",
+      "Trigger governance envelope review."
+    ]
+  }
+}
