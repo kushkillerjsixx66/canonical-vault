@@ -1,0 +1,35 @@
+# content_engine_model.yaml
+# Structural model of the Content Engine
+
+engine_id: "CONTENT-ENGINE"
+version: "1.0.0"
+status: "active"
+
+components:
+  mechanism_extractor: "extracts weekly mechanism from signals + narrative"
+  workflow_builder: "operationalizes mechanism into operator workflow"
+  intel_analyzer: "interprets audience + analytics signals"
+  narrative_generator: "produces weekly narrative artifact"
+  cycle_seeder: "generates seeds for next week's mechanism"
+
+governance:
+  protocols:
+    - "Ω-13"
+    - "Ω-14"
+    - "AMP"
+  invariants:
+    - "semantic_integrity"
+    - "coherence_integrity"
+    - "drift_detectability"
+    - "lineage_mandatory"
+
+integrations:
+  vara: "signal decomposition + drift mapping"
+  stumpy: "structural coherence checks"
+  vault_pipeline: "artifact lifecycle"
+
+lineage:
+  required: true
+  sinks:
+    - "00_governance/governance_lineage/protocols.lineage"
+    - "07_content_engine/lineage/"
