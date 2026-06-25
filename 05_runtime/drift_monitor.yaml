@@ -1,0 +1,23 @@
+# drift_monitor.yaml
+# Drift detection and classification rules
+
+monitor_id: "DRIFT-MONITOR"
+version: "1.0.0"
+
+drift_domains:
+  - "semantic_drift"
+  - "constraint_drift"
+  - "structure_drift"
+  - "visibility_drift"
+  - "empirical_drift"
+
+rules:
+  - "Drift must be measurable."
+  - "Drift must be classed."
+  - "Drift must be reversible when possible."
+  - "Drift must trigger escalation if beyond threshold."
+
+thresholds:
+  low: "monitor only"
+  medium: "log and notify"
+  high: "halt and escalate"
