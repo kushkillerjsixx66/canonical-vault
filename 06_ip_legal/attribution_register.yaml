@@ -1,0 +1,21 @@
+# attribution_register.yaml
+# Registry of attribution obligations for the Lattice
+
+register_id: "ATTRIBUTION-REGISTER"
+version: "1.0.0"
+status: "active"
+
+description: >
+  The Attribution Register records all attribution obligations for internal and
+  external artifacts. Each entry defines the source, required attribution text,
+  and applicable surfaces.
+
+entries: []
+# Example entry template:
+#  - id: "ATTR-001"
+#    source: "External Library or Work"
+#    required_text: "Copyright (c) YEAR NAME — used under LICENSE."
+#    applies_to:
+#      - "runtime"
+#      - "narrative_surface"
+#      - "docs"
