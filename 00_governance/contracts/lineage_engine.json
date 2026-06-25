@@ -1,0 +1,148 @@
+{
+  "id": "contract.lineage_engine",
+  "version": "1.0.0",
+  "scope": "Lineage Engine ↔ artifacts/modules",
+  "description": "Defines lineage anchoring, artifact hashing, and cross-module traceability.",
+  "artifact_spec": {
+    "engine_id": "string",
+    "fields": {
+      "anchors": "array<object>",
+      "hashing_strategies": "array<object>",
+      "trace_paths": "array<object>",
+      "verification_rules": "array<object>",
+      "audit_logs": "array<object>"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "anchors",
+        "hashing_strategies",
+        "trace_paths",
+        "verification_rules"
+      ],
+      "rules": [
+        "Every artifact type must have an anchor.",
+        "Hashing strategies must define algorithms and fields."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R4",
+    "description": "Lineage entries reversible until audit logs sealed.",
+    "rollback_window_minutes": 720,
+    "rollback_conditions": [
+      "Incorrect anchors.",
+      "Hashing misconfigured.",
+      "Trace paths incomplete."
+    ],
+    "irreversible_events": [
+      "audit_logs_sealed",
+      "lineage_chain_locked"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "Anchors must reflect module sequence.",
+      "Trace paths must be continuous."
+    ],
+    "structure": [
+      "Verification rules must define checks and thresholds.",
+      "Audit logs must include operator and timestamps."
+    ],
+    "safety": [
+      "No lineage entry may be deleted without governance approval.",
+      "No broken trace paths allowed."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.lineage_engine",
+    "dimensions": [
+      "anchor_density",
+      "trace_path_integrity",
+      "hashing_coverage",
+      "audit_log_completeness"
+    ],
+    "tolerances": {
+      "anchor_density": "no reduction below minimum per artifact type",
+      "trace_path_integrity": "no broken paths allowed",
+      "hashing_coverage": "≥99% critical fields hashed",
+      "audit_log_completeness": "≥99% operations logged"
+    },
+    "monitoring": {
+      "signals": [
+        "anchor_count",
+        "path_status",
+        "coverage_ratio",
+        "log_coverage_ratio"
+      ],
+      "alert_thresholds": {
+        "anchor_count": 10,
+        "path_status": 1,
+        "coverage_ratio": 0.99,
+        "log_coverage_ratio": 0.99
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P6_traceable_decisions",
+      "P7_responsible_retention"
+    ],
+    "policies": [
+      "policy.lineage.minimum",
+      "policy.audit.standard"
+    ],
+    "regimes": [
+      "internal_governance",
+      "data_governance"
+    ],
+    "evidence_requirements": [
+      "Anchors stored in Vault.",
+      "Trace paths verified.",
+      "Audit logs sealed."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "engine_id",
+      "anchor_id"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "anchors",
+        "trace_paths"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "engine_author_id",
+        "operator_id",
+        "creation_timestamp",
+        "lock_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "vault_chain",
+    "expected_use": [
+      "Resolve artifact lineage.",
+      "Verify trace paths.",
+      "Support audits and governance."
+    ],
+    "interfaces": [
+      "lineage_cli verify-chain",
+      "vault resolve-lineage"
+    ],
+    "failure_modes": [
+      "Missing anchors.",
+      "Broken trace paths.",
+      "Incomplete audit logs."
+    ],
+    "fallbacks": [
+      "Pause governed operations.",
+      "Escalate via Operator Playbook.",
+      "Trigger governance envelope review."
+    ]
+  }
+}
