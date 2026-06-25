@@ -1,0 +1,50 @@
+# veil_integration_map.yaml
+# Full integration map for the Veil subsystem across all Lattice layers
+
+integration_map:
+
+  governance_layer:
+    constitution: "visibility governed, boundary integrity"
+    invariants: ["visibility_governed", "lineage_mandatory"]
+    omega_table: "Veil Enforcement Column"
+
+  sovereignty_layer:
+    operator_identity: "default veil level = Veil-0"
+    authority: "operator may override upward visibility only"
+
+  epistemic_substrate:
+    evidence_classes: "veil level determines allowable evidence surfaces"
+    signal_qualification: "veil level restricts signal exposure"
+
+  vault_pipeline:
+    capture: "veil level declared at ingest"
+    transformation: "veil metadata preserved"
+    handoff: "veil enforcement mandatory"
+    review: "veil level may be raised, never lowered without lineage"
+    canonization: "veil level locked"
+
+  runtime:
+    scheduler: "tasks must declare veil level"
+    execution_engine: "veil-level filtering"
+    drift_monitor: "visibility drift detection"
+    reversibility_engine: "reversible redaction"
+
+  narrative_surface:
+    compression: "Veil-2"
+    redaction: "Veil-3"
+    exposure: "surface must match allowed_levels"
+
+  content_engine:
+    weekly_spine: "narrative artifacts must declare veil level"
+    intel_contract: "intel visibility restricted by veil"
+
+  modules:
+    IDE: "Veil-0"
+    CCE: "Veil-0"
+    CFC: "Veil-0"
+    MTM: "Veil-1"
+    DriftEngine: "Veil-1"
+    Vara: "Veil-1"
+    Stumpy: "Veil-1"
+    NarrativeSurface: "Veil-2"
+    FieldINTEL: "Veil-1"
