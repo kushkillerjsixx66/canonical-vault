@@ -1,0 +1,19 @@
+# intel_contract.yaml
+# Rules for Field INTEL signal interpretation
+
+contract_id: "INTEL-CONTRACT"
+version: "1.0.0"
+
+requirements:
+  - "Intel must derive from audience + analytics signals."
+  - "Intel must be classed as evidence."
+  - "Intel must be drift-mapped by Vara."
+  - "Intel must be reversible."
+  - "Intel must seed next cycle."
+
+fields:
+  - signal_summary
+  - drift_map
+  - evidence_class
+  - intel_statement
+  - lineage
