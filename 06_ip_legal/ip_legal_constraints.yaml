@@ -1,0 +1,11 @@
+# ip_legal_constraints.yaml
+# Non-negotiable IP & legal constraints for the Lattice
+
+constraints:
+  - "No use of unlicensed third-party assets."
+  - "No violation of third-party license terms."
+  - "No removal of required attribution."
+  - "No redistribution beyond license scope."
+  - "No misrepresentation of authorship."
+  - "No silent integration of external IP."
+  - "All legal-relevant changes must emit lineage."
