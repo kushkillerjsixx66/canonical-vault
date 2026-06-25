@@ -1,0 +1,11 @@
+# pipeline_constraints.yaml
+# Constraints on pipeline behavior
+
+constraints:
+  - "No unqualified capture."
+  - "No unstructured artifacts."
+  - "No silent transformations."
+  - "No irreversible operations without intent."
+  - "No cross-boundary mutation."
+  - "No drift beyond threshold."
+  - "No Vault handoff without bilateral validation."
