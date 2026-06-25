@@ -1,0 +1,162 @@
+# invariants_map.yaml
+# Unified Invariants Map — Canonical Governance Constraint Registry
+# Maps all invariants across constitutional, structural, drift, audit, protocol,
+# operator, runtime, and amendment layers.
+
+map_id: "INVARIANTS-MAP"
+version: "1.0.0"
+status: "active"
+
+description: >
+  The Invariants Map defines the authoritative registry of all invariants across
+  the Lattice governance layer. It unifies constitutional invariants, constraint
+  classes, drift domains, audit policies, operator manual invariants, protocol
+  invariants, runtime invariants, and amendment invariants into a single governed
+  reference. All invariants must appear here to be considered valid.
+
+sovereign_operator:
+  op_id: "JRM-01"
+  handle: "@liminaljermo"
+  signature: "SIG: JRM-01 @liminaljermo"
+
+sources:
+  constitutional: "invariants.md"
+  constraint_classes: "constraint_classes.yaml"
+  drift_domains: "drift_domains.yaml"
+  audit_policy: "audit_policy.yaml"
+  principles: "principles.yaml"
+  operator_manual:
+    - "execution_postures.yaml"
+    - "failure_modes.yaml"
+    - "recovery_sequences.yaml"
+    - "section_7_operator_playbook.md"
+  protocols:
+    - "omega_13.yaml"
+    - "omega_14.yaml"
+    - "amp_protocol.yaml"
+    - "escalation_ladders.yaml"
+    - "bilateralism_map.yaml"
+  amendment_laws: "amendment_laws.md"
+
+invariants:
+
+  constitutional:
+    - id: "C-01"
+      rule: "Lineage is mandatory."
+    - id: "C-02"
+      rule: "Canon is immutable."
+    - id: "C-03"
+      rule: "Intent is explicit."
+    - id: "C-04"
+      rule: "Boundaries are real."
+    - id: "C-05"
+      rule: "Drift must be detectable."
+    - id: "C-06"
+      rule: "Reversibility is preferred."
+    - id: "C-07"
+      rule: "Governance supersedes runtime."
+    - id: "C-08"
+      rule: "Operator identity is stable."
+    - id: "C-09"
+      rule: "Visibility is governed."
+    - id: "C-10"
+      rule: "Archive is not deletion."
+
+  constraint_classes:
+    - id: "CC-01"
+      rule: "Structural constraints must be enforced."
+    - id: "CC-02"
+      rule: "Temporal constraints must be respected."
+    - id: "CC-03"
+      rule: "Semantic constraints must be preserved."
+    - id: "CC-04"
+      rule: "Boundary constraints must not be violated."
+    - id: "CC-05"
+      rule: "Reversibility constraints must be declared."
+    - id: "CC-06"
+      rule: "Canonization constraints must be satisfied."
+
+  drift_domains:
+    - id: "DD-01"
+      rule: "All drift must be measurable."
+    - id: "DD-02"
+      rule: "Drift domains must be declared."
+    - id: "DD-03"
+      rule: "Cross-domain drift must trigger escalation."
+    - id: "DD-04"
+      rule: "Drift recovery must be reversible when possible."
+
+  audit_policies:
+    - id: "AP-01"
+      rule: "All invariants must be auditable."
+    - id: "AP-02"
+      rule: "Violations must be detectable."
+    - id: "AP-03"
+      rule: "Lineage must be validated."
+    - id: "AP-04"
+      rule: "Governance faults must escalate."
+
+  operator_manual:
+    - id: "OM-01"
+      rule: "Operator posture must be declared."
+    - id: "OM-02"
+      rule: "Posture changes must be lineage-tracked."
+    - id: "OM-03"
+      rule: "Altitude shifts must be explicit."
+    - id: "OM-04"
+      rule: "Operator identity cannot be overridden."
+    - id: "OM-05"
+      rule: "Recovery sequences must preserve lineage."
+
+  protocol_invariants:
+    - id: "P-01"
+      rule: "Cross-module interactions must be bilateral (Ω-13)."
+    - id: "P-02"
+      rule: "System autonomy must remain within envelope (Ω-14)."
+    - id: "P-03"
+      rule: "Altitude drift must be detectable (AMP)."
+    - id: "P-04"
+      rule: "Escalation must follow governed ladders."
+    - id: "P-05"
+      rule: "Bindings must be declared in the bilateralism map."
+
+  runtime_invariants:
+    - id: "R-01"
+      rule: "No cross-boundary mutation."
+    - id: "R-02"
+      rule: "No silent writes."
+    - id: "R-03"
+      rule: "No ungoverned execution."
+    - id: "R-04"
+      rule: "No lineage gaps."
+
+  amendment_invariants:
+    - id: "A-01"
+      rule: "Amendments must preserve core invariants."
+    - id: "A-02"
+      rule: "Operator identity cannot be amended."
+    - id: "A-03"
+      rule: "Kernel modules cannot be modified."
+    - id: "A-04"
+      rule: "Amendments must be lineage-tracked."
+    - id: "A-05"
+      rule: "Amendments require explicit operator intent."
+
+lineage:
+  required: true
+  sinks:
+    - "00_governance/governance_lineage/constitution.lineage"
+    - "00_governance/governance_lineage/protocols.lineage"
+  fields:
+    - "timestamp"
+    - "invariant_id"
+    - "source"
+    - "change_type"
+    - "operator_signature"
+
+metadata:
+  description: >
+    The unified invariants registry for the Lattice. All invariants across the
+    governance layer must be declared here. This file ensures coherence,
+    detectability, and constitutional alignment across all subsystems.
+  audit_policy_source: "audit_policy.yaml"
