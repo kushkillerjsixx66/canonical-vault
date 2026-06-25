@@ -1,0 +1,150 @@
+{
+  "id": "contract.constitution_binding",
+  "version": "1.0.0",
+  "scope": "Constitution ↔ module execution",
+  "description": "Specifies how Constitution principles, invariants, and amendment laws bind into module execution.",
+  "artifact_spec": {
+    "binding_id": "string",
+    "constitution_version": "string",
+    "fields": {
+      "principle_bindings": "array<object>",
+      "invariant_sets": "array<object>",
+      "amendment_laws": "array<object>",
+      "module_scopes": "array<object>",
+      "override_rules": "array<object>"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "principle_bindings",
+        "invariant_sets",
+        "amendment_laws",
+        "module_scopes"
+      ],
+      "rules": [
+        "Every module must have at least one principle binding.",
+        "Amendment laws must define application conditions."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R5",
+    "description": "Constitution binding reversible only via amendment process.",
+    "rollback_window_minutes": 0,
+    "rollback_conditions": [
+      "Formal amendment process invoked."
+    ],
+    "irreversible_events": [
+      "amendment_applied",
+      "binding_sealed"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "All bindings must reference valid Constitution principles.",
+      "Invariant sets must be consistent across modules."
+    ],
+    "structure": [
+      "Module scopes must define boundaries and responsibilities.",
+      "Override rules must require governance approval."
+    ],
+    "safety": [
+      "No binding may permit unsafe behavior.",
+      "No amendment may bypass governance envelope."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.constitution_binding",
+    "dimensions": [
+      "binding_density",
+      "invariant_coverage",
+      "amendment_frequency",
+      "override_usage"
+    ],
+    "tolerances": {
+      "binding_density": "no reduction below minimum per module",
+      "invariant_coverage": "≥99% critical invariants bound",
+      "amendment_frequency": "no more than defined threshold",
+      "override_usage": "no more than defined threshold"
+    },
+    "monitoring": {
+      "signals": [
+        "binding_count",
+        "coverage_ratio",
+        "amendment_count",
+        "override_count"
+      ],
+      "alert_thresholds": {
+        "binding_count": 10,
+        "coverage_ratio": 0.99,
+        "amendment_count": 2,
+        "override_count": 3
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P1_clarity_of_intent",
+      "P3_governed_risk",
+      "P4_safe_deployment",
+      "P6_traceable_decisions"
+    ],
+    "policies": [
+      "policy.constitution.binding",
+      "policy.amendment.process"
+    ],
+    "regimes": [
+      "internal_governance",
+      "constitutional_governance"
+    ],
+    "evidence_requirements": [
+      "Binding definition stored in Vault.",
+      "Amendment records.",
+      "Override logs."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "binding_id",
+      "constitution_version"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "principle_bindings",
+        "invariant_sets",
+        "amendment_laws"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "constitution_author_id",
+        "governance_operator_id",
+        "creation_timestamp",
+        "amendment_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "all_modules",
+    "expected_use": [
+      "Load Constitution bindings.",
+      "Apply invariants at runtime.",
+      "Respect amendment laws."
+    ],
+    "interfaces": [
+      "constitution_cli load-binding",
+      "module_runtime apply-binding"
+    ],
+    "failure_modes": [
+      "Missing bindings.",
+      "Undefined invariants.",
+      "Amendment laws misapplied."
+    ],
+    "fallbacks": [
+      "Pause governed operations.",
+      "Escalate via governance envelope.",
+      "Trigger Constitution review."
+    ]
+  }
+}
