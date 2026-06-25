@@ -1,0 +1,89 @@
+# bilateralism_map.yaml
+# Cross‑Module Binding Map — Required by Ω‑13 (Bilateralism Protocol)
+# Defines all governed bindings between modules, their constraints, drift domains,
+# validation rules, and reversibility states.
+
+map_id: "BILATERALISM-MAP"
+version: "1.0.0"
+status: "active"
+
+description: >
+  The Bilateralism Map defines every allowed cross-module binding in the Lattice.
+  Each binding must be explicitly declared, validated by both sender and receiver,
+  and governed by constraint classes, drift domains, and lineage rules. No
+  cross-boundary interaction may occur unless it appears in this map.
+
+sovereign_operator:
+  op_id: "JRM-01"
+  handle: "@liminaljermo"
+  signature: "SIG: JRM-01 @liminaljermo"
+
+constraint_sources:
+  constraint_classes: "constraint_classes.yaml"
+  drift_domains: "drift_domains.yaml"
+  audit_policy: "audit_policy.yaml"
+
+bindings:
+
+  - binding_id: "IDE→CCE"
+    sender: "IDE"
+    receiver: "CCE"
+    purpose: "Transfer of interpreted intent into constraint cartography."
+    reversible: true
+    constraints:
+      - "semantic_integrity"
+      - "intent_preservation"
+      - "boundary_respect"
+    drift_domains:
+      - "semantic_drift"
+      - "intent_drift"
+    validation:
+      sender_checks:
+        - "intent_declared"
+        - "payload_integrity"
+      receiver_checks:
+        - "constraint_map_valid"
+        - "drift_within_bounds"
+    lineage_required: true
+
+  - binding_id: "CCE→CFC"
+    sender: "CCE"
+    receiver: "CFC"
+    purpose: "Passing constraint-resolved structures into coherence formation."
+    reversible: true
+    constraints:
+      - "constraint_resolution"
+      - "structure_integrity"
+    drift_domains:
+      - "constraint_drift"
+      - "structure_drift"
+    validation:
+      sender_checks:
+        - "constraints_resolved"
+        - "map_consistency"
+      receiver_checks:
+        - "coherence_threshold_met"
+        - "drift_assessment"
+    lineage_required: true
+
+  - binding_id: "CFC→Pipeline"
+    sender: "CFC"
+    receiver: "Pipeline"
+    purpose: "Delivering coherent structures into execution pipelines."
+    reversible: false
+    irreversible_requirements:
+      - "explicit operator intent"
+      - "canonization of resulting artifact"
+      - "lineage entry with irreversible flag"
+    constraints:
+      - "coherence_integrity"
+      - "execution_boundary"
+    drift_domains:
+      - "coherence_drift"
+    validation:
+      sender_checks:
+        - "coherence_valid"
+        - "structure_complete"
+      receiver_checks:
+        - "pipeline_ready"
+        - "execution
