@@ -1,0 +1,28 @@
+# veil_runtime_hooks.yaml
+# Runtime enforcement hooks for the Veil subsystem
+
+runtime_hooks:
+
+  pre_execution:
+    - "resolve veil level"
+    - "verify surface compliance"
+    - "check for upward visibility violations"
+    - "apply silence protocol if mismatch"
+
+  post_execution:
+    - "apply compression (Veil-2)"
+    - "apply redaction (Veil-3)"
+    - "emit veil lineage"
+    - "log enforcement state"
+
+  drift_hooks:
+    - "detect visibility drift"
+    - "detect surface mismatch"
+    - "detect unauthorized veil changes"
+    - "trigger escalation if beyond threshold"
+
+  failure_hooks:
+    - "halt execution"
+    - "activate silence protocol"
+    - "log veil violation"
+    - "notify operator"
