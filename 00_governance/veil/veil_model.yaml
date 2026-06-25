@@ -1,0 +1,41 @@
+# veil_model.yaml
+# Structural model of the Veil subsystem
+
+veil_id: "VEIL-ENGINE"
+version: "1.0.0"
+status: "active"
+
+components:
+  level_resolver: "determines veil level for artifacts"
+  redaction_engine: "removes or masks sensitive content"
+  compression_engine: "compresses artifacts for external surfaces"
+  silence_protocol: "governed silence and non-response behavior"
+  enforcement_layer: "applies veil rules across modules and surfaces"
+
+integrations:
+  vault:
+    - "veil_level declaration"
+    - "veil enforcement during commit/review/canon"
+  narrative_surface:
+    - "visibility filtering"
+    - "compression"
+  runtime:
+    - "silence protocol"
+    - "boundary enforcement"
+  omega_table:
+    - "Veil Enforcement Column"
+
+governance:
+  protocols:
+    - "Ω-14"
+    - "AMP"
+  invariants:
+    - "visibility_governed"
+    - "lineage_mandatory"
+    - "boundary_integrity"
+
+lineage:
+  required: true
+  sinks:
+    - "00_governance/governance_lineage/protocols.lineage"
+    - "veil/lineage/"
