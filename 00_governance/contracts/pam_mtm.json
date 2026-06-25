@@ -1,0 +1,157 @@
+{
+  "id": "contract.pam_mtm",
+  "version": "1.0.0",
+  "scope": "PAM→MTM",
+  "description": "Handoff from Planning/Architecture Module (PAM) into Mechanism/Topology Module (MTM).",
+  "artifact_spec": {
+    "input_module": "PAM",
+    "output_module": "MTM",
+    "artifact_type": "pam_plan",
+    "schema_version": "1.0.0",
+    "fields": {
+      "plan_id": "string",
+      "brief_id": "string",
+      "architecture_views": "array<object>",
+      "constraints_resolved": "array<object>",
+      "risk_posture": "object",
+      "governance_bindings": "array<object>",
+      "implementation_slices": "array<object>",
+      "timeline": "object",
+      "dependencies": "array<object>"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "plan_id",
+        "brief_id",
+        "architecture_views",
+        "constraints_resolved",
+        "risk_posture",
+        "timeline"
+      ],
+      "rules": [
+        "At least one architecture view must be marked canonical.",
+        "Risk posture must include residual risk."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R3",
+    "description": "Plans are reversible until MTM locks mechanisms and topology.",
+    "rollback_window_minutes": 180,
+    "rollback_conditions": [
+      "Mechanism complexity exceeds defined thresholds.",
+      "Topology introduces new high-risk dependencies.",
+      "Constitution binding changes."
+    ],
+    "irreversible_events": [
+      "mtm_topology_locked",
+      "mtm_mechanism_committed"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "Every implementation slice must map to at least one Constitution principle.",
+      "Constraints_resolved must show trace from original brief constraints."
+    ],
+    "structure": [
+      "Dependencies must include type, criticality, and failure impact.",
+      "Timeline must include milestones and governance checkpoints."
+    ],
+    "safety": [
+      "No plan may omit risk posture for critical mechanisms.",
+      "No plan may bypass governance checkpoints."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.pam_mtm",
+    "dimensions": [
+      "mechanism_complexity",
+      "dependency_graph_size",
+      "risk_posture",
+      "timeline"
+    ],
+    "tolerances": {
+      "mechanism_complexity": "±25% change in complexity score",
+      "dependency_graph_size": "±20% node count change",
+      "risk_posture": "no more than one severity level increase",
+      "timeline": "±10% schedule shift"
+    },
+    "monitoring": {
+      "signals": [
+        "complexity_score",
+        "dependency_count",
+        "risk_delta"
+      ],
+      "alert_thresholds": {
+        "complexity_score": 80,
+        "dependency_count": 50,
+        "risk_delta": 2
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P2_structured_mechanisms",
+      "P3_governed_risk",
+      "P6_traceable_decisions"
+    ],
+    "policies": [
+      "policy.architecture.views",
+      "policy.dependency.management"
+    ],
+    "regimes": [
+      "internal_governance",
+      "engineering_governance"
+    ],
+    "evidence_requirements": [
+      "Canonical architecture view documented.",
+      "Risk posture signed off.",
+      "Dependency graph stored in Vault."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "plan_id",
+      "brief_id"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "architecture_views",
+        "constraints_resolved",
+        "risk_posture"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "architect_id",
+        "operator_id",
+        "creation_timestamp",
+        "approval_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "MTM",
+    "expected_use": [
+      "Derive mechanisms from architecture.",
+      "Define topology and dependency graph.",
+      "Set mechanism-level risk posture."
+    ],
+    "interfaces": [
+      "mtm_cli ingest-plan",
+      "vault topology-anchor"
+    ],
+    "failure_modes": [
+      "Missing canonical architecture view.",
+      "Unresolved constraints.",
+      "Incomplete dependency graph."
+    ],
+    "fallbacks": [
+      "Return to PAM for refinement.",
+      "Escalate via Operator Playbook.",
+      "Trigger governance envelope review."
+    ]
+  }
+}
