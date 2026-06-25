@@ -1,0 +1,89 @@
+{
+  "index_version": "1.0.0",
+  "contracts": [
+    {
+      "id": "contract.sbm_pam",
+      "modules": ["SBM", "PAM"],
+      "reversibility_class": "R2",
+      "drift_domain": "drift.sbm_pam",
+      "lineage_anchors": ["brief_id", "sbm_session_id"]
+    },
+    {
+      "id": "contract.pam_mtm",
+      "modules": ["PAM", "MTM"],
+      "reversibility_class": "R3",
+      "drift_domain": "drift.pam_mtm",
+      "lineage_anchors": ["plan_id", "brief_id"]
+    },
+    {
+      "id": "contract.mtm_wda",
+      "modules": ["MTM", "WDA"],
+      "reversibility_class": "R4",
+      "drift_domain": "drift.mtm_wda",
+      "lineage_anchors": ["mechanism_set_id", "plan_id"]
+    },
+    {
+      "id": "contract.pipeline_runtime",
+      "modules": ["SBM", "PAM", "MTM", "WDA"],
+      "reversibility_class": "R5",
+      "drift_domain": "drift.pipeline_runtime",
+      "lineage_anchors": ["pipeline_id", "module_sequence"]
+    },
+    {
+      "id": "contract.vault_chain",
+      "modules": ["Vault", "SBM", "PAM", "MTM", "WDA"],
+      "reversibility_class": "R3",
+      "drift_domain": "drift.vault_chain",
+      "lineage_anchors": ["vault_id", "artifact_anchor"]
+    },
+    {
+      "id": "contract.governance_envelope",
+      "modules": ["SBM", "PAM", "MTM", "WDA"],
+      "reversibility_class": "R4",
+      "drift_domain": "drift.governance_envelope",
+      "lineage_anchors": ["envelope_id", "rule_set_id"]
+    },
+    {
+      "id": "contract.bilateral_protocols",
+      "modules": ["Governance"],
+      "reversibility_class": "R4",
+      "drift_domain": "drift.bilateral_protocols",
+      "lineage_anchors": ["protocol_set_id", "pair_id"]
+    },
+    {
+      "id": "contract.operator_playbook",
+      "modules": ["Operators"],
+      "reversibility_class": "R3",
+      "drift_domain": "drift.operator_playbook",
+      "lineage_anchors": ["playbook_id", "action_id"]
+    },
+    {
+      "id": "contract.constitution_binding",
+      "modules": ["All"],
+      "reversibility_class": "R5",
+      "drift_domain": "drift.constitution_binding",
+      "lineage_anchors": ["binding_id", "constitution_version"]
+    },
+    {
+      "id": "contract.lineage_engine",
+      "modules": ["LineageEngine", "Vault"],
+      "reversibility_class": "R4",
+      "drift_domain": "drift.lineage_engine",
+      "lineage_anchors": ["engine_id", "anchor_id"]
+    },
+    {
+      "id": "contract.veil_interface",
+      "modules": ["Operators", "Modules"],
+      "reversibility_class": "R3",
+      "drift_domain": "drift.veil_interface",
+      "lineage_anchors": ["veil_id", "command_id"]
+    },
+    {
+      "id": "contract.stumpy_bridge",
+      "modules": ["Stumpy", "Kernel", "Vault"],
+      "reversibility_class": "R4",
+      "drift_domain": "drift.stumpy_bridge",
+      "lineage_anchors": ["bridge_id", "kernel_binding_id", "vault_binding_id"]
+    }
+  ]
+}
