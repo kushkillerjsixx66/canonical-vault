@@ -1,0 +1,28 @@
+# evidence_classes.yaml
+# Classification of all evidence types in the Lattice
+
+classes:
+  primary:
+    description: "Direct observation or raw signal."
+    drift_tolerance: "low"
+    reversible: true
+
+  secondary:
+    description: "Derived from primary evidence."
+    drift_tolerance: "medium"
+    reversible: true
+
+  tertiary:
+    description: "Structural inference from secondary evidence."
+    drift_tolerance: "medium-high"
+    reversible: true
+
+  quaternary:
+    description: "Narrative-surface or external-context evidence."
+    drift_tolerance: "high"
+    reversible: false
+
+  null:
+    description: "Unqualified, invalid, or unverifiable evidence."
+    drift_tolerance: "undefined"
+    reversible: false
