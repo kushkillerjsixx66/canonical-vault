@@ -1,0 +1,22 @@
+# substrate_model.yaml
+# Structural model of the epistemic substrate
+
+model:
+  layers:
+    - empirical_doctrine
+    - epistemic_laws
+    - evidence_classes
+    - signal_qualification
+    - epistemic_constraints
+    - substrate_principles
+
+  invariants:
+    - "truth_stability"
+    - "evidence_integrity"
+    - "drift_detectability"
+    - "signal_qualification"
+    - "empirical_decay"
+
+  integrations:
+    vara: "signal decomposition and drift mapping"
+    stumpy: "structural coherence and constraint mapping"
