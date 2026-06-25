@@ -1,0 +1,18 @@
+# mechanism_contract.yaml
+# Rules for extracting weekly mechanisms
+
+contract_id: "MECHANISM-CONTRACT"
+version: "1.0.0"
+
+requirements:
+  - "Mechanism must derive from prior narrative + intel."
+  - "Mechanism must be reversible."
+  - "Mechanism must expose drift."
+  - "Mechanism must be structurally coherent."
+  - "Mechanism must declare altitude."
+
+fields:
+  - mechanism_statement
+  - mechanism_diagram
+  - drift_map
+  - lineage
