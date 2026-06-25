@@ -1,0 +1,12 @@
+# system_constraints.yaml
+# Architectural constraints on the Lattice
+
+constraints:
+  - "No cross-boundary mutation."
+  - "No silent state changes."
+  - "No irreversible actions without intent."
+  - "No unqualified signals."
+  - "No unclassed evidence."
+  - "No drift beyond threshold."
+  - "No envelope violations."
+  - "No bypassing the Vault Pipeline."
