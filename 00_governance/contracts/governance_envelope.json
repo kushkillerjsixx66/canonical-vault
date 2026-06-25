@@ -1,0 +1,156 @@
+{
+  "id": "contract.governance_envelope",
+  "version": "1.0.0",
+  "scope": "Governance envelope ↔ modules",
+  "description": "Exposes governance rules, constraint classes, and drift domains to modules at runtime.",
+  "artifact_spec": {
+    "envelope_id": "string",
+    "modules": [
+      "SBM",
+      "PAM",
+      "MTM",
+      "WDA"
+    ],
+    "fields": {
+      "rules": "array<object>",
+      "constraint_classes": "array<object>",
+      "drift_domains": "array<object>",
+      "override_mechanisms": "array<object>",
+      "escalation_paths": "array<object>"
+    },
+    "quality_gates": {
+      "required_fields": [
+        "rules",
+        "constraint_classes",
+        "drift_domains",
+        "escalation_paths"
+      ],
+      "rules": [
+        "Every constraint class must map to at least one rule.",
+        "Every drift domain must define tolerances."
+      ]
+    }
+  },
+  "reversibility_boundary": {
+    "class": "R4",
+    "description": "Governance envelope reversible until locked by Constitution binding.",
+    "rollback_window_minutes": 1440,
+    "rollback_conditions": [
+      "Rules misaligned with Constitution.",
+      "Constraint classes incomplete.",
+      "Drift domains undefined."
+    ],
+    "irreversible_events": [
+      "envelope_locked",
+      "constitution_amendment_applied"
+    ]
+  },
+  "invariants": {
+    "alignment": [
+      "All rules must reference Constitution principles.",
+      "Constraint classes must be stable across modules."
+    ],
+    "structure": [
+      "Drift domains must define dimensions and tolerances.",
+      "Override mechanisms must require escalation."
+    ],
+    "safety": [
+      "No rule may permit unsafe deployment.",
+      "No override without operator approval."
+    ]
+  },
+  "drift_domain": {
+    "id": "drift.governance_envelope",
+    "dimensions": [
+      "rule_density",
+      "constraint_class_coverage",
+      "override_frequency",
+      "escalation_latency"
+    ],
+    "tolerances": {
+      "rule_density": "no reduction below minimum per module",
+      "constraint_class_coverage": "≥95% constraints covered",
+      "override_frequency": "no more than defined threshold",
+      "escalation_latency": "≤ defined maximum minutes"
+    },
+    "monitoring": {
+      "signals": [
+        "rule_count",
+        "coverage_ratio",
+        "override_count",
+        "escalation_time"
+      ],
+      "alert_thresholds": {
+        "rule_count": 10,
+        "coverage_ratio": 0.95,
+        "override_count": 3,
+        "escalation_time": 60
+      }
+    }
+  },
+  "compliance_mapping": {
+    "constitution_principles": [
+      "P1_clarity_of_intent",
+      "P3_governed_risk",
+      "P5_operator_legibility"
+    ],
+    "policies": [
+      "policy.governance.envelope",
+      "policy.override.standard"
+    ],
+    "regimes": [
+      "internal_governance",
+      "ai_governance"
+    ],
+    "evidence_requirements": [
+      "Envelope definition stored in Vault.",
+      "Override logs.",
+      "Escalation records."
+    ]
+  },
+  "lineage_requirements": {
+    "anchors": [
+      "envelope_id",
+      "rule_set_id"
+    ],
+    "hashing": {
+      "algorithm": "sha256",
+      "fields_hashed": [
+        "rules",
+        "constraint_classes",
+        "drift_domains"
+      ]
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "governance_author_id",
+        "operator_id",
+        "creation_timestamp",
+        "lock_timestamp"
+      ]
+    }
+  },
+  "downstream_consumption": {
+    "consumer_module": "all_modules",
+    "expected_use": [
+      "Load governance rules at runtime.",
+      "Apply constraint classes.",
+      "Monitor drift domains."
+    ],
+    "interfaces": [
+      "governance_cli load-envelope",
+      "module_runtime apply-governance"
+    ],
+    "failure_modes": [
+      "Missing rules.",
+      "Undefined drift domains.",
+      "Constraint classes misaligned."
+    ],
+    "fallbacks": [
+      "Pause governed operations.",
+      "Escalate via Operator Playbook.",
+      "Trigger Constitution review."
+    ]
+  }
+}
