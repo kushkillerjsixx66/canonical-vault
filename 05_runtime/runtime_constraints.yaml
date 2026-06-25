@@ -1,0 +1,12 @@
+# runtime_constraints.yaml
+# Constraints on runtime behavior
+
+constraints:
+  - "No silent execution."
+  - "No unqualified signals."
+  - "No unclassed evidence."
+  - "No irreversible operations without intent."
+  - "No drift beyond threshold."
+  - "No envelope violations."
+  - "No bypassing scheduler."
+  - "No bypassing reversibility engine."
