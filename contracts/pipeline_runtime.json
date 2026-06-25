@@ -1,9 +1,0 @@
-{
-  "version": "v0.1.0",
-  "pipeline": "SBM → PAM → MTM → EXECUTION → WDA",
-  "invariants": [
-    "Every executed plan has a corresponding PAIG verdict.",
-    "Every material event that meets audit_policy.yaml conditions produces an EAT.",
-    "Principle and policy versions are recorded in context for each EAT."
-  ]
-}
