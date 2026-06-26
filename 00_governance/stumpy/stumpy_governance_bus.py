@@ -5,13 +5,7 @@ from typing import Callable
 
 class GovernanceBus:
     """
-    Event bus between:
-    - runtime (Veil)
-    - epistemic layer (Vara)
-    - Vault
-    - Stumpy processes
-
-    Uses a shared multiprocessing.Queue, but runs a local dispatcher thread.
+    Event bus between runtime, epistemic, Vault, and Stumpy processes.
     """
 
     def __init__(self, event_queue, violation_queue) -> None:
@@ -19,7 +13,6 @@ class GovernanceBus:
         self._violation_queue = violation_queue
         self._running = False
         self._thread: threading.Thread | None = None
-
         self._handlers: dict[str, Callable[[dict], None]] = {}
 
     def register_handler(self, event_type: str, handler: Callable[[dict], None]) -> None:
@@ -43,13 +36,12 @@ class GovernanceBus:
             except Empty:
                 continue
 
-            event_type = event.get("type")
-            handler = self._handlers.get(event_type)
+            etype = event.get("type")
+            handler = self._handlers.get(etype)
 
             if handler:
                 handler(event)
             else:
-                # Unhandled events can be logged or treated as soft violations.
                 self._violation_queue.put({
                     "type": "unhandled_event",
                     "event": event,
