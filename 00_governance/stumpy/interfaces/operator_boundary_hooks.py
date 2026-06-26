@@ -1,7 +1,5 @@
 """
 Operator boundary hooks.
-
-Used when operator posture or altitude needs to be enforced.
 """
 
 
