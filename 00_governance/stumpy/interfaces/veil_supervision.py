@@ -1,7 +1,5 @@
 """
 Supervision hooks for Veil.
-
-Veil reports runtime_state events into Stumpy's event queue.
 """
 
 
