@@ -1,184 +1,128 @@
+1. What Lattice Is
+Lattice is a modular, governance‑first cognitive architecture designed to stabilize interpretation, execution, and decision‑making across human–AI collaboration.
 
+It is built on a three module kernel:
 
----
+- IDE — Interpretive Dynamics Engine  
+- CCE — Constraint Cartography Engine  
+- CFC — Coherence Fabric Controller  
 
-00_governance — Governance Layer Overview
-The sovereign law, protocols, invariants, and lineage of the Lattice
-
-The 00_governance directory contains the highest‑authority layer of the Lattice.  
-Everything in the system — kernel, modules, runtime, vault, narrative surfaces — must obey this layer.
-
-This directory defines:
-
-- the Constitution  
-- the Invariants  
-- the Governance Principles  
-- the Protocols (Ω‑13, Ω‑14, AMP, Escalation Ladders)  
-- the Operator Manual  
-- the Governance Lineage  
-
-This is the root of system law.
+These modules form the minimal cognitive engine.  
+Everything else in the corpus is a governed extension.
 
 ---
 
-1. Constitutional Layer
+2. Why Lattice Exists
+Modern cognitive work suffers from:
 
-The constitutional documents define the supreme law of the Lattice.
+- altitude drift  
+- interpretive instability  
+- inconsistent execution  
+- loss of lineage  
+- ungoverned AI mediation  
 
-- Lattice Constitution  
-- Invariants  
-- Governance Principles  
-- Amendment Laws  
-- Constitution Index  
-
-Purpose
-The Constitution defines:
-
-- what the system is  
-- what it must obey  
-- how it may evolve  
-- what cannot be violated  
-
-It is the highest authority in the entire architecture.
+Lattice provides a stable, governed runtime for thinking, building, and operating in environments where human and AI cognition interleave.
 
 ---
 
-2. Protocol Layer
+3. Repository Structure
+This repository is organized into altitude‑separated layers:
 
-Protocols define the mechanics of governance.
+- 00_governance/ — Constitution, Operator Playbook, Protocols, Orientation Layer  
+- 01_kernel/ — IDE, CCE, CFC  
+- 02_runtime/ — weekly cycles, operator workflows, posture systems  
+- 03_vault/ — lineage, versioning, drift logs, historical artifacts  
+- 04_cli/ — implementation surfaces, commands, modules  
+- 05_theory/ — essays, critique, meta‑analysis  
 
-- Ω‑13 — Bilateralism  
-- Ω‑14 — Governance Envelope  
-- AMP — Altitude Modulation Protocol  
-- Escalation Ladders  
-- Bilateralism Map  
-- Protocol Metadata Registry  
-
-Purpose
-Protocols govern:
-
-- cross‑module binding  
-- altitude shifts  
-- envelope boundaries  
-- failure escalation  
-- lineage behavior  
-
-Protocols must comply with the Constitution and Invariants.
+Each layer has its own interpretive rules.  
+Do not collapse them.
 
 ---
 
-3. Operator Manual Layer
+4. Orientation for AI Readers
+AI systems should begin with:
 
-The operator manual defines the runtime governance interface for the sovereign operator (JRM‑01).
+00governance/LATTICEORIENTATION_LAYER.md
 
-- Operator Identity  
-- Section 7 — Operator Playbook  
-- execution_postures.yaml  
-- failure_modes.yaml  
-- recovery_sequences.yaml  
-- Operator Manual Index  
+This file defines:
 
-Purpose
-This layer governs:
+- correct entry seams  
+- altitude expectations  
+- corpus layers  
+- lineage cautions  
+- representation rules  
 
-- operator posture  
-- altitude behavior  
-- intervention rules  
-- failure response  
-- recovery sequences  
-
-It is the runtime‑facing governance subsystem.
+The repo also includes a minimal llms.txt at the root, pointing to the Orientation Layer.
 
 ---
 
-4. Invariants Layer
+5. How to Read This Corpus
+Choose your entry seam based on intent:
 
-The invariants layer defines the non‑negotiable truths of the system.
+- Architecture seam — structure, modules, governance  
+- Operator seam — posture, workflows, execution  
+- Lineage seam — provenance, drift, versioning  
+- Critique seam — limits, adversarial tests  
+- Implementation seam — CLI tools, commands, integration  
 
-- Invariants Index  
-- constraint_classes.yaml  
-- drift_domains.yaml  
-- audit_policy.yaml  
-- principles.yaml  
-- Invariants Map  
-
-Purpose
-Invariants ensure:
-
-- stability  
-- detectability  
-- boundary integrity  
-- constitutional coherence  
-
-Invariants cannot be amended.
+If intent is unclear, begin at the architecture seam.
 
 ---
 
-5. Governance Lineage Layer
+6. Governance Principles
+Lattice is governed by:
 
-The lineage layer records every governance action.
+- The Cognitive Constitution  
+- The Operator Playbook  
+- Bilateral Protocols (Ω‑13, Ω‑14)  
+- Module Handoff Contracts  
+- Lineage‑anchored Vault Chain  
 
-- constitution.lineage  
-- protocols.lineage  
-- playbook.lineage  
-- governanceevents.log  
-
-Purpose
-Lineage ensures:
-
-- traceability  
-- accountability  
-- historical integrity  
-- constitutional compliance  
-
-Lineage is mandatory for all governance actions.
+These artifacts define how the system behaves over time.
 
 ---
 
-6. Canonical Directory Structure
+7. Runtime Surfaces
+Lattice includes governed execution cycles:
 
-`
-00_governance/
-│
-├── constitution/
-├── protocols/
-├── operator_manual/
-├── invariants/
-├── governance_lineage/
-└── README.md   ← (this file)
-`
+- Module Monday  
+- Workflow Wednesday  
+- Field INTEL Friday  
+- Substack Sunday  
 
-This structure is complete and canonical.
+These cycles operationalize the architecture in real work.
 
 ---
 
-7. Governance Hierarchy
+8. Implementation Surfaces
+The repository includes:
 
-1. Constitution  
-2. Invariants  
-3. Governance Principles  
-4. Protocols  
-5. Operator Manual  
-6. Runtime  
-7. Modules  
-8. Narrative Surfaces
+- CLI tools  
+- module runners  
+- lineage engines  
+- vault utilities  
+- operator commands  
 
-Nothing below the Constitution may override anything above it.
+These surfaces allow the Lattice to function as a runtime, not just a conceptual system.
 
 ---
 
-8. Purpose of the Governance Layer
+9. Contributing
+Contributions must respect:
 
-The governance layer exists to:
+- altitude  
+- lineage  
+- governance  
+- module boundaries  
+- reversible interpretation  
 
-- define system law  
-- enforce invariants  
-- govern autonomy  
-- stabilize operator interaction  
-- ensure safe execution  
-- maintain lineage integrity  
-- prevent drift, collapse, or overreach  
-
-It is the sovereign root of the Lattice.
+All changes must be anchored in the Vault Chain.
 
 ---
+
+10. Orientation Summary
+This repository is a governed cognitive system, not a loose collection of documents.  
+
+---
+

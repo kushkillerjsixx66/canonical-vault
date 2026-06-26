@@ -1,0 +1,52 @@
+{
+  "version": "v1.0.0",
+  "from": "PAM",
+  "to": "EGG",
+  "description": "Contract governing the handoff of principle-alignment evaluation results from the Principle Alignment Module to the Epistemic Generation Gateway.",
+  "alignment_result_contract": {
+    "schema": {
+      "type": "object",
+      "required": ["atom_id", "source_intent_id", "paig_score", "alignment_status", "principle_violations", "timestamp"],
+      "properties": {
+        "atom_id": { "type": "string", "format": "uuid", "description": "ID of the semantic atom evaluated by PAM." },
+        "source_intent_id": { "type": "string", "format": "uuid", "description": "ID of the originating IDE intent, carried forward from the semantic atom." },
+        "paig_score": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "Principle Alignment Index Grade score. 1.0 = full alignment." },
+        "alignment_status": { "type": "string", "enum": ["ALIGNED", "MISALIGNED", "FLAGGED"], "description": "Categorical alignment verdict from PAM." },
+        "principle_violations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["principle", "severity"],
+            "properties": {
+              "principle": { "type": "string", "description": "Name of the violated principle." },
+              "severity": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"], "description": "Severity of the principle violation." },
+              "detail": { "type": "string", "description": "Optional human-readable detail about the violation." }
+            }
+          },
+          "description": "List of principle violations detected. Empty array if alignment_status=ALIGNED."
+        },
+        "drift_inherited": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "drift_score inherited from the SBM semantic atom." },
+        "veil_level_inherited": { "type": "integer", "minimum": 0, "maximum": 5, "description": "veil_level inherited from CFC via the semantic atom." },
+        "timestamp": { "type": "string", "format": "iso8601", "description": "UTC timestamp of PAM evaluation." }
+      }
+    },
+    "guarantees": [
+      "atom_id references a valid semantic atom that passed SBM_PAM contract.",
+      "source_intent_id references a valid IDE intent ID.",
+      "paig_score is a float in [0.0, 1.0].",
+      "alignment_status is one of ALIGNED, MISALIGNED, FLAGGED.",
+      "principle_violations is present (may be empty array).",
+      "principle_violations is empty if and only if alignment_status=ALIGNED.",
+      "drift_inherited and veil_level_inherited match the values from the originating semantic atom.",
+      "timestamp is a valid UTC ISO-8601 string."
+    ],
+    "violations": {
+      "MISALIGNED_ATOM": { "code": "PAM_EGG_001", "description": "alignment_status=MISALIGNED. Atom must not be forwarded to EGG.", "action": "REJECT", "escalation": "Log and emit PAM_MISALIGNED event. Do not forward to EGG. Record principle_violations in audit log." },
+      "CRITICAL_PRINCIPLE_VIOLATION": { "code": "PAM_EGG_002", "description": "At least one principle_violations entry has severity=CRITICAL.", "action": "REJECT", "escalation": "Log and emit PAM_CRITICAL event regardless of alignment_status. Do not forward to EGG." },
+      "PAIG_SCORE_OUT_OF_RANGE": { "code": "PAM_EGG_003", "description": "paig_score is outside [0.0, 1.0].", "action": "REJECT", "escalation": "Log and emit PAM_ERROR event. Do not forward to EGG." },
+      "FLAGGED_ATOM": { "code": "PAM_EGG_004", "description": "alignment_status=FLAGGED. EGG must annotate generated output with PAM_FLAGGED marker.", "action": "FLAG", "escalation": "Forward to EGG with PAM_FLAGGED annotation." }
+    },
+    "timeout": { "max_ms": 600, "on_timeout": "ABORT_AND_LOG", "retry_policy": { "max_retries": 2, "backoff_ms": 100 } },
+    "routing": { "channel": "internal_pipeline", "priority": "normal", "ordering": "strict_fifo", "batch_allowed": false }
+  }
+}
