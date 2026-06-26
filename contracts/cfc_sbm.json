@@ -1,0 +1,40 @@
+{
+  "version": "v1.0.0",
+  "from": "CFC",
+  "to": "SBM",
+  "description": "Contract governing the handoff of veil-filtered constraint envelopes from the Constraint Filter Context to the Semantic Buffer Module.",
+  "filtered_envelope_contract": {
+    "schema": {
+      "type": "object",
+      "required": ["intent_id", "normalized_signal", "constraint_classes", "drift_score", "veil_level", "filtered", "timestamp"],
+      "properties": {
+        "intent_id": { "type": "string", "format": "uuid", "description": "ID of the originating intent from IDE." },
+        "normalized_signal": { "type": "string", "minLength": 1, "description": "Normalized signal text carried forward from IDE through CCE." },
+        "constraint_classes": { "type": "array", "items": { "type": "string" }, "description": "Constraint class tags from CCE, carried forward unchanged." },
+        "drift_score": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "Semantic drift score from CCE, carried forward unchanged." },
+        "veil_level": { "type": "integer", "minimum": 0, "maximum": 5, "description": "Epistemic veil level assigned by CFC. 0 = fully transparent, 5 = fully veiled." },
+        "filtered": { "type": "boolean", "description": "True if CFC applied any transformation or suppression to the envelope." },
+        "filter_notes": { "type": "string", "description": "Optional notes describing CFC filter actions applied. Present only when filtered=true." },
+        "timestamp": { "type": "string", "format": "iso8601", "description": "UTC timestamp of CFC processing." }
+      }
+    },
+    "guarantees": [
+      "intent_id references a valid IDE intent that passed CCE_CFC contract.",
+      "normalized_signal is non-empty.",
+      "constraint_classes is present (may be empty array).",
+      "drift_score is a float in [0.0, 1.0].",
+      "veil_level is an integer in [0, 5].",
+      "filtered is always a boolean.",
+      "filter_notes is present if and only if filtered=true.",
+      "timestamp is a valid UTC ISO-8601 string."
+    ],
+    "violations": {
+      "VEIL_LEVEL_OUT_OF_RANGE": { "code": "CFC_SBM_001", "description": "veil_level is outside [0, 5].", "action": "REJECT", "escalation": "Log and emit CFC_ERROR event. Do not forward to SBM." },
+      "MISSING_VEIL_LEVEL": { "code": "CFC_SBM_002", "description": "veil_level field is absent.", "action": "REJECT", "escalation": "Log and emit CFC_ERROR event. Do not forward to SBM." },
+      "SUPPRESSED_SIGNAL": { "code": "CFC_SBM_003", "description": "veil_level=5 and CFC has fully suppressed the signal. SBM must not generate atoms.", "action": "HALT", "escalation": "Log suppression event. Do not forward to SBM for atom generation. Emit CFC_SUPPRESSED event upstream." },
+      "INVALID_INTENT_REFERENCE": { "code": "CFC_SBM_004", "description": "intent_id does not reference a known IDE intent that passed the CCE_CFC contract.", "action": "REJECT", "escalation": "Log and emit CFC_ERROR event. Do not forward to SBM." }
+    },
+    "timeout": { "max_ms": 400, "on_timeout": "ABORT_AND_LOG", "retry_policy": { "max_retries": 2, "backoff_ms": 100 } },
+    "routing": { "channel": "internal_pipeline", "priority": "normal", "ordering": "strict_fifo", "batch_allowed": false }
+  }
+}

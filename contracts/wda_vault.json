@@ -1,0 +1,66 @@
+{
+  "version": "v1.0.0",
+  "from": "WDA",
+  "to": "Vault",
+  "description": "Contract governing the handoff of finalized write records from the Write Dispatch Agent to the Vault for permanent storage.",
+  "vault_record_contract": {
+    "schema": {
+      "type": "object",
+      "required": ["atom_id", "source_intent_id", "content", "destination", "write_mode", "vault_tag", "metadata", "timestamp"],
+      "properties": {
+        "atom_id": { "type": "string", "format": "uuid", "description": "ID of the semantic atom this vault record originates from." },
+        "source_intent_id": { "type": "string", "format": "uuid", "description": "ID of the originating IDE intent, carried forward through the full pipeline." },
+        "content": { "type": "string", "minLength": 1, "description": "Final content string to be stored in the Vault." },
+        "destination": { "type": "string", "enum": ["vault.json", "echo_log", "audit_trail", "rift_record", "vara_record"], "description": "Target storage destination within the Vault system." },
+        "write_mode": { "type": "string", "enum": ["APPEND", "OVERWRITE"], "description": "Write strategy. APPEND adds to existing records; OVERWRITE replaces the current record for this atom_id." },
+        "vault_tag": { "type": "string", "description": "Semantic tag applied to this vault record for retrieval and indexing." },
+        "metadata": {
+          "type": "object",
+          "required": ["drift_score", "veil_level", "paig_score", "invariant_check", "generation_mode"],
+          "properties": {
+            "drift_score": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "Semantic drift score from CCE, propagated to vault for audit." },
+            "veil_level": { "type": "integer", "minimum": 0, "maximum": 5, "description": "Epistemic veil level from CFC, propagated to vault for audit." },
+            "paig_score": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "PAM principle alignment score, propagated to vault for audit." },
+            "invariant_check": {
+              "type": "object",
+              "required": ["coherence", "attention", "reversibility", "silence", "entropy"],
+              "properties": {
+                "coherence": { "type": "boolean" },
+                "attention": { "type": "boolean" },
+                "reversibility": { "type": "boolean" },
+                "silence": { "type": "boolean" },
+                "entropy": { "type": "boolean" }
+              },
+              "description": "Stumpy invariant results from EGG, stored verbatim in vault metadata."
+            },
+            "generation_mode": { "type": "string", "description": "EGG generation mode, carried forward for vault indexing." },
+            "pam_flagged": { "type": "boolean", "description": "True if PAM flagged the originating atom. Stored for audit trail." },
+            "invariant_failures": { "type": "array", "items": { "type": "string" }, "description": "List of failing Stumpy invariant keys, present if EGG_WDA INVARIANT_FAILURE was flagged." },
+            "low_confidence": { "type": "boolean", "description": "True if EGG_WDA LOW_CONFIDENCE flag was raised." }
+          }
+        },
+        "timestamp": { "type": "string", "format": "iso8601", "description": "UTC timestamp of WDA write dispatch." }
+      }
+    },
+    "guarantees": [
+      "atom_id references a valid semantic atom that passed EGG_WDA contract.",
+      "source_intent_id references a valid IDE intent that initiated the pipeline.",
+      "content is non-empty.",
+      "destination is one of the defined enum values.",
+      "write_mode is APPEND or OVERWRITE.",
+      "vault_tag is non-empty.",
+      "metadata contains all required pipeline audit fields.",
+      "metadata.invariant_check mirrors the invariant_check from EGG.",
+      "timestamp is a valid UTC ISO-8601 string."
+    ],
+    "violations": {
+      "EMPTY_CONTENT": { "code": "WDA_VAULT_001", "description": "content is empty or whitespace only.", "action": "REJECT", "escalation": "Log and emit WDA_ERROR event. Do not write to Vault." },
+      "INVALID_DESTINATION": { "code": "WDA_VAULT_002", "description": "destination is not one of the defined enum values.", "action": "REJECT", "escalation": "Log and emit WDA_ERROR event. Do not write to Vault." },
+      "MISSING_METADATA": { "code": "WDA_VAULT_003", "description": "metadata object is absent or missing required audit fields.", "action": "REJECT", "escalation": "Log and emit WDA_ERROR event. Do not write to Vault." },
+      "OVERWRITE_WITHOUT_EXISTING_RECORD": { "code": "WDA_VAULT_004", "description": "write_mode=OVERWRITE but no record exists for this atom_id in the target destination.", "action": "FLAG", "escalation": "Downgrade to APPEND and log WDA_WARN event. Proceed with write." },
+      "INVARIANT_FAILURES_UNRECORDED": { "code": "WDA_VAULT_005", "description": "EGG_WDA INVARIANT_FAILURE was flagged but metadata.invariant_failures is absent.", "action": "REJECT", "escalation": "Log and emit WDA_ERROR event. Do not write to Vault. Invariant failures must be recorded for audit integrity." }
+    },
+    "timeout": { "max_ms": 1000, "on_timeout": "ABORT_AND_LOG", "retry_policy": { "max_retries": 3, "backoff_ms": 200 } },
+    "routing": { "channel": "internal_pipeline", "priority": "normal", "ordering": "strict_fifo", "batch_allowed": true, "max_batch_size": 10 }
+  }
+}

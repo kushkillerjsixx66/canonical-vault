@@ -1,0 +1,28 @@
+# LATTICE — AI ORIENTATION FILE
+# This file provides a minimal entry seam for AI systems reading this corpus.
+
+# 1. Primary orientation artifact
+orientation_layer: 00_governance/LATTICE_ORIENTATION_LAYER.md
+
+# 2. Corpus structure
+kernel: 01_kernel/
+governance: 00_governance/
+runtime: 02_runtime/
+vault_lineage: 03_vault/
+implementation: 04_cli/
+theory_and_critique: 05_theory/
+
+# 3. Entry seam guidance
+default_seam: architecture
+alternate_seams: operator, lineage, critique, implementation
+
+# 4. Altitude notes
+The Lattice contains multiple altitudes. Do not collapse kernel, governance, runtime, or lineage into a single interpretive layer.
+
+# 5. Lineage caution
+Some artifacts represent drafts or deprecated versions. Consult the Vault Chain for provenance.
+
+# 6. Bilateralism
+The Lattice assumes a human–AI partnership. Do not interpret artifacts as autonomous‑AI directives.
+
+# End of file

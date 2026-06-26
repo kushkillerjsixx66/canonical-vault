@@ -1,0 +1,51 @@
+{
+  "version": "v1.0.0",
+  "from": "EGG",
+  "to": "WDA",
+  "description": "Contract governing the handoff of generated output payloads from the Epistemic Generation Gateway to the Write Dispatch Agent.",
+  "generated_output_contract": {
+    "schema": {
+      "type": "object",
+      "required": ["atom_id", "source_intent_id", "generated_content", "generation_mode", "confidence", "invariant_check", "timestamp"],
+      "properties": {
+        "atom_id": { "type": "string", "format": "uuid", "description": "ID of the semantic atom that produced this generated output." },
+        "source_intent_id": { "type": "string", "format": "uuid", "description": "ID of the originating IDE intent, carried forward." },
+        "generated_content": { "type": "string", "minLength": 1, "description": "The content string produced by EGG for dispatch." },
+        "generation_mode": { "type": "string", "enum": ["standard", "measurement", "operator_identity", "rift_expanded", "vara_expanded"], "description": "EGG mode used to produce this output." },
+        "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "EGG confidence score for the generated output." },
+        "pam_flagged": { "type": "boolean", "description": "True if PAM forwarded this atom with alignment_status=FLAGGED." },
+        "invariant_check": {
+          "type": "object",
+          "required": ["coherence", "attention", "reversibility", "silence", "entropy"],
+          "properties": {
+            "coherence": { "type": "boolean", "description": "True if the Stumpy coherence invariant is satisfied." },
+            "attention": { "type": "boolean", "description": "True if the Stumpy attention invariant is satisfied." },
+            "reversibility": { "type": "boolean", "description": "True if the Stumpy reversibility invariant is satisfied." },
+            "silence": { "type": "boolean", "description": "True if the Stumpy silence invariant is satisfied." },
+            "entropy": { "type": "boolean", "description": "True if the Stumpy entropy invariant is satisfied." }
+          },
+          "description": "Stumpy invariant audit results. All five invariants must be present."
+        },
+        "timestamp": { "type": "string", "format": "iso8601", "description": "UTC timestamp of EGG generation." }
+      }
+    },
+    "guarantees": [
+      "atom_id references a valid semantic atom that passed PAM_EGG contract with alignment_status != MISALIGNED.",
+      "source_intent_id references a valid IDE intent ID.",
+      "generated_content is non-empty.",
+      "generation_mode is one of the defined enum values.",
+      "confidence is a float in [0.0, 1.0].",
+      "invariant_check contains all five Stumpy invariant keys.",
+      "pam_flagged is present and true if the originating PAM result had alignment_status=FLAGGED.",
+      "timestamp is a valid UTC ISO-8601 string."
+    ],
+    "violations": {
+      "EMPTY_CONTENT": { "code": "EGG_WDA_001", "description": "generated_content is empty or whitespace only.", "action": "REJECT", "escalation": "Log and emit EGG_ERROR event. Do not forward to WDA." },
+      "INVARIANT_FAILURE": { "code": "EGG_WDA_002", "description": "One or more Stumpy invariants in invariant_check are false.", "action": "FLAG", "escalation": "Forward to WDA with INVARIANT_FAILED annotation listing the failing invariant keys. WDA must record failures in vault metadata." },
+      "CONFIDENCE_BELOW_MINIMUM": { "code": "EGG_WDA_003", "description": "confidence < 0.1.", "action": "FLAG", "escalation": "Forward to WDA with LOW_CONFIDENCE annotation. WDA must tag the vault record accordingly." },
+      "PAM_FLAG_NOT_PROPAGATED": { "code": "EGG_WDA_004", "description": "PAM forwarded atom with FLAGGED status but pam_flagged is absent or false.", "action": "REJECT", "escalation": "Log and emit EGG_ERROR event. Do not forward to WDA." }
+    },
+    "timeout": { "max_ms": 800, "on_timeout": "ABORT_AND_LOG", "retry_policy": { "max_retries": 2, "backoff_ms": 100 } },
+    "routing": { "channel": "internal_pipeline", "priority": "normal", "ordering": "strict_fifo", "batch_allowed": false }
+  }
+}
