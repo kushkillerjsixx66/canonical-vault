@@ -1,7 +1,5 @@
 """
 Hooks for Vault integrity checks.
-
-Vault can emit lineage or integrity events into Stumpy.
 """
 
 
