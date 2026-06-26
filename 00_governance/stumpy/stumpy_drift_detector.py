@@ -4,12 +4,7 @@ from typing import Any
 
 class DriftDetectorProcess:
     """
-    Runs in its own process.
-
-    Watches events for:
-    - epistemic drift
-    - runtime altitude drift
-    - governance violations
+    Watches events for altitude and epistemic drift.
     """
 
     def __init__(self, event_queue, violation_queue) -> None:
@@ -22,23 +17,32 @@ class DriftDetectorProcess:
             try:
                 event = self._event_queue.get(timeout=1.0)
             except Exception:
-                # Periodic background checks could go here.
+                # Background drift checks could be added here.
+                time.sleep(0.1)
                 continue
 
             self._inspect_event(event)
 
     def _inspect_event(self, event: dict[str, Any]) -> None:
-        source = event.get("source")
         payload = event.get("payload", {})
-
-        # Example: simple altitude drift check
         altitude = payload.get("altitude")
+
         if altitude and altitude not in ("governance", "epistemic", "runtime", "operator"):
             self._violation_queue.put({
                 "type": "altitude_drift",
-                "source": source,
+                "source": event.get("source"),
                 "payload": payload,
             })
+
+        # Simple epistemic drift example
+        if event.get("type") == "epistemic_state":
+            lineage = payload.get("lineage")
+            if not lineage:
+                self._violation_queue.put({
+                    "type": "epistemic_drift",
+                    "source": event.get("source"),
+                    "payload": payload,
+                })
 
     def stop(self) -> None:
         self._running = False
