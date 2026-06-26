@@ -2,7 +2,7 @@
 
 1. Overview
 
-This repository contains the full Lattice cognitive architecture, a governed, altitude‑aware, lineage‑anchored system composed of
+This repository contains the full Lattice cognitive architecture, a governed, altitude aware, lineage anchored system composed of
 
 - Runtime Layer — Veil  
 - Epistemic Layer — Vara  
