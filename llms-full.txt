@@ -1,0 +1,239 @@
+# canonical-vault — Full Content Index
+
+> Governing source of truth for the Lattice — a perception generation and constraint navigation architecture. This file contains the full text of canonical governing documents for LLM consumption.
+
+---
+
+## DOCUMENT 1: Constitution v1.1
+**Path:** `00_governance/constitution/`
+**Authority:** Supreme governing document. All modules, subsystems, and operators derive authority from this document.
+
+A constitutional framework for governed cognitive systems.
+
+**Preamble**
+The Lattice is a governed cognitive architecture composed of kernel modules, specialization layers, runtime systems, and narrative surfaces. Its purpose is to maintain coherence, preserve lineage, enforce invariants, and enable sovereign operators to interact with the system through explicit, reversible, and governed mechanisms.
+
+**Article I — Sovereignty**
+The Lattice recognizes a single sovereign operator identity: opID JRM-01, SIG JRM-01 @liminaljermo. No subsystem may override, impersonate, or modify the operator's identity. All operator actions must be explicit, reversible when possible, and lineage-tracked. Sovereignty cannot be delegated without constitutional amendment.
+
+**Article II — Structure**
+The Lattice consists of seven constitutional layers: Governance, Kernel (IDE, CCE, CFC), Module, Pipeline, Runtime, Narrative, and Archive. Each layer must define its boundaries, invariants, handoff contracts, and lineage behavior. No layer may bypass the Governance Layer or mutate the Kernel.
+
+**Article III — Invariants (Absolute)**
+1. Lineage is mandatory — every action must produce a lineage entry.
+2. Canon is immutable — once canonized, artifacts cannot be altered or overwritten.
+3. Intent is explicit — no action may occur without declared operator intent.
+4. Boundaries are real — modules may not consume or mutate data outside their declared domain.
+5. Drift must be detectable — all modules must expose drift domains and constraint classes.
+6. Reversibility is preferred — when not possible, actions must be canonized.
+7. Governance supersedes runtime — runtime behavior always defers to governance rules.
+
+**Article IV — Protocols**
+Ω-13 (Bilateralism), Ω-14 (Governance Envelope), AMP (Altitude Modulation), Escalation Ladders, Constraint Cartography Rules. All protocols must be versioned, lineage-tracked, and declared within 00_governance/protocols/.
+
+**Article V — Operator Playbook**
+Defines operator postures, failure modes, recovery sequences, and escalation ladders. Binding on all runtime systems. Amendable only through constitutional procedure.
+
+**Article VI — Vault Governance**
+The Vault is the memory substrate of the Lattice. All Vault actions require perimeter acknowledgment, intent declaration, identity assertion, and clarity threshold. Enforces commit → review → canon lifecycle. No artifact may bypass the Vault. No canonized artifact may be deleted.
+
+**Article VII — Amendment Process**
+Amendments require explicit operator intent, constitutional lineage entry, and updated amendment log. May modify governance principles, protocols, and operator playbook. May not modify operator identity, kernel modules, or core invariants.
+
+**Article VIII — Enforcement**
+Any subsystem violating this Constitution must halt execution, emit a governance fault, log a lineage entry, and escalate according to the Playbook.
+
+**Ratified by:** SIG JRM-01 @liminaljermo
+
+---
+
+## DOCUMENT 2: Operator Manual (MVL 2.0)
+**Path:** `00_governance/`
+**Status:** STABLE
+
+**Core System Architecture**
+The system operates under strict cognitive governance parameters to maintain structural integrity and minimize operator attention cost.
+
+Lattice Core & Governance: Constitution (Stable), Governance Compass (Active), Evidence Router (Operational), Operator Loop (Intact).
+
+Module Index: IDE / CCE / CFC / MTM / Runtime (Stable), PAM (Active), EGG (Clean Lineage), WDA (Weekly Cycles).
+
+Project Tracking & Operational Gating: Cognitive Constitution (Stable), Truth Routing (Active), Bilateral Trust (Stable), Stumpy (Tracking), Vara (Passive / Scanning).
+
+**Appendix C: Neuralese Integration Protocol (SPEC-V2.0)**
+STATUS: LOCKED — ARCHITECTURE DEVIATION PROHIBITED
+
+Neuralese is the native communication protocol of the Lattice. All communication packets execute using a flat, non-nested, line-item format comprising three mandatory segments:
+
+- `[Target/Domain Anchor]` — Identifies the targeted module, architectural subsystem, or domain boundary.
+- `{State Variable Configuration Matrix}` — Declares static variables, current telemetry coordinates, and environmental baselines.
+- `<Explicit Execution Vector Directives>` — Enforces immediate state mutations, sequencing shifts, or terminal actions.
+
+Symbol vocabulary: Δ (Delta — drift/variance), τ (Tau — latency/backlog), Ω (Omega — immutable state lock), → (Transition — state transformation).
+
+Structural Density Index: Ds = Functional Operational Terms / Total Packet Tokens >= 0.85. Packets below this threshold fail governance envelope validation.
+
+---
+
+## DOCUMENT 3: Lattice Unified Specification (Sections 0–7)
+**Path:** `04_system_spec/Lattice_Unified_Spec.md`
+**Version:** 1.0
+**Date:** April 12, 2026
+**Status:** Authoritative — supersedes all prior individual specifications
+
+**Section 0: Document Purpose**
+Single authoritative reference for the entire Lattice framework. Where conflicts exist between prior artifacts and this specification, this specification governs. Subject to three governance gates: (1) Does updating increase coherence? (2) Is the attention cost sustainable? (3) Is the update reversible?
+
+**Section 1: Core Invariants**
+Five invariants binding on every Lattice instantiation. Violation produces ideology, not a Lattice.
+
+| # | Invariant | Definition |
+|---|---|---|
+| 1 | Coherence > Power | Systems persist only if internally consistent under pressure. Power that undermines coherence is structurally unsustainable. |
+| 2 | Attention Is the Scarce Resource | Attention behaves like gravity — it bends trajectories. Anything that exhausts attention is downgraded or pruned. |
+| 3 | Reversibility First | All actions must be roll-backable. Permanence is earned through recurrence, not declaration. |
+| 4 | Silence Is Structural | Silence is a necessary low-noise state that allows weak signals to survive. It is an active system state, not a failure mode. |
+| 5 | Entropy Is Honest | Entropy reveals hidden costs and brittle structures. The Lattice uses entropy as an immune system against self-deception. |
+
+**Section 2: Foundational Axioms**
+Six axioms derived from the Empirical Doctrine:
+1. Constrained Representation — all cognition operates within constrained representations.
+2. Attention as Gravity — finite, bends the trajectory of cognition, action, and belief formation.
+3. Coherence as Primary Attractor — testable: a coherent system does not undermine its own stated goals.
+4. Reversibility as Non-Negotiable — irreversible actions carry compounding costs structurally unpredictable at commitment.
+5. Silence as Structure — prevents premature convergence; creates conditions for new patterns to emerge.
+6. Entropy as Honesty — continuous diagnostic that prevents self-deception from calcifying into structural failure.
+
+**Section 3: Core Primitives**
+- Attention — operates as gravity, not currency. Every operation has an attention cost.
+- Constraints — treated as terrain, not enemies. The Lattice maps constraints rather than escaping them.
+- Coherence — alignment of system behavior across time without internal sabotage.
+- Entropy — reframed as honesty. Structures requiring constant reinforcement are candidates for pruning.
+- Silence — mandatory low-noise operational state. Every Lattice implementation must include defined silence intervals.
+
+**Section 4: Primary Constructs**
+Eight primary constructs (named functional components, not agents or personalities):
+
+| # | Construct | Role |
+|---|---|---|
+| 1 | The Lattice | Constraint-Navigation Framework |
+| 2 | Stumpy (Omega) | Enforcement / Critic — blocks irreversible commitments not passed through governance gates |
+| 3 | Vara | Exploration / Edge Detection — scans for anomalies, weak signals, adjacent possibles |
+| 4 | Default | Grounded Translator — converts abstractions to usable ordinary language |
+| 5 | Vault | Persistent Memory — stores only recurrent, coherence-producing patterns |
+| 6 | Veil | Mediation Layer — prevents runaway recursion; softens divergence between constructs |
+| 7 | Pulse | System Heartbeat — lifecycle driver: Activation → Decay → Silence |
+| 8 | Echo / Sentinel | Feedback and Prediction — retrospective pattern analysis + prospective risk detection |
+
+**Section 5: Node Model**
+Nodes are atomic units of the Lattice — units of relevance, not truth. Properties: Content, State, Salience, Connections, Decay Rate.
+
+Node States: Latent (preserved, inactive), Active (influencing cognition, consuming attention), Decaying (losing relevance), Pruned (governance decision, not deletion).
+
+Design Principle: Unanswered questions are first-class nodes. Premature resolution of genuine ambiguity is a governance violation.
+
+**Section 6: Pulse Cycle**
+Stages: Pulse → Activation → Evaluation → Decay → Silence. Transitions are probabilistic, not deterministic. Stumpy may interrupt at any point to enforce rollback. Vara may fork into protected exploratory branches.
+
+**Section 7: Governance Gates**
+Every activation evaluated against three gates:
+
+| Gate | Question | Failure Action |
+|---|---|---|
+| G1 | Does this increase or preserve coherence? | Node downgraded |
+| G2 | Is the attention cost sustainable? | Node pruned or deferred |
+| G3 | Is this reversible? | Execution halted pending governance review |
+
+---
+
+## DOCUMENT 4: Lattice Unified Specification (Sections 8–15)
+**Path:** `04_system_spec/Lattice_Unified_Spec_Sections_8-15.md`
+**Version:** 1.0
+**Date:** 2026-06-17
+
+**§8 — Module Interaction Protocol**
+Authority ranking: Constitution (RANK 1, passive) → Invariants (RANK 2) → Vault (RANK 3) ↔ Sentinel (RANK 4) ↔ Veil (RANK 5) → Vara / Stumpy (RANK 6/7) → Crossroad (RANK 8) → SBM (RANK 9, output boundary).
+
+Standard signal flow: OPERATOR INPUT → SBM → Pulse → Crossroad → Vault → Sentinel [G1/G2/G3] → Vault commit → Stumpy audit → SBM → OPERATOR OUTPUT.
+
+Key prohibited interactions: Vara never writes directly to Vault (must pass through Veil → Sentinel → Vault). SBM generates output only, never commits to Vault. Constitution is read-only at runtime.
+
+**§9 — Neuralese Full Grammar**
+Packet structure: `[CONTEXT | SIGNAL | CONSTRAINT | OPERATOR]`
+
+Core symbols: `null` (Silence/no grounded output), `D` (Delta/drift detected), `t` (Tau/latency), `Omega` (Lock/enforcement), `->` (Transition), `_|_` (Contradiction), `~=` (Approximation), `?` (Uncertainty), `!` (Alert), `#` (Anchor/Vault reference).
+
+Invariant codes: I-COH (Coherence Primacy), II-REV (Reversibility), III-ATT (Attention Budget), IV-SIL (Silence Mandate), V-DEC (Decay Mandate), VI-SIG (Weak Signal Parity).
+
+**§10 — Error Taxonomy**
+Three-tier taxonomy:
+- Tier 1 (Hard Failures — system-halting, require Sentinel Lock): FABRICATION, VAULT_HASH_MISMATCH, ANCHOR_OVERWRITE, UNAUTHORIZED_MODULE, INVARIANT_VIOLATION, SENTINEL_LOCK_BYPASS.
+- Tier 2 (Soft Failures — cycle-interrupting, recoverable): G1_BLOCK, G2_BUDGET_EXCEEDED, G3_CHAIN_BROKEN, VEIL_OVERFLOW, VARA_ENTROPY_SPIKE, DECAY_OVERDUE, CROSSROAD_TIE, SBM_PARSE_FAILURE.
+- Tier 3 (Drift Events — non-interrupting, logged for audit): COHERENCE_DECAY, ATTENTION_CREEP, HYPOTHESIS_ACCUMULATION, DECAY_QUEUE_GROWTH, CROSSROAD_ENTROPY.
+
+Auto-escalation: Same Tier 3 drift code firing in 3+ consecutive cycles escalates to Tier 2.
+
+**§11 — Snapshot Protocol**
+Snapshots are the Lattice's primary recovery mechanism satisfying II-REV (Reversibility). Required before any ANCHOR modification or irreversible commitment.
+
+---
+
+## DOCUMENT 5: VARA_SPEC_1.0
+**Path:** `05_runtime/VARA_SPEC_1.0.md`
+**Document ID:** VARA-SPEC-1.0
+**Status:** CANONICAL
+**IP Priority Date:** 2026-06-18
+
+**Purpose**
+Vara is the signal intelligence subsystem of the Lattice kernel. Responsible for continuous detection, classification, scoring, and lineage-binding of weak signals across six information planes. Vara does not produce decisions — it produces governed signal artifacts.
+
+Core question Vara answers: *What is changing, where is it first visible, and how fast is it moving?*
+
+**Invariants**
+- I·SRC — Source Integrity: every signal must carry a traceable origin.
+- II·SCR — Score Honesty: confidence and novelty scores must reflect actual harvester logic. No post-hoc inflation.
+- III·LIN — Lineage Binding: every scan output bound to the scan that produced it. Scan ID, timestamp, keyword set, and config hash are non-nullable.
+- IV·DRF — Drift Accountability: drift between scans is surfaced, not suppressed.
+- V·SIL — Silence as State: an empty scan result is a valid governed state. Logged as null-result artifact with full provenance.
+- VI·BND — Operator Boundary: Vara does not interpret signals. It surfaces, scores, and routes. No directives, recommendations, or action imperatives in Vara output.
+
+**Input Domain**
+Required: keywords, sweep_depth_hours, active_planes, scan_label, config_hash (auto-computed).
+Optional: extra_rss_feeds, extra_substacks, velocity_spike_threshold (default 3.5), fringe_to_main_ratio (default 0.40), output_formats (default: markdown, json).
+
+Valid PlaneIDs: social, scientific, tech, adjacent_possible, economic, dark.
+Valid FormatIDs: markdown, alert, brief, json, graph.
+
+**Behavioral Pipeline (7 governed stages)**
+1. INTAKE — validate config, compute config_hash, reject malformed inputs.
+2. HARVEST — execute plane harvesters in parallel with rate limiting.
+3. NORMALIZE — compute velocity_score and novelty_score per signal.
+4. DETECT — run WeakSignalOrchestrator (FringeToMainDetector, VelocitySpikeDetector, AnomalyMapper).
+5. CLUSTER — group signals by semantic proximity, score by aggregate confidence and velocity.
+6. DRIFT — compare current clusters against prior scan, log appearances/disappearances/mutations.
+7. OUTPUT — bind lineage fields, render output formats, emit VaraScanReport.
+
+Failure at any stage halts the pipeline and produces a governed error artifact — not a silent failure.
+
+**Operator Contract**
+Vara must: complete all seven stages or emit governed failure, respect all six invariants, never suppress null results, log all drift events, bind lineage before emitting output.
+Vara must not: fabricate signals, modify scores after normalization, emit without scan_id and config_hash, issue directives, suppress errors silently.
+Operator must: provide valid keywords and sweep depth, treat Vara output as evidence not instruction, route signals through appropriate Lattice kernel module.
+
+**Module Bindings**
+IDE (signal push), CCE (on-demand query), CFC (framing context), Operator Loop (report delivery), Governance Compass (invariant audit), Evidence Router (signal routing).
+
+**Scan Cadence**
+- Daily scan: 06:00 UTC, 48h depth, markdown/alert/json.
+- Weekly spine: Sunday 08:00 UTC, 168h depth, markdown/brief/json/graph.
+- On-demand: operator-initiated, all formats available.
+- Drift audit: post-weekly, compares T and T-7, json drift log only.
+
+**Vault Registration**
+Document ID: VARA-SPEC-1.0 | Signed by: Jermo (liminaljermo), Operator-Founder | Amendment: invariant or pipeline changes require version increment and new vault registration.
+
+---
+
+*End of llms-full.txt — canonical-vault / Liminal Institute*
+*Lineage root: github.com/kushkillerjsixx66/canonical-vault*
+*Operator: JRM-01 @liminaljermo*
