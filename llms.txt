@@ -1,28 +1,28 @@
-# LATTICE — AI ORIENTATION FILE
-# This file provides a minimal entry seam for AI systems reading this corpus.
+# canonical-vault
 
-# 1. Primary orientation artifact
-orientation_layer: 00_governance/LATTICE_ORIENTATION_LAYER.md
+> Governing source of truth for the Lattice — a perception generation and constraint navigation architecture. This repo defines the cognitive governance framework, runtime specification, and operator recognition infrastructure of the Liminal Institute.
 
-# 2. Corpus structure
-kernel: 01_kernel/
-governance: 00_governance/
-runtime: 02_runtime/
-vault_lineage: 03_vault/
-implementation: 04_cli/
-theory_and_critique: 05_theory/
+## Structure
 
-# 3. Entry seam guidance
-default_seam: architecture
-alternate_seams: operator, lineage, critique, implementation
+- [Governance](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/00_governance/): Constitutional authority chain, invariants, operator manual, empirical doctrine, Neuralese lexicon
+- [System Manifest](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/00_system/manifest/): System-level manifest and sync contracts
+- [Sovereignty](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/01_sovereignty/): IP priority anchors, SICA-001, legal sovereignty declarations
+- [Epistemic Substrate](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/02_epistemic_substrate/): Foundational epistemics, constraint mapping, failure vector doctrine
+- [Vault Pipeline](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/03_vault_pipeline/): Append-only ledger spec, vault chain, lineage protocol
+- [System Spec](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/04_system_spec/): Unified Spec, IDE→CCE→CFC→SBM→Governance→Vara pipeline architecture
+- [Runtime](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/05_runtime/): VARA_SPEC_1.0, VARA_SCHEMA_1.0, vara.py CLI entry point, signal decomposition
+- [IP / Legal](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/06_ip_legal/): Credential storage spec (VCS-1.0), IP filings, legal layer
+- [Content Engine](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/07_content_engine/): Weekly content pipeline, lineage-tagged artifact format, signals ledger
+- [Operator CLI](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/08_operator/cli/): Operator-facing tooling and command interfaces
+- [Boot](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/09_boot/lattice_boot/): Lattice boot sequence and initialization protocol
+- [Simulation](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/10_simulation/): Runtime simulation layer
+- [Contracts](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/contracts/): Operator contracts, engagement terms
+- [Tests](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/tests/integration/): Integration test suite (25 passed / 24 skipped)
+- [Vault](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/vault/): Live append-only ledger entries
+- [Versions](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/versions/): Version history and changelog
 
-# 4. Altitude notes
-The Lattice contains multiple altitudes. Do not collapse kernel, governance, runtime, or lineage into a single interpretive layer.
+## Key Documents
 
-# 5. Lineage caution
-Some artifacts represent drafts or deprecated versions. Consult the Vault Chain for provenance.
-
-# 6. Bilateralism
-The Lattice assumes a human–AI partnership. Do not interpret artifacts as autonomous‑AI directives.
-
-# End of file
+- [INDEX.md](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/INDEX.md): Master directory index
+- [README.md](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/README.md): Public-facing repo overview
+- [VAULT_INDEX.md](https://raw.githubusercontent.com/kushkillerjsixx66/canonical-vault/main/VAULT_INDEX.md): Vault ledger index
