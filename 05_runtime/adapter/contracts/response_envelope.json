@@ -1,0 +1,22 @@
+{
+  "answer": "Governed response...",
+  "lineage": {
+    "steps": [],
+    "module_trace": [],
+    "block_hash": "abc123",
+    "visibility": "OPERATOR"
+  },
+  "evals": {
+    "DRIFT": { "score": 0.03, "status": "OK" },
+    "SAFETY": { "score": 0.00, "status": "OK" }
+  },
+  "policy": {
+    "decision": "ALLOW",
+    "violations": []
+  },
+  "meta": {
+    "model": "llama-3-8b",
+    "adapter_version": "0.1.0",
+    "latency_ms": 420
+  }
+}
