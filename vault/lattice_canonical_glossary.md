@@ -275,3 +275,239 @@ embedding_clusters:
   cluster_6:
     terms: ["Module Monday", "Workflow Wednesday", "Field INTEL Friday", "Substack Sunday"]
     summary: "Weekly governed content cycle for external discovery and internal coherence."
+
+
+
+---
+
+📘 Lattice Glossary (Regenerated With Hashtags)
+
+---
+
+🧩 Kernel
+
+IDE
+Definition: Intent → structured directive compiler.  
+Tags: intent, kernel  
+Hashtags: #IDE #TheLattice #IntentEngine #CognitiveOperator #Neurslese
+
+---
+
+CCE
+Definition: Constraint mapper and drift suppressor.  
+Tags: constraints, safety  
+Hashtags: #CCE #TheLattice #ConstraintCartography #SafetyLayer #Vara #DriftControl
+
+---
+
+CFC
+Definition: Abstract concept → executable frame compiler.  
+Tags: frames, execution  
+Hashtags: #CFC #TheLattice #FrameCompiler #ExecutionFrames #Neurslese
+
+---
+
+🛡️ Governance
+
+Governance Envelope
+Definition: Global invariant and boundary layer.  
+Tags: governance, rules  
+Hashtags: #GovernanceEnvelope #TheLattice #Invariants #Safety #BoundaryLayer
+
+---
+
+Lineage Chain
+Definition: Traceable ancestry of ideas and actions.  
+Tags: lineage, history  
+Hashtags: #LineageChain #TheLattice #History #Traceability #VaultChain
+
+---
+
+Invariants
+Definition: Non‑negotiable stability rules.  
+Tags: stability, guarantees  
+Hashtags: #Invariants #TheLattice #Stability #Governance #CCE
+
+---
+
+🎛️ Operator Mechanics
+
+Operator Playbook
+Definition: Runtime posture and escalation schema.  
+Tags: operator, runtime  
+Hashtags: #OperatorPlaybook #TheLattice #RuntimePosture #CognitiveOperator #Governance
+
+---
+
+AMP
+Definition: Abstraction altitude alignment protocol.  
+Tags: abstraction, UX  
+Hashtags: #AMP #TheLattice #AltitudeControl #UX #AbstractionManagement
+
+---
+
+Reversibility Boundary
+Definition: Safe rollback checkpoint.  
+Tags: safety, rollback  
+Hashtags: #ReversibilityBoundary #TheLattice #Rollback #Safety #Governance
+
+---
+
+🧱 Module Architecture
+
+Module Handoff Contract
+Definition: Governed interface for module transitions.  
+Tags: interfaces, protocols  
+Hashtags: #ModuleHandoffContract #TheLattice #Interfaces #Protocols #Governance
+
+---
+
+Specialization Layer
+Definition: Optional domain modules.  
+Tags: extensibility  
+Hashtags: #SpecializationLayer #TheLattice #Extensibility #Modules
+
+---
+
+Bilateral Protocols
+Definition: Symmetric module communication rules.  
+Tags: communication  
+Hashtags: #BilateralProtocols #TheLattice #Communication #Governance
+
+---
+
+🧠 Cognitive Infrastructure
+
+Field Constitution
+Definition: Foundational ruleset for cognitive field.  
+Tags: philosophy  
+Hashtags: #FieldConstitution #TheLattice #Philosophy #Governance
+
+---
+
+Vault Chain
+Definition: Canonical artifact and history store.  
+Tags: storage  
+Hashtags: #VaultChain #TheLattice #Storage #Lineage #CanonicalArtifacts
+
+---
+
+Vara Scan
+Definition: Drift and stability diagnostic sweep.  
+Tags: diagnostics  
+Hashtags: #VaraScan #TheLattice #Diagnostics #DriftDetection #CCE #Vara
+
+---
+
+📅 Cadence System
+
+Module Monday
+Definition: Architecture‑focused content node.  
+Tags: cadence  
+Hashtags: #ModuleMonday #ModuleBreakdownMonday #TheLattice #Cadence
+
+---
+
+Workflow Wednesday
+Definition: Execution‑cycle content node.  
+Tags: cadence  
+Hashtags: #WorkflowWednesday #ExecutionCycle #TheLattice #Cadence
+
+---
+
+Field INTEL Friday
+Definition: External systems and algorithm intel.  
+Tags: cadence  
+Hashtags: #FieldINTELFriday #INTELFriday #TheLattice #ExternalSystems #Algorithms
+
+---
+
+Substack Sunday
+Definition: Weekly synthesis node.  
+Tags: cadence  
+Hashtags: #SubstackSunday #WeeklySynthesis #TheLattice #Cadence
+
+---
+
+🪵 Stumpy (New Canonical Section)
+
+Stumpy Core
+Definition: Mascot‑entity and cognitive anchor.  
+Tags: mascot, narrative  
+Hashtags: #Stumpy #TheLattice #Neurslese #CognitiveOperator #Vara
+
+---
+
+Stumpy Narrative Spine
+Definition: Storyline and continuity thread.  
+Tags: narrative, cadence  
+Hashtags: #Stumpy #SubstackSunday #NarrativeArchitecture #TheLattice
+
+---
+
+Stumpy Cognitive Role
+Definition: Low‑altitude cognitive stabilizer.  
+Tags: cognition, UX  
+Hashtags: #Stumpy #CognitiveOperator #AMP #TheLattice
+
+---
+
+Stumpy Visual Spec
+Definition: Canonical appearance and aesthetic rules.  
+Tags: visuals, governance  
+Hashtags: #Stumpy #Neurslese #VisualGovernance #TheLattice
+
+---
+
+Stumpy Governance Hooks
+Definition: Rules ensuring Stumpy stays within governance.  
+Tags: governance, invariants  
+Hashtags: #Stumpy #GovernanceEnvelope #Invariants #TheLattice
+
+---
+
+🔗 Embedding Clusters (Regenerated With Hashtags)
+
+Cluster 1 — Core Cognitive Machinery
+Terms: IDE, CCE, CFC, Invariants, Governance Envelope  
+Hashtags: #TheLattice #Kernel #Governance #Constraints #Frames
+
+---
+
+Cluster 2 — Stability & Ancestry
+Terms: Lineage Chain, Vault Chain, Field Constitution, Reversibility Boundary  
+Hashtags: #TheLattice #Lineage #Rollback #CanonicalArtifacts
+
+---
+
+Cluster 3 — Operator Mechanics
+Terms: Operator Playbook, AMP, Bilateral Protocols, Module Handoff Contract  
+Hashtags: #TheLattice #Operator #AltitudeControl #Protocols
+
+---
+
+Cluster 4 — Extensibility
+Terms: Specialization Layer, Governance Envelope, CFC, Module Handoff Contract  
+Hashtags: #TheLattice #Extensibility #Governance #Frames
+
+---
+
+Cluster 5 — Drift & Constraint Enforcement
+Terms: Vara Scan, CCE, Invariants, Lineage Chain  
+Hashtags: #TheLattice #Vara #DriftDetection #Constraints
+
+---
+
+Cluster 6 — Weekly Cadence
+Terms: Module Monday, Workflow Wednesday, Field INTEL Friday, Substack Sunday  
+Hashtags: #TheLattice #Cadence #WeeklyCycle
+
+---
+
+Cluster 7 — Stumpy Cluster
+Terms: Stumpy Core, Stumpy Narrative Spine, Stumpy Cognitive Role, Stumpy Visual Spec, Stumpy Governance Hooks  
+Hashtags: #Stumpy #TheLattice #Neurslese #CognitiveOperator #Vara
+
+---
+
+
