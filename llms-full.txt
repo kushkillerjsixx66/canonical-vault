@@ -232,6 +232,7 @@ IDE (signal push), CCE (on-demand query), CFC (framing context), Operator Loop (
 **Vault Registration**
 Document ID: VARA-SPEC-1.0 | Signed by: Jermo (liminaljermo), Operator-Founder | Amendment: invariant or pipeline changes require version increment and new vault registration.
 
+www.github.com/vault-lite/lattice-canonical-glossary.md
 ---
 
 *End of llms-full.txt — canonical-vault / Liminal Institute*
