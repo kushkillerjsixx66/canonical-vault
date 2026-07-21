@@ -132,7 +132,7 @@
 | `CFC/` |  Present | Constraint and Flow Controller  extracted and operational |
 | `IDE/` |  Present | Integrated Development Environment module |
 | `LMES/` |  Present | Lattice Module Execution System  extracted and operational |
-| `Lmes/` |  Present | Lattice Module Execution System (alternate casing) |
+| `LMES/` |  Present | Lattice Module Execution System (`Lmes/` duplicate removed — was byte-identical, superseded by this reorganized version) |
 | `lattice-app/` |  Present | Lattice application layer |
 | `lattice_cli_project/` |  Present | CLI project files |
 | `lattice_runtime_cli/` |  Present | Runtime CLI interface |

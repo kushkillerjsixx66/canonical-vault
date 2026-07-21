@@ -1,6 +1,6 @@
 from multiprocessing import Queue
 from ..veil_interface import VeilInterface
-from ...vara.vara_interface import VaraInterface
+from epistemic.vara.vara_interface import VaraInterface
 
 
 def test_veil_emits_runtime_state():

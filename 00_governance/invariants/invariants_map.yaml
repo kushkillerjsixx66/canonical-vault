@@ -8,11 +8,30 @@ version: "1.0.0"
 status: "active"
 
 description: >
-  The Invariants Map defines the authoritative registry of all invariants across
-  the Lattice governance layer. It unifies constitutional invariants, constraint
-  classes, drift domains, audit policies, operator manual invariants, protocol
-  invariants, runtime invariants, and amendment invariants into a single governed
-  reference. All invariants must appear here to be considered valid.
+  The Invariants Map is the Tier 2 registry of constitutional, procedural, and
+  protocol-level governance rules: constraint classes, drift domains, audit
+  policies, operator manual invariants, protocol invariants, runtime rules,
+  and amendment law. It is subordinate to and must not contradict the six
+  Lattice Invariants defined in Lattice_Invariants_v1.md (Tier 1 — the
+  structural constraints enforced by Sentinel and audited by Stumpy). This
+  registry governs process and procedure; it is not a decomposition of the
+  six invariants, though several rules here correspond to one — see
+  `relationship_to_tier_1` below.
+
+relationship_to_tier_1:
+  authority_order: "Cognitive Constitution v1.1 > Lattice_Invariants_v1.md (six invariants) > this file"
+  loose_correspondences:
+    - { tier2: "C-02 Canon is immutable", tier1: "II·REV, V·DEC" }
+    - { tier2: "C-06 Reversibility is preferred", tier1: "II·REV" }
+    - { tier2: "C-05 Drift must be detectable", tier1: "V·DEC" }
+    - { tier2: "C-01 Lineage is mandatory", tier1: "II·REV" }
+    - { tier2: "CC-05 Reversibility constraints must be declared", tier1: "II·REV" }
+    - { tier2: "DD-01..04 (drift domains)", tier1: "V·DEC" }
+  note: >
+    These are the rules with a clear semantic match. The remaining rules
+    (amendment law, operator posture, protocol bilateralism, etc.) govern
+    process rather than runtime structure and have no Tier 1 counterpart —
+    that is expected, not a gap.
 
 sovereign_operator:
   op_id: "JRM-01"

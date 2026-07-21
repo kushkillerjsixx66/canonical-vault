@@ -1,0 +1,20 @@
+[project]
+name = "canonical-vault"
+version = "0.1.0"
+description = "Lattice cognitive architecture — canonical governance vault"
+requires-python = ">=3.11"
+# No third-party runtime dependencies as of this audit: every non-stdlib
+# import resolved is internal to this repo. pytest is the only external
+# tool required, and only for running the test suite.
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+# rootdir-relative test discovery; conftest.py at repo root handles the
+# sys.path wiring for the numeric-prefixed subsystem directories.
+testpaths = ["."]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-q"

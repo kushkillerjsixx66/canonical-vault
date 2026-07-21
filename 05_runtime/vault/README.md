@@ -182,9 +182,12 @@ Each engine is isolated, governed, and single‑responsibility.
 
 ---
 
-📜 Governance Principles
+📜 Vault Operating Principles
 
-The Vault operates under six invariants:
+These are Vault-subsystem operating principles, not the Lattice's six
+Invariants (those are defined in `Lattice_Invariants_v1.md` and enforced by
+Sentinel/Stumpy — see that file for authority ordering). Where a principle
+here corresponds to one, it's noted inline.
 
 1. Intent is mandatory  
    No action occurs without explicit operator intent.
@@ -195,13 +198,13 @@ The Vault operates under six invariants:
 3. Clarity is required  
    The clarity phrase is non‑optional and non‑fuzzy.
 
-4. Lineage is absolute  
+4. Lineage is absolute — corresponds to `II·REV`  
    Every action is logged. Nothing is untracked.
 
-5. Canon is immutable  
+5. Canon is immutable — corresponds to `II·REV`, `V·DEC`  
    Once canonized, an artifact cannot be altered.
 
-6. Veil is reversible  
+6. Veil is reversible — corresponds to `II·REV`  
    Redaction hides content, but never destroys it.
 
 ---

@@ -39,11 +39,11 @@ The Lattice is designed for governed cognition, operator‑class control, and mo
 
 00_governance/
 01_sovereignty/
-02epistemicsubstrate/
-03vaultpipeline/
-04systemspec/
+02_epistemic_substrate/
+03_vault_pipeline/
+04_system_spec/
 05_runtime/
-06inlegal/
+06_ip_legal/
 `
 
 What each top‑level directory represents
@@ -51,11 +51,11 @@ What each top‑level directory represents
 - 00_system/ — system‑level constitution, manifests, and invariants  
 - 00_governance/ — Stumpy governance engine + hooks  
 - 01_sovereignty/ — operator identity, roles, sovereignty models  
-- 02epistemicsubstrate/ — Vara + epistemic logic  
-- 03vaultpipeline/ — lineage, scan storage, promotions  
-- 04systemspec/ — specifications, contracts, and architecture docs  
+- 02_epistemic_substrate/ — Vara + epistemic logic  
+- 03_vault_pipeline/ — lineage, scan storage, promotions  
+- 04_system_spec/ — specifications, contracts, and architecture docs  
 - 05_runtime/ — Veil, runtime boundary, operator state  
-- 06inlegal/ — legal, compliance, and policy artifacts  
+- 06_ip_legal/ — legal, compliance, and policy artifacts  
 
 ---
 

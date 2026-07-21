@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from .vara_lineage import LineageTracker
-from .vara_epistemic_bus import EpistemicBus
 
 
 @dataclass
@@ -10,6 +9,13 @@ class EpistemicContext:
     identity: dict[str, Any]
     runtime_state: dict[str, Any]
     lineage: list[dict[str, Any]]
+
+
+# Imported after EpistemicContext is defined: vara_epistemic_bus imports
+# EpistemicContext back from this module, so importing it any earlier
+# creates a circular import (ImportError: cannot import name
+# 'EpistemicContext' from partially initialized module 'vara.vara_core').
+from .vara_epistemic_bus import EpistemicBus
 
 
 class Vara:
