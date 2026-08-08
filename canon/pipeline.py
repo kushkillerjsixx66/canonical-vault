@@ -16,7 +16,118 @@ from datetime import datetime, timedelta
 from itertools import combinations
 from typing import Any
 
-import numpy as np
+# numpy is optional — pure-Python fallback used when unavailable (e.g. Termux)
+try:
+    import numpy as _np
+    _HAS_NUMPY = True
+except ImportError:  # pragma: no cover
+    _np = None       # type: ignore
+    _HAS_NUMPY = False
+
+
+# ── Pure-Python math shims (used when numpy absent) ──────────────────────────
+
+def _mean(seq):
+    """Arithmetic mean of a numeric iterable."""
+    lst = list(seq)
+    return sum(lst) / len(lst) if lst else 0.0
+
+def _dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+def _weighted_mean(vals, weights):
+    """Weighted average of vals with given weights."""
+    total_w = sum(weights)
+    if total_w == 0:
+        return _mean(vals)
+    return sum(v * w for v, w in zip(vals, weights)) / total_w
+
+def _pearson(a, b):
+    """Pearson correlation coefficient, pure Python."""
+    n = len(a)
+    if n < 2:
+        return 0.0
+    ma, mb = _mean(a), _mean(b)
+    num  = sum((x - ma) * (y - mb) for x, y in zip(a, b))
+    dsa  = math.sqrt(sum((x - ma) ** 2 for x in a))
+    dsb  = math.sqrt(sum((y - mb) ** 2 for y in b))
+    if dsa == 0 or dsb == 0:
+        return 0.0
+    r = num / (dsa * dsb)
+    return max(-1.0, min(1.0, r))
+
+def _cross_correlate(a, b):
+    """Full cross-correlation of two equal-length sequences, pure Python."""
+    n   = len(a)
+    ma, mb = _mean(a), _mean(b)
+    ca  = [x - ma for x in a]
+    cb  = [y - mb for y in b]
+    out = []
+    for lag in range(-(n - 1), n):
+        s = 0.0
+        for i in range(n):
+            j = i + lag
+            if 0 <= j < n:
+                s += ca[i] * cb[j]
+        out.append(s)
+    return out
+
+def _norm(v):
+    """Euclidean norm of a list."""
+    return math.sqrt(sum(x * x for x in v))
+
+def _vec_mean(vecs):
+    """Element-wise mean of a list of equal-or-padded lists."""
+    if not vecs:
+        return []
+    max_len = max(len(v) for v in vecs)
+    padded  = [v + [0.0] * (max_len - len(v)) for v in vecs]
+    return [sum(col) / len(col) for col in zip(*padded)]
+
+
+# ── numpy-aware wrappers (select real numpy or shim at call time) ─────────────
+
+def _np_mean(seq):
+    lst = list(seq)
+    if not lst:
+        return 0.0
+    return float(_np.mean(lst)) if _HAS_NUMPY else _mean(lst)
+
+def _np_weighted_mean(vals, weights):
+    if _HAS_NUMPY:
+        va, wa = _np.array(vals), _np.array(weights)
+        return float(_np.average(va, weights=wa))
+    return _weighted_mean(vals, weights)
+
+def _np_pearson(a, b):
+    if _HAS_NUMPY and len(a) > 1:
+        r = float(_np.corrcoef(_np.array(a), _np.array(b))[0, 1])
+        return 0.0 if math.isnan(r) else r
+    return _pearson(a, b)
+
+def _np_lag(a, b):
+    n = len(a)
+    if n < 2:
+        return 0.0
+    if _HAS_NUMPY:
+        va, vb = _np.array(a), _np.array(b)
+        xc     = _np.correlate(va - va.mean(), vb - vb.mean(), mode="full")
+        return float(int(_np.argmax(xc)) - (n - 1))
+    xc = _cross_correlate(a, b)
+    return float(xc.index(max(xc)) - (n - 1))
+
+def _np_vec_mean_and_norm(vecs):
+    if _HAS_NUMPY:
+        max_len = max(len(v) for v in vecs)
+        padded  = _np.array([v + [0.0] * (max_len - len(v)) for v in vecs])
+        mean_v  = padded.mean(axis=0).tolist()
+        mag     = float(_np.linalg.norm(mean_v) / math.sqrt(max_len))
+    else:
+        mean_v  = _vec_mean(vecs)
+        max_len = len(mean_v)
+        mag     = _norm(mean_v) / math.sqrt(max(1, max_len))
+    return [round(x, 4) for x in mean_v], round(mag, 4)
+
 
 from citl import CITLBus, Message, Topic
 from canon_constants import (
@@ -330,20 +441,21 @@ class CDCE:
         if min_len == 0:
             strength, lag = 0.0, 0.0
         else:
-            va, vb = np.array(vals_a[:min_len]), np.array(vals_b[:min_len])
-            strength = float(np.corrcoef(va, vb)[0, 1]) if min_len > 1 else 0.0
+            va_list = vals_a[:min_len]
+            vb_list = vals_b[:min_len]
+            strength = _np_pearson(va_list, vb_list) if min_len > 1 else 0.0
             strength = 0.0 if math.isnan(strength) else strength
-            lag      = self._estimate_lag(va, vb)
+            lag      = self._estimate_lag(va_list, vb_list)
 
-        conf_a = np.mean([d.confidence_score for d in dips_a]) if dips_a else 0.5
-        conf_b = np.mean([d.confidence_score for d in dips_b]) if dips_b else 0.5
+        conf_a = _np_mean(d.confidence_score for d in dips_a) if dips_a else 0.5
+        conf_b = _np_mean(d.confidence_score for d in dips_b) if dips_b else 0.5
 
         all_signals_a = [s for d in dips_a for s in d.signal_set]
         all_signals_b = [s for d in dips_b for s in d.signal_set]
 
         reinf, diverg    = self._split_signals(all_signals_a, all_signals_b, strength)
         contradiction    = self._contradiction_score(all_signals_a, all_signals_b)
-        predictive_value = float(np.mean([s.confidence for s in reinf])) if reinf else 0.0
+        predictive_value = _np_mean(s.confidence for s in reinf) if reinf else 0.0
 
         # ── Structural prior from DOMAIN_RELATIONSHIP_MAP (I·SCR) ────────────
         # Convert DomainID enums → canonical lowercase keys used in the map
@@ -395,9 +507,9 @@ class CDCE:
             if not dip.signal_set:
                 result.append(0.0)
                 continue
-            vals    = np.array([s.value for s in dip.signal_set])
-            weights = np.array([s.weight for s in dip.signal_set])
-            result.append(float(np.average(vals, weights=weights)))
+            vals    = [s.value  for s in dip.signal_set]
+            weights = [s.weight for s in dip.signal_set]
+            result.append(_np_weighted_mean(vals, weights))
         return result
 
     @staticmethod
@@ -405,13 +517,9 @@ class CDCE:
         return [d.confidence_score for d in dips]
 
     @staticmethod
-    def _estimate_lag(va: np.ndarray, vb: np.ndarray) -> float:
-        """Peak cross-correlation offset (normalised to [0, len-1])."""
-        if len(va) < 2:
-            return 0.0
-        xcorr = np.correlate(va - va.mean(), vb - vb.mean(), mode="full")
-        offset = int(np.argmax(xcorr)) - (len(va) - 1)
-        return float(offset)
+    def _estimate_lag(va, vb) -> float:
+        """Peak cross-correlation offset."""
+        return _np_lag(list(va), list(vb))
 
     @staticmethod
     def _split_signals(
@@ -439,7 +547,7 @@ class CDCE:
                     disagree = (sa.value * sb.value) < 0
                     mag = (abs(sa.value) + abs(sb.value)) / 2
                     scores.append((1.0 if disagree else 0.0) * min(1.0, mag / 100.0 + 0.1))
-        return float(np.mean(scores)) if scores else 0.0
+        return _np_mean(scores) if scores else 0.0
 
     @staticmethod
     def _infer_corr_type(
@@ -609,13 +717,7 @@ class DCA:
         if not all_vecs:
             return [0.0], 0.0
 
-        # Pad to common length
-        max_len = max(len(v) for v in all_vecs)
-        padded  = np.array([v + [0.0] * (max_len - len(v)) for v in all_vecs])
-        mean_v  = padded.mean(axis=0).tolist()
-        mag     = float(np.linalg.norm(mean_v) / math.sqrt(max_len))
-
-        return [round(x, 4) for x in mean_v], round(mag, 4)
+        return _np_vec_mean_and_norm(all_vecs)
 
 
 class EPS:
@@ -836,7 +938,7 @@ class EPS:
         for domain, signals in by_domain.items():
             if not signals:
                 continue
-            agg_weight = float(np.mean([s.weight for s in signals]))
+            agg_weight = _np_mean(s.weight for s in signals)
             clusters.append(ReinforcementCluster(
                 signals=signals[:8],
                 domain_origin=domain,
@@ -886,7 +988,7 @@ class EPS:
         # Crypto+Gov convergence
         if has_crypto and has_gov:
             avg_strength = (
-                float(np.mean([abs(s.correlation_strength) for s in scps]))
+                _np_mean(abs(s.correlation_strength) for s in scps)
                 if scps else 0.0
             )
             if avg_strength > 0.5:
@@ -932,11 +1034,11 @@ class EPS:
 
         # Opportunity indicator (inverse of contradiction, weighted by reinforcement)
         avg_reinf_conf = (
-            float(np.mean([
+            _np_mean(
                 s.confidence
                 for scp in scps
                 for s in scp.reinforcement_signals
-            ])) if any(scp.reinforcement_signals for scp in scps) else 0.5
+            ) if any(scp.reinforcement_signals for scp in scps) else 0.5
         )
         opp_val = avg_reinf_conf * (1 - max_contradiction * 0.5)
         indicators.append(PredictiveIndicator(
@@ -955,7 +1057,7 @@ class EPS:
 
         # Inflection point
         avg_pred = (
-            float(np.mean([scp.predictive_value for scp in scps])) if scps else 0.0
+            _np_mean(scp.predictive_value for scp in scps) if scps else 0.0
         )
         indicators.append(PredictiveIndicator(
             indicator_type=IndicatorType.INFLECTION,
@@ -969,11 +1071,11 @@ class EPS:
     def _compute_confidence(dips: list[DIP], scps: list[SCP]) -> float:
         scores = []
         if dips:
-            scores.append(float(np.mean([d.confidence_score for d in dips])))
+            scores.append(_np_mean(d.confidence_score for d in dips))
         if scps:
-            scores.append(float(np.mean([abs(s.correlation_strength) for s in scps])))
-            scores.append(float(np.mean([s.predictive_value for s in scps])))
-        return float(np.mean(scores)) if scores else 0.0
+            scores.append(_np_mean(abs(s.correlation_strength) for s in scps))
+            scores.append(_np_mean(s.predictive_value for s in scps))
+        return _np_mean(scores) if scores else 0.0
 
     @staticmethod
     def _generate_insight(
