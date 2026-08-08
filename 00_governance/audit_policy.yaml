@@ -1,1 +1,45 @@
+# audit_policy.yaml
+# Governance audit policy for the Canon Intelligence System
+# Operator: JRM-01 @liminaljermo  Version: 1.0  Revised: 2026-08-08
 
+policy:
+  name: "Canon Audit Policy"
+  version: "1.0"
+  scope: "All Canon subsystems — CDS-Ω1, Vara, Paradox Engine, Veil, Vault"
+  authority: "Stumpy Governance Engine"
+
+retention:
+  default_days: 90
+  escalated_days: 365          # PARADOX_ENGINE / OPERATOR_ALERT events
+  drift_series_days: 180
+  min_audit_buffer: 500        # ring-buffer minimum entries
+
+severity_levels:
+  - TRACE                      # internal bookkeeping, never escalated
+  - INFO                       # normal operation telemetry
+  - WARNING                    # threshold approached but not breached
+  - VIOLATION                  # invariant breach detected
+  - CRITICAL                   # system integrity at risk; operator notified
+
+escalation_rules:
+  - condition: "severity == CRITICAL"
+    action: "emit_operator_alert"
+    target: "canon.operator.dashboard"
+  - condition: "violation_count_in_window > 5"
+    window_minutes: 10
+    action: "emit_operator_alert"
+    target: "canon.operator.dashboard"
+  - condition: "drift_magnitude >= 0.60"
+    action: "tag_drift_series"
+    target: "canon.drift.series"
+
+invariant_enforcement:
+  halt_on_breach: false          # surface + log; do not halt pipeline
+  emit_to_stumpy_bus: true
+  emit_topic: "stumpy.audit.violation"
+
+review_cadence:
+  automated_digest_hours: 24
+  operator_review_days: 7
+
+exemptions: []                   # no exemptions; all subsystems audited
