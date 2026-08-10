@@ -1,19 +1,38 @@
 {
   "id": "vault_lineage_index",
-  "version": "1.0.0",
-  "description": "Canonical lineage index for the Vault subsystem. Stores all lineage edges created by Vault commits.",
-
-  "edges": [],
-
+  "version": "1.1.0",
+  "description": "Canonical lineage index for the Vault subsystem. Stores all lineage edges created by Vault commits. Activated.",
+  "edges": [
+    {
+      "record_type": "system",
+      "target_id": "lineage_engine_genesis",
+      "source_ids": [
+        "constitution_v1.1",
+        "contract.lineage_engine"
+      ],
+      "timestamp": "2026-08-10T07:54:00+00:00",
+      "action": "ACTIVATE",
+      "operator": "SIG: JRM-01 @liminaljermo",
+      "engine_id": "lineage_engine_v1",
+      "context": "Lineage Engine activated per INDEX.md next-step option. R4 reversible until audit seal."
+    }
+  ],
   "meta": {
-    "created": "INITIALIZE",
-    "last_updated": "INITIALIZE",
-    "edge_count": 0,
+    "created": "2026-08-10T07:54:00+00:00",
+    "last_updated": "2026-08-10T07:54:00+00:00",
+    "edge_count": 1,
+    "status": "ACTIVE",
+    "activated_by": "SIG: JRM-01 @liminaljermo",
+    "activation_timestamp": "2026-08-10T07:54:00+00:00",
+    "engine_id": "lineage_engine_v1",
     "schema": {
       "record_type": "string",
       "target_id": "string",
       "source_ids": "array<string>",
-      "timestamp": "string"
+      "timestamp": "string",
+      "action": "string",
+      "operator": "string",
+      "engine_id": "string"
     }
   }
 }
