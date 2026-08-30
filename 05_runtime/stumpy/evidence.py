@@ -1,13 +1,14 @@
 """Evidence primitives for Stumpy.
 
-The module deliberately models evidence as immutable records. It does not
-perform canonical mutation or decide constitutional truth by itself.
+Evidence is immutable, content-addressed, and explicitly bound to a claim.
+This module never mutates canonical state and never decides truth by itself.
 """
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 import hashlib
+import json
 from typing import Any, Mapping, Optional
 
 
@@ -20,6 +21,10 @@ class EvidenceKind(str, Enum):
     LINEAGE = "LINEAGE"
     RECEIPT = "RECEIPT"
     ASSERTION = "ASSERTION"
+
+
+def _canonical_payload(payload: Mapping[str, Any]) -> bytes:
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
 
 
 @dataclass(frozen=True)
@@ -52,9 +57,8 @@ class EvidenceRecord:
         source_ref: Optional[str] = None,
         lineage_ref: Optional[str] = None,
     ) -> "EvidenceRecord":
-        digest = hashlib.sha256(
-            repr(sorted(payload.items())).encode("utf-8")
-        ).hexdigest()
+        normalized = dict(payload)
+        digest = hashlib.sha256(_canonical_payload(normalized)).hexdigest()
         return cls(
             evidence_id=evidence_id,
             claim_id=claim_id,
@@ -67,8 +71,16 @@ class EvidenceRecord:
             digest=digest,
             source_ref=source_ref,
             lineage_ref=lineage_ref,
-            payload=dict(payload),
+            payload=normalized,
         )
 
     def is_assertion_only(self) -> bool:
         return self.kind is EvidenceKind.ASSERTION
+
+    def verify_digest(self) -> bool:
+        if self.digest is None:
+            return False
+        return hashlib.sha256(_canonical_payload(dict(self.payload))).hexdigest() == self.digest
+
+    def is_independently_observable(self) -> bool:
+        return self.kind is not EvidenceKind.ASSERTION and bool(self.method) and bool(self.evaluator_id)
