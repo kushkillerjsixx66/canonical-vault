@@ -1,0 +1,47 @@
+version: 1.0.0
+root_of_truth:
+  document: 00_governance/constitution/lattice_constitution.md
+  title: Lattice Constitution
+  status: SUPREME_AUTHORITY
+  rank: 1
+
+hierarchy:
+  - rank: 1
+    artifact: 00_governance/constitution/lattice_constitution.md
+    type: CONSTITUTION
+    authority: SUPREME
+    description: Fundamental law of the Lattice. No exceptions, no overrides.
+  - rank: 2
+    artifact: 00_governance/constitution/invariants.md
+    type: TIER_1_INVARIANTS
+    authority: CONSTITUTIONALLY_SUBORDINATE_BINDING
+    description: Six canonical invariants (I.COH through VI.SIG).
+  - rank: 3
+    artifact: 00_governance/constitution/amendment_laws.md
+    type: AMENDMENT_PROCEDURE
+    authority: CONSTITUTIONAL_PROCEDURE
+    description: Governs constitutional and invariant modifications.
+  - rank: 4
+    artifact: 04_system_spec/Lattice_Unified_Spec.md
+    type: INTEGRATED_SYSTEM_SPECIFICATION
+    authority: SPECIFICATION_LEVEL
+    subordinate_to:
+      - 00_governance/constitution/lattice_constitution.md
+      - 00_governance/constitution/invariants.md
+  - rank: 5
+    artifact: 00_governance/contracts/
+    type: SCHEMA_AND_CONTRACTS
+    authority: OPERATIONAL_CONTRACTS
+  - rank: 6
+    artifact: 05_runtime/runtime_envelope.yaml
+    type: RUNTIME_CONFIGURATION
+    authority: PARAMETERIZATION_ONLY
+    override_capacity: NONE
+  - rank: 7
+    artifact: 05_runtime/governance/boundary.py
+    type: EXECUTABLE_RUNTIME
+    authority: ENFORCEMENT_PLANE
+  - rank: 8
+    artifact: tests/
+    type: ASSURANCE_CONFORMANCE
+    authority: VERIFICATION_ONLY

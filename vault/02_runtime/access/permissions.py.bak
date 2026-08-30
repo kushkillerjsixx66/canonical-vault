@@ -1,0 +1,94 @@
+"""access/permissions.py — Permission resolution backed by access_control.json.
+
+Loads the canonical RBAC policy from vault/06_governance/access_control.json
+and exposes check(), has_permission(), get_role_permissions(), and list_roles()
+so that callers need not duplicate policy-lookup logic.
+
+Roles defined in access_control.json (as of audit):
+  operator · governance_operator · system · auditor
+"""
+from __future__ import annotations
+import json
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+
+# Default policy path — relative to this file: vault/02_runtime/access/ → vault/06_governance/
+_DEFAULT_POLICY = (
+    Path(__file__).resolve().parent   # access/
+    .parent                           # 02_runtime/
+    .parent                           # vault/
+    / "06_governance"
+    / "access_control.json"
+)
+
+
+class Permissions:
+    """Loads and evaluates role-based permission rules.
+
+    Parameters
+    ----------
+    policy_path:
+        Override the default path to access_control.json.  Useful in tests.
+    """
+
+    def __init__(self, policy_path: Optional[Path] = None) -> None:
+        self._path:   Path            = policy_path or _DEFAULT_POLICY
+        self._policy: Dict[str, Any]  = {}
+        self.load()
+
+    # ── I/O ──────────────────────────────────────────────────────────────────
+
+    def load(self) -> None:
+        """(Re-)load the access-control policy from disk."""
+        try:
+            self._policy = json.loads(self._path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            # Fail open with an empty policy — RBAC.check() will raise for unknown roles.
+            self._policy = {"roles": {}}
+
+    # ── enforcement ──────────────────────────────────────────────────────────
+
+    def check(self, role: str, action: str, record_type: str) -> None:
+        """Assert that *role* may perform *action* on *record_type*.
+
+        Raises
+        ------
+        PermissionError
+            If the role is unknown, the action is not allowed, or the
+            record type is not in scope for the role.
+        """
+        roles      = self._policy.get("roles", {})
+        role_block = roles.get(role)
+        if role_block is None:
+            raise PermissionError(f"Unknown role: '{role}'")
+
+        allowed_actions = role_block.get("actions",      [])
+        allowed_types   = role_block.get("record_types", [])
+
+        action_ok = action      in allowed_actions or "*" in allowed_actions
+        type_ok   = record_type in allowed_types   or "*" in allowed_types
+
+        if not (action_ok and type_ok):
+            raise PermissionError(
+                f"Role '{role}' is not permitted to '{action}' "
+                f"on record type '{record_type}'"
+            )
+
+    def has_permission(self, role: str, action: str, record_type: str) -> bool:
+        """Boolean form of check() — never raises."""
+        try:
+            self.check(role, action, record_type)
+            return True
+        except PermissionError:
+            return False
+
+    # ── introspection ─────────────────────────────────────────────────────────
+
+    def get_role_permissions(self, role: str) -> Dict[str, List[str]]:
+        """Return the raw permission block for *role*, or ``{}`` if unknown."""
+        return dict(self._policy.get("roles", {}).get(role, {}))
+
+    def list_roles(self) -> List[str]:
+        """Return all role names defined in the loaded policy."""
+        return list(self._policy.get("roles", {}).keys())

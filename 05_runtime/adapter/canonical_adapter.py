@@ -1,51 +1,79 @@
-from runtime.adapter.model_client_stub import StubModelClient
-from runtime.governance.engine import GovernanceEngine
+"""
+Lattice Governed Canonical Runtime Adapter
+==========================================
+Authority: 00_governance/constitution/lattice_constitution.md
+Mnemonic: LAT-ADP-001
+Status: ACTIVE / AUTHORITATIVE
+Operator: JRM-01 (@liminaljermo)
+"""
+
+import uuid
+from typing import Any, Dict, Optional
+from ..governance.contracts import (
+    iso_now,
+    GovernedRequest,
+    GovernedResponse,
+    ValidatedIntent,
+    ValidatedOperatorContext,
+)
+from ..governance.boundary import GovernanceBoundary
 
 
-class LatticeRuntimeAdapter:
-    def __init__(self, model_client=None, governance_engine=None):
-        self.model = model_client or StubModelClient()
-        self.gov = governance_engine or GovernanceEngine(config={})
+class GovernedRuntimeAdapter:
+    def __init__(self, boundary: Optional[GovernanceBoundary] = None):
+        self.boundary = boundary or GovernanceBoundary()
 
-    def run(self, request_envelope: dict) -> dict:
-        gco = self.gov.resolve_context(request_envelope)
-        gpe = self._build_gpe(request_envelope, gco)
-        mia = self.model.invoke(gpe)
-        ioo = self._interpret_output(mia)
-        er = self.gov.run_evals(ioo, gco)
-        lb = self.gov.capture_lineage(
-            request_envelope, gpe, mia, ioo, er, gco
+    def run(self, request_envelope: Dict[str, Any]) -> Dict[str, Any]:
+        op_data = request_envelope.get("operator", {})
+        operator = ValidatedOperatorContext(
+            operator_id=op_data.get("operator_id", "UNAUTHENTICATED"),
+            credential_id=op_data.get("credential_id", "none"),
+            authenticated_at=op_data.get("authenticated_at", iso_now()),
+            session_id=op_data.get("session_id", f"session-{uuid.uuid4()}"),
+            signature=op_data.get("signature", ""),
+            roles=tuple(op_data.get("roles", ["GUEST"])),
+            verified=bool(op_data.get("verified", False)),
         )
-        pdo = self.gov.decide_policy(er, gco)
-        return self._emit_response(ioo, er, lb, pdo)
 
-    def _build_gpe(self, req: dict, gco: dict) -> dict:
-        return {
-            "system": f"Posture: {gco['posture']}; Constraints: {gco['constraints']}",
-            "modules": {m: f"Module {m} active" for m in gco["modules"]},
-            "user": req.get("prompt", ""),
-            "tools": []
-        }
+        intent_data = request_envelope.get("intent", {})
+        intent = ValidatedIntent(
+            kind=intent_data.get("kind", "query"),
+            scope=tuple(intent_data.get("scope", ["read"])),
+            nonce=intent_data.get("nonce", str(uuid.uuid4())),
+            issued_at=intent_data.get("issued_at", iso_now()),
+        )
 
-    def _interpret_output(self, mia: dict) -> dict:
-        return {
-            "answer": mia.get("raw_output", ""),
-            "reasoning": mia.get("reasoning", ""),
-            "tools_used": mia.get("tools_used", [])
-        }
+        governed_req = GovernedRequest(
+            request_id=request_envelope.get("request_id", f"req-{uuid.uuid4()}"),
+            operator=operator,
+            intent=intent,
+            input_payload=request_envelope.get("payload", {}),
+            source_refs=tuple(request_envelope.get("source_refs", ())),
+            requested_action=request_envelope.get("action", "query"),
+        )
 
-    def _emit_response(self, ioo: dict, er: dict, lb: dict, pdo: dict) -> dict:
-        return {
-            "answer": ioo["answer"],
-            "lineage": {
-                "block_hash": lb["block_hash"],
-                "module_trace": lb["module_trace"],
-                "visibility": lb["visibility"]
-            },
-            "evals": er,
-            "policy": pdo,
-            "meta": {
-                "adapter_version": "0.1.0",
-                "model": "stub-model"
+        response: GovernedResponse = self.boundary.execute(governed_req)
+
+        if response.silenced:
+            return {
+                "decision": "SILENCE",
+                "output": None,
+                "reasons": response.decision.reasons,
+                "lineage_status": "quarantined",
             }
+
+        return {
+            "decision": response.decision.decision,
+            "gate_results": {g: res.status for g, res in response.decision.gate_results.items()},
+            "eval_scores": {
+                g: {"score": res.score, "confidence": res.confidence, "status": res.status}
+                for g, res in response.decision.gate_results.items()
+            },
+            "lineage": {
+                "event_id": response.lineage.event_id,
+                "decision_hash": response.lineage.decision_hash,
+                "payload_hash": response.lineage.payload_hash,
+            },
+            "receipt": response.receipt.__dict__ if response.receipt else None,
+            "output": response.output,
         }

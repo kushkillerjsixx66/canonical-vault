@@ -1,0 +1,27 @@
+---
+event_type: CONSTITUTIONAL_REMEDIATION_COMMIT
+event_id: LIN-REM-20260829-001
+timestamp: "2026-08-29T23:41:30-04:00"
+operator_credentials:
+  operator_id: "JRM-01"
+  handle: "@liminaljermo"
+  signature: "SIG: JRM-01 @liminaljermo"
+altitude: "A0"
+veil_level: "Veil-0"
+target_baseline_commit: "9106ac8998a13aaef14d3f6bc6e3168f4c384952"
+governance_action: "COLLAPSE_TO_SINGLE_SOVEREIGN_CONTROL_PLANE"
+remediations:
+  - domain: "RFD-01"
+    summary: "Neutralized bypass paths; established non-bypassable GovernanceBoundary"
+  - domain: "RFD-02"
+    summary: "Bound all Vault mutations to commit_transition; removed destructive reset"
+  - domain: "RFD-03"
+    summary: "Enforced validated operator context (identity + scope) over caller assertions"
+  - domain: "RFD-04"
+    summary: "Replaced stubbed ALLOW/1.0 with fail-closed SILENCE and explicit ABSTAIN"
+  - domain: "RFD-05"
+    summary: "Established machine-readable authority hierarchy rooted in lattice_constitution.md"
+  - domain: "RFD-06"
+    summary: "Implemented 12-point negative-path constitutional conformance test suite"
+conformance_status: "VERIFIED_PASS (12/12)"
+---

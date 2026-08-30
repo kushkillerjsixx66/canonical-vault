@@ -1,0 +1,104 @@
+"""vault_cli.py — Canonical Vault command-line interface.
+
+Wires all VaultCore dependencies via importlib so that numeric directory
+names (02_runtime, 03_cli, etc.) never break standard import resolution.
+"""
+from __future__ import annotations
+import argparse
+import importlib.util
+import json
+import sys
+from pathlib import Path
+
+# ── path bootstrap ────────────────────────────────────────────────────────────
+_VAULT_ROOT = Path(__file__).resolve().parent.parent   # vault/
+_RUNTIME    = _VAULT_ROOT / "02_runtime"
+
+
+def _load_class(rel_path: str, class_name: str):
+    """Load *class_name* from *rel_path* (relative to 02_runtime/)."""
+    full = _RUNTIME / rel_path
+    if not full.exists():
+        raise FileNotFoundError(f"[vault_cli] dependency not found: {full}")
+    spec = importlib.util.spec_from_file_location(class_name, full)
+    mod  = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return getattr(mod, class_name)
+
+
+def _build_vault():
+    """Instantiate VaultCore with every required dependency."""
+    RBAC            = _load_class("access/rbac.py",         "RBAC")
+    CommitValidator = _load_class("commit/validator.py",    "CommitValidator")
+    RetentionAssign = _load_class("retention/assign.py",    "RetentionAssign")
+    CommitApply     = _load_class("commit/apply.py",        "CommitApply")
+    LineageIndex    = _load_class("lineage/index.py",       "LineageIndex")
+    GovernanceHooks = _load_class("governance/hooks.py",    "GovernanceHooks")
+    AuditLogger     = _load_class("audit/logger.py",        "AuditLogger")
+    CommitEnvelope  = _load_class("commit/envelope.py",     "CommitEnvelope")
+    VaultPaths      = _load_class("core/vault_paths.py",    "VaultPaths")
+    VaultCore       = _load_class("core/vault_core.py",     "VaultCore")
+
+    return VaultCore(
+        rbac       = RBAC(),
+        validator  = CommitValidator(),
+        retention  = RetentionAssign(),
+        apply      = CommitApply(),
+        lineage    = LineageIndex(),
+        governance = GovernanceHooks(),
+        audit      = AuditLogger(),
+        envelope   = CommitEnvelope(),
+        paths      = VaultPaths(),
+    )
+
+
+# ── CLI definition ────────────────────────────────────────────────────────────
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        prog="vault",
+        description="Canonical Vault CLI — commit, retrieve, and inspect records.",
+    )
+    sub = parser.add_subparsers(dest="cmd")
+
+    # vault commit <record_type> <json_payload> [--role ROLE]
+    p_commit = sub.add_parser("commit", help="Commit a record to the vault")
+    p_commit.add_argument("record_type", help="Record type (e.g. operator_identity)")
+    p_commit.add_argument("payload",     help="JSON payload string or raw value")
+    p_commit.add_argument("--role",      default="operator", help="Caller role (default: operator)")
+
+    # vault retrieve <record_id>
+    p_get = sub.add_parser("retrieve", help="Retrieve a vault record by ID")
+    p_get.add_argument("record_id")
+
+    # vault status
+    sub.add_parser("status", help="Show vault runtime status")
+
+    args = parser.parse_args()
+    if args.cmd is None:
+        parser.print_help()
+        return
+
+    try:
+        vault = _build_vault()
+    except Exception as exc:
+        print(f"[vault] ERROR building VaultCore: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+    if args.cmd == "commit":
+        try:
+            payload = json.loads(args.payload)
+        except json.JSONDecodeError:
+            payload = {"raw": args.payload}
+        result = vault.commit(args.record_type, payload, role=args.role)
+        print(f"[vault] committed → {result}")
+
+    elif args.cmd == "retrieve":
+        record = vault.retrieve(args.record_id)
+        print(json.dumps(record, indent=2, default=str))
+
+    elif args.cmd == "status":
+        print("[vault] status: operational")
+
+
+if __name__ == "__main__":
+    main()

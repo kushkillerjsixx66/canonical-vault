@@ -1,0 +1,64 @@
+"""governance/events.py — Event dispatch for vault governance.
+
+Maintains a handler registry keyed by event type.  All handlers for a
+given type are called in registration order.  Errors in individual handlers
+are isolated so they never crash the vault commit pipeline.
+"""
+from __future__ import annotations
+from datetime import datetime
+from typing import Callable, Dict, List
+
+
+class GovernanceEvents:
+    """Dispatches governance events to registered handlers."""
+
+    def __init__(self) -> None:
+        self._handlers: Dict[str, List[Callable]] = {}
+        self._log: List[dict] = []
+
+    # ── registration ─────────────────────────────────────────────────────────
+
+    def register(self, event_type: str, handler: Callable) -> None:
+        """Register *handler* for *event_type*.  Use "*" to catch all events."""
+        self._handlers.setdefault(event_type, []).append(handler)
+
+    # ── dispatch ─────────────────────────────────────────────────────────────
+
+    def emit(self, event_type: str, envelope) -> None:
+        """Emit *event_type* to all matching handlers.
+
+        Parameters
+        ----------
+        event_type:
+            A dot-namespaced event string, e.g. ``"vault.commit"``.
+        envelope:
+            The commit envelope object produced by CommitEnvelope.
+        """
+        entry: dict = {
+            "event_type":  event_type,
+            "timestamp":   datetime.utcnow().isoformat(),
+            "envelope_id": getattr(envelope, "id",          None),
+            "record_type": getattr(envelope, "record_type", None),
+        }
+        self._log.append(entry)
+
+        # Specific-type handlers + wildcard handlers
+        targets = (
+            self._handlers.get(event_type, [])
+            + self._handlers.get("*", [])
+        )
+        for handler in targets:
+            try:
+                handler(event_type, envelope)
+            except Exception as exc:  # noqa: BLE001
+                self._log.append({
+                    "error":   str(exc),
+                    "handler": repr(handler),
+                    "event":   event_type,
+                })
+
+    # ── introspection ─────────────────────────────────────────────────────────
+
+    def event_log(self) -> List[dict]:
+        """Return a snapshot of all emitted event records."""
+        return list(self._log)

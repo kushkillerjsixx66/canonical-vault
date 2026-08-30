@@ -1,0 +1,59 @@
+"""CFC/load_model.py — Computational load estimation for the CFC kernel.
+
+LoadModel.estimate() is the first stage of the CFCRuntime pipeline:
+
+    LoadModel → PostureResolver → ConstraintEnforcer → CFCState
+
+The returned float drives PostureResolver.resolve() which branches at
+0.40 / 0.70 / 0.90 to select the appropriate constraint posture.
+"""
+from __future__ import annotations
+from typing import Any, Dict
+
+
+# ── tuneable constants ────────────────────────────────────────────────────────
+_CHARS_FOR_MAX_TEXT_LOAD = 4_000   # character count at which text load saturates to 1.0
+_CONSTRAINT_WEIGHT        = 0.05   # each active constraint adds this to the total
+_MAX_CONSTRAINT_LOAD      = 0.40   # cap so constraints alone cannot saturate the score
+
+
+class LoadModel:
+    """Estimates the computational load of a CFC request.
+
+    The score is a simple two-factor model:
+
+    * **Text factor** — scales linearly from 0.0 (empty input) to 1.0
+      at ``_CHARS_FOR_MAX_TEXT_LOAD`` characters.
+
+    * **Constraint factor** — each *active* (truthy) entry in
+      ``constraint_map`` contributes ``_CONSTRAINT_WEIGHT``, capped at
+      ``_MAX_CONSTRAINT_LOAD``.
+
+    Combined score is clamped to [0.0, 1.0].
+    """
+
+    def estimate(self, text: str, constraint_map: Dict[str, Any]) -> float:
+        """Return a load score in [0.0, 1.0].
+
+        Parameters
+        ----------
+        text:
+            Raw input text that the CFC kernel will process.
+        constraint_map:
+            Mapping of constraint name → value.  A constraint is considered
+            *active* if its value is truthy (non-None, non-empty, non-zero).
+
+        Returns
+        -------
+        float
+            0.0 = negligible load  /  1.0 = fully saturated.
+        """
+        # ── text length contribution ──────────────────────────────────────────
+        text_load = min(len(text) / _CHARS_FOR_MAX_TEXT_LOAD, 1.0)
+
+        # ── active constraint contribution ────────────────────────────────────
+        active_count    = sum(1 for v in constraint_map.values() if v)
+        constraint_load = min(active_count * _CONSTRAINT_WEIGHT, _MAX_CONSTRAINT_LOAD)
+
+        # ── combined score ────────────────────────────────────────────────────
+        return round(min(text_load + constraint_load, 1.0), 4)
