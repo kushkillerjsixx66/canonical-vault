@@ -14,3 +14,8 @@ venv/
 .vscode/
 .idea/
 .DS_Store
+
+# Hygiene — do not reintroduce
+*.bak
+.patch_backup_*/
+*.patch
