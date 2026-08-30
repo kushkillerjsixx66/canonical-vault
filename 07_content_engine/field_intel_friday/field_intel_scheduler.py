@@ -1,5 +1,5 @@
 from typing import Any, List
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 
 from vara.scan_pipeline.vara_scan_pipeline import VaraScanPipeline
@@ -36,7 +36,7 @@ class FieldIntelScheduler:
         return self._store_report(report)
 
     def _store_report(self, report: str) -> str:
-        ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        ts = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         root = Path(self._vault_root)
         report_dir = root / "intel_reports"
         report_dir.mkdir(parents=True, exist_ok=True)
