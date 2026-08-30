@@ -1,5 +1,4 @@
 import multiprocessing as mp
-from queue import Empty
 from threading import Lock
 
 from .stumpy_governance_bus import GovernanceBus
@@ -39,23 +38,26 @@ class StumpyEngine:
             self.bus.register_handler(event_type, self._handle_governance_event)
 
     def _handle_governance_event(self, event: dict) -> None:
-        before = self._drain_violation_queue()
-        self.drift_proc._inspect_event(event)
-        self.enforcement_proc._route_event(event)
-        violations = before + self._drain_violation_queue()
-        if violations:
-            with self._history_lock:
-                self._violation_history.extend(violations)
-                for violation in violations:
-                    self.violation_queue.put(violation)
+        """Evaluate an event and retain findings synchronously.
 
-    def _drain_violation_queue(self) -> list[dict]:
-        items: list[dict] = []
-        while True:
-            try:
-                items.append(self.violation_queue.get_nowait())
-            except Empty:
-                return items
+        The public event queue is asynchronous, but governance evaluation is
+        deterministic. Findings therefore must be returned directly by the
+        evaluators rather than immediately re-reading a multiprocessing.Queue,
+        whose feeder thread can make get_nowait() observe a false empty state.
+        """
+        violations = []
+        violations.extend(self.drift_proc.inspect_event(event))
+        violations.extend(self.enforcement_proc.route_event(event))
+
+        if not violations:
+            return
+
+        with self._history_lock:
+            self._violation_history.extend(violations)
+
+        # Preserve the violation queue as an outward-facing notification bus.
+        for violation in violations:
+            self.violation_queue.put(violation)
 
     def start(self) -> None:
         """Start the deterministic governance event consumer."""
