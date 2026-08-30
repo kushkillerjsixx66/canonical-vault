@@ -24,10 +24,7 @@ def finding_from_relationship(
         status=evidence.state.value,
         severity="MEDIUM" if evidence.state.value != "FAIL" else "HIGH",
         claim=f"Relationship '{evidence.relation}' between {source_target} and {target_target} was structurally evaluated.",
-        observed_state={
-            "relationship": evidence.relation,
-            "evidence": list(evidence.evidence),
-        },
+        observed_state={"relationship": evidence.relation, "evidence": list(evidence.evidence)},
         expected_state={"relationship": evidence.relation},
         constitutional_basis=[invariant],
         evidence_refs=[evidence_id],
@@ -39,4 +36,5 @@ def finding_from_relationship(
         confidence=None if evidence.state.value == "UNKNOWN" else 0.8,
         timestamp=datetime.now(timezone.utc).isoformat(),
     )
+    finding.validate()
     return finding
