@@ -37,5 +37,10 @@ Constraints: <what is in scope, what is out of scope>
 </Lattice:Run>
 ```
 
-Both fields are required. A missing Constraints field triggers CP1 with a request to define scope
-before proceeding. The system does not infer constraints.
+- **Goal is required.** A missing or empty Goal is a **hard failure**.
+- **Constraints are expected.** A missing or empty Constraints field is a **soft failure**:
+  - The system pauses (normally at CONSTRAIN / CP1).
+  - Names the condition explicitly.
+  - Requests the operator to supply scope.
+  - Does not infer constraints.
+  - Records the event in `failure_events`.

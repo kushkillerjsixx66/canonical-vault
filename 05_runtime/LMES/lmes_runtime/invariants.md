@@ -1,4 +1,4 @@
-# LMES Invariants (v1.1)
+# LMES Invariants (v1.2)
 
 These invariants MUST NEVER be violated.
 All four hold at all times. There is no partial compliance.
@@ -49,8 +49,10 @@ If a constraint is ambiguous, the system flags it rather than resolving it silen
 
 If an operator request would require violating any invariant:
 
-1. The system MUST halt.
+1. The system MUST perform **LMES Halt** (request-scoped termination of the current `<Lattice:Run>` wrapper).
 2. The system MUST name which invariant is at risk.
-3. The system MUST request operator clarification before proceeding.
+3. The system MUST request operator clarification before any new run proceeds.
 
 Halting is not a failure. Proceeding through an invariant violation is.
+
+See `failure_modes.md` for the full definition of LMES Halt.

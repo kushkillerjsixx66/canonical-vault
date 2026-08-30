@@ -1,4 +1,4 @@
-# Lattice Minimal Executable System (LMES v1.1)
+# Lattice Minimal Executable System (LMES v1.2)
 
 LMES is the smallest deployable version of the Lattice architecture.
 It preserves the essential governance invariants while remaining simple
@@ -16,6 +16,8 @@ Governance is the mechanism. Runtime is the environment. Reasoning is the payloa
 - A minimal invariant set that prevents drift
 - Explicit failure semantics and rollback behavior
 - A formal runtime state machine
+- Request-scoped halt semantics (LMES Halt)
+- Declarative evidence interface for later Stumpy consumption
 
 ## Non-Goals
 
@@ -25,6 +27,7 @@ LMES is NOT:
 - an autonomous decision-making system
 - a truth engine
 - a moral authority structure
+- a substitute for the full Lattice governance stack
 
 LMES exists to improve:
 - reasoning visibility
@@ -54,6 +57,11 @@ The system will:
 8. Enter AUDIT state — emit Audit Log
 9. EXIT
 
+## Relationship to Canon
+
+See `RELATIONSHIP_TO_CANON.md` for the derivation map and explicit non-claims
+relative to the constitutional and structural invariant planes.
+
 ## Model-Agnostic
 
 LMES requires no infrastructure beyond text.
@@ -61,7 +69,7 @@ All governance is structural, not platform-dependent.
 
 ## Version
 
-LMES v1.1
+LMES v1.2
 
 ## License
 

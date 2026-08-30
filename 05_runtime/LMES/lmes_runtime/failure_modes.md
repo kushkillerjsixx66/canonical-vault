@@ -1,13 +1,34 @@
-# LMES Failure Modes (v1.1)
+# LMES Failure Modes (v1.2)
 
 LMES distinguishes hard failures, soft failures, and drift indicators.
 Each has defined behavior. Operators do not improvise recovery logic.
 
 ---
 
+## LMES Halt Semantics
+
+**Definition:**  
+LMES Halt = request-scoped termination of the current `<Lattice:Run>` wrapper.
+
+**Behavior:**
+1. Immediate cessation of the active run at the point of detection.
+2. Emission of FAILURE_LOG (or partial AUDIT_LOG if the run reached a checkpoint that authorizes partial close).
+3. Return to IDLE.
+4. No claim is made about disabling any other concurrent request, subsystem, or the broader Lattice runtime.
+
+**Rationale:**  
+This matches the observed enforcement strength of the wider Lattice (request-level BLOCK + lineage) and avoids inventing subsystem- or system-level halt semantics that the Constitution itself has not yet machine-resolved.
+
+**Prohibited interpretations:**
+- Process kill of the host model or runtime process
+- Global freeze of all governed execution
+- Automatic quarantine of unrelated sessions
+
+---
+
 ## Hard Failures
 
-Hard failures halt the runtime immediately.
+Hard failures trigger LMES Halt immediately.
 The system does not proceed. It emits a FAILURE_LOG.
 
 | Condition | Description |
@@ -19,7 +40,7 @@ The system does not proceed. It emits a FAILURE_LOG.
 | Nested Wrapper | A second `<Lattice:Run>` opened inside an active wrapper |
 
 **Hard failure behavior:**
-1. Halt immediately at the point of detection.
+1. Perform LMES Halt at the point of detection.
 2. Name the failure condition explicitly.
 3. Do not produce partial output as if the run completed.
 4. Emit FAILURE_LOG.

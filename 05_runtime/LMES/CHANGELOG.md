@@ -2,7 +2,26 @@
 
 ---
 
-## v1.1 — Current
+## v1.2 — Current
+
+### Added
+- `RELATIONSHIP_TO_CANON.md` — explicit derivation map and non-claims relative to S1/S2/S3
+- LMES Halt Semantics — request-scoped wrapper termination only
+- Stumpy / Evidence Interface declaration (declarative, one-way)
+- `tests/test_smoke_protocol.py` — structural marker smoke test
+
+### Changed
+- `wrapper.md` — Missing Constraints standardized as soft failure; Goal remains hard failure
+- `failure_modes.md` — Halt language made precise; hard-failure behavior references LMES Halt
+- `invariants.md` — On Invariant Violations uses LMES Halt terminology
+- `specification.md` — Terminology updated; Stumpy interface section added; version bumped to v1.2
+
+### Invariants
+No invariants were changed. Reversibility, Lineage, Operator Primacy, Non-Obfuscation remain the complete set.
+
+---
+
+## v1.1
 
 ### Added
 - `specification.md` — canonical reference for terminology, states, semantics, compliance

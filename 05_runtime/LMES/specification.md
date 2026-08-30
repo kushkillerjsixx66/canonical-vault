@@ -1,4 +1,4 @@
-# LMES Specification (v1.1)
+# LMES Specification (v1.2)
 
 ## Purpose
 
@@ -18,12 +18,13 @@ Additions require a version increment and a documented rationale. Scope creep is
 | Wrapper | The outer boundary tag `<Lattice:Run>` ... `</Lattice:Run>` |
 | Runtime | The active governed reasoning environment inside the wrapper |
 | Checkpoint (CP) | A mandatory operator decision point |
-| Invariant | A rule that cannot be violated without halting the runtime |
+| Invariant | A rule that cannot be violated without triggering LMES Halt |
 | Lineage | The traceable chain from goal to output |
 | Audit Log | The evidence record emitted at the end of every run |
 | Drift | Deviation from governed behavior without operator authorization |
-| Hard Failure | A condition that halts the runtime and requires explicit recovery |
+| Hard Failure | A condition that triggers LMES Halt (request-scoped termination of the current wrapper) and requires explicit recovery |
 | Soft Failure | A condition that pauses the runtime and requests operator input |
+| LMES Halt | Request-scoped termination of the current `<Lattice:Run>` wrapper; emits FAILURE_LOG (or partial AUDIT_LOG) and returns to IDLE. Does not claim subsystem- or system-level cessation. |
 
 ---
 
@@ -81,15 +82,34 @@ A compliant LMES run:
 - Pauses at all three checkpoints
 - Emits a complete Audit Log
 - Does not skip, compress, or elide reasoning steps
-- Halts on invariant violation
+- Performs LMES Halt on invariant violation
 
 A non-compliant run must not produce a final output.
 It must emit a FAILURE_LOG instead of an AUDIT_LOG.
 
 ---
 
+## Stumpy / Evidence Interface
+
+LMES produces two primary evidence artifacts:
+
+- `AUDIT_LOG` (compliant or partial runs)
+- `FAILURE_LOG` (hard-failure runs)
+
+**Declaration:**
+1. These logs are valid candidate evidence for Stumpy source audits.
+2. A Stumpy audit of an LMES run SHALL treat the emitted log as primary observational evidence.
+3. Stumpy SHALL NOT invent additional claims about the run that are not supported by the log or by independently observable wrapper behavior.
+4. LMES itself does not call Stumpy; binding is one-way (LMES → evidence → possible later Stumpy consumption).
+
+This interface is declarative only. No runtime coupling is required for LMES v1.2.
+
+See also: `RELATIONSHIP_TO_CANON.md`.
+
+---
+
 ## Versioning
 
-This specification covers LMES v1.1.
+This specification covers LMES v1.2.
 Breaking changes to invariants, states, or checkpoint semantics require a major version increment.
-Additive changes (new fields, new examples) require a minor version increment.
+Additive changes (new fields, new examples, relationship declarations) require a minor version increment.
