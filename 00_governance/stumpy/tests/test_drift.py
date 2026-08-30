@@ -14,6 +14,5 @@ def test_drift_detector_altitude_violation():
     }
     detector._inspect_event(event)
 
-    assert not vq.empty()
-    v = vq.get()
+    v = vq.get(timeout=1.0)
     assert v["type"] == "altitude_drift"
