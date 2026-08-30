@@ -6,35 +6,36 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .classifier import EpistemicState
+from .evidence_contracts import RelationshipEvidence, evaluate_relationship
 from .relationship_graph import CORE_RELATIONSHIP_GRAPH, RelationshipEdge, validate_graph
-from .relational import RelationalObservation, observe_declared_reference
 
 
 @dataclass(frozen=True)
 class RelationshipRun:
     edges_evaluated: int
-    observations: tuple[RelationalObservation, ...]
+    observations: tuple[RelationshipEvidence, ...]
 
     @property
     def counts(self) -> dict[str, int]:
         return {state.value: sum(o.state == state for o in self.observations) for state in EpistemicState}
 
 
-def _tokens_for(edge: RelationshipEdge) -> tuple[str, ...]:
-    source_name = Path(edge.target).stem
-    return (source_name, edge.relation, edge.invariant)
-
-
 def run_relationship_graph(repository_root: str, edges=CORE_RELATIONSHIP_GRAPH) -> RelationshipRun:
+    edges = tuple(edges)
     validate_graph(edges)
-    observations = tuple(
-        observe_declared_reference(
-            repository_root,
-            relation_id=edge.edge_id,
-            left_target=edge.source,
-            right_target=edge.target,
-            tokens=_tokens_for(edge),
-        )
-        for edge in edges
-    )
-    return RelationshipRun(edges_evaluated=len(tuple(edges)), observations=observations)
+    observations = []
+    for edge in edges:
+        source_path = Path(repository_root, edge.source)
+        target_path = Path(repository_root, edge.target)
+        if not source_path.is_file() or not target_path.is_file():
+            observations.append(RelationshipEvidence(
+                edge_id=edge.edge_id,
+                relation=edge.relation,
+                state=EpistemicState.UNKNOWN,
+                evidence=(),
+                reason="One or both relationship endpoints are unavailable; relationship cannot be established.",
+            ))
+            continue
+        source = source_path.read_text(encoding="utf-8")
+        observations.append(evaluate_relationship(edge, source, target_path.read_text(encoding="utf-8")))
+    return RelationshipRun(edges_evaluated=len(edges), observations=tuple(observations))
