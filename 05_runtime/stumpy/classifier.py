@@ -23,10 +23,11 @@ def classify_evidence(
     explicit_silence: bool = False,
     evaluator_can_judge: bool = True,
 ) -> EpistemicState:
-    """Classify evidence without treating assertions as proof.
+    """Classify evidence without manufacturing certainty.
 
-    The function intentionally refuses to manufacture certainty from absent or
-    assertion-only evidence.
+    PASS/FAIL require at least one non-assertion record with a valid digest and
+    an independently observable acquisition method. Invalid or unsupported
+    evidence cannot substantiate constitutional truth.
     """
     records = tuple(evidence)
 
@@ -36,7 +37,14 @@ def classify_evidence(
         return EpistemicState.DECLARED_UNENFORCED
     if not evaluator_can_judge:
         return EpistemicState.ABSTAIN
-    if not records or all(record.is_assertion_only() for record in records):
+
+    substantive = tuple(
+        record for record in records
+        if not record.is_assertion_only()
+        and record.verify_digest()
+        and record.is_independently_observable()
+    )
+    if not substantive:
         return EpistemicState.UNKNOWN
     if observed_conformance is True:
         return EpistemicState.PASS
