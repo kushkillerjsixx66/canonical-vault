@@ -48,7 +48,10 @@ def audit_source_for_predicate(
     elif predicate == "contains_function":
         observed = f"def {expected_behavior}(" in source
     elif predicate == "contains_class":
-        observed = f"class {expected_behavior}(" in source
+        # Accept normal Python class declarations with or without inheritance.
+        # The predicate asks whether the named class is observable, not whether
+        # it uses one exact formatting convention.
+        observed = f"class {expected_behavior}" in source
     else:
         return SourceAuditResult(claim, EpistemicState.UNKNOWN, "unsupported predicate")
 
