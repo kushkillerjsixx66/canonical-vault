@@ -21,6 +21,16 @@ def register(invariant_id: str) -> Callable[[CheckFn], CheckFn]:
     return decorator
 
 
+@register("S·ROOT")
+def check_sovereignty_root(ctx: Dict[str, Any]) -> InvariantResult:
+    """The explicit sovereignty marker, when supplied, must be canonical root."""
+    sovereignty = ctx.get("sovereignty")
+    if sovereignty is None:
+        return InvariantResult("S·ROOT", True, "no sovereignty field — n/a")
+    passed = str(sovereignty).lower() == "root"
+    return InvariantResult("S·ROOT", passed, "ok" if passed else f"invalid sovereignty '{sovereignty}'", {"sovereignty": sovereignty, "required": "root"})
+
+
 @register("S·OPR")
 def check_operator_identity(ctx: Dict[str, Any]) -> InvariantResult:
     op = ctx.get("operator", ctx.get("operator_id"))
