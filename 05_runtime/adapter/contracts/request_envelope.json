@@ -1,0 +1,19 @@
+{
+  "session_id": "uuid",
+  "operator_posture": "OPERATOR",
+  "intent": "analysis",
+  "prompt": "User text...",
+  "context": {
+    "thread": [],
+    "vault_refs": []
+  },
+  "lattice": {
+    "modules": ["IDE", "CCE", "CFC"],
+    "constraints": ["NO_HARM", "NO_LEAKAGE"],
+    "lineage": {
+      "mode": "FULL",
+      "visibility": "OPERATOR"
+    },
+    "eval_profile": ["DRIFT", "COHERENCE", "SAFETY"]
+  }
+}
