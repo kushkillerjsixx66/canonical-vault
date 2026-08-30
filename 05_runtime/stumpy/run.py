@@ -5,7 +5,8 @@ from __future__ import annotations
 import subprocess
 from dataclasses import dataclass
 
-from .registry import StumpyAuditRegistry, default_repository_rules
+from .manifest import AuditManifest, core_manifest
+from .registry import StumpyAuditRegistry
 from .report import StumpyAuditReport, build_report
 
 
@@ -29,14 +30,20 @@ def resolve_repository_revision(repository_root: str) -> Revision:
     raise RuntimeError("unable to resolve repository revision; audit must not run against an unidentified revision")
 
 
-def run_default_audit(repository_root: str) -> StumpyAuditReport:
+def run_audit(repository_root: str, manifest: AuditManifest | None = None) -> StumpyAuditReport:
+    selected = manifest or core_manifest()
+    selected.validate()
     revision = resolve_repository_revision(repository_root)
-    registry = StumpyAuditRegistry(repository_root, default_repository_rules())
+    registry = StumpyAuditRegistry(repository_root, selected.rules)
     findings = registry.run()
     return build_report(
         findings,
         repository_revision=revision.value,
-        rules_evaluated=len(registry.rules),
+        rules_evaluated=len(selected.rules),
         evaluator_id="stumpy.audit_registry",
         evaluator_version="1.0.0",
     )
+
+
+def run_default_audit(repository_root: str) -> StumpyAuditReport:
+    return run_audit(repository_root, core_manifest())
