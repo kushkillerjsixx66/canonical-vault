@@ -1,0 +1,174 @@
+# escalation_ladders.yaml
+# Escalation Ladders — Governance Fault Response System
+# Defines governed escalation paths for drift, envelope breaches, failures, and violations.
+
+protocol_id: "ESC-LADDERS"
+name: "Governance Escalation Ladders"
+version: "1.0.0"
+status: "active"
+
+description: >
+  Escalation ladders define the governed response sequence when the system
+  encounters drift, boundary violations, envelope breaches, or protocol-level
+  failures. Each ladder specifies detection triggers, escalation stages,
+  operator notification rules, and recovery pathways. All escalations must be
+  lineage-tracked and reversible when possible.
+
+sovereign_operator:
+  op_id: "JRM-01"
+  handle: "@liminaljermo"
+  signature: "SIG: JRM-01 @liminaljermo"
+
+ladders:
+
+  OMEGA13-DRIFT:
+    name: "Ω-13 Bilateralism Drift Ladder"
+    triggers:
+      - "cross-boundary mutation without bilateral validation"
+      - "missing binding declaration in bilateralism_map.yaml"
+      - "irreversible action attempted without canonization"
+    stages:
+      - id: "D1"
+        action: "Reject interaction"
+        system_state: "halted_local"
+        lineage_required: true
+      - id: "D2"
+        action: "Emit governance fault"
+        system_state: "fault_declared"
+        lineage_required: true
+      - id: "D3"
+        action: "Notify operator"
+        system_state: "operator_alerted"
+        lineage_required: true
+      - id: "D4"
+        action: "Enter recovery sequence"
+        recovery_source: "recovery_sequences.yaml"
+        lineage_required: true
+
+  OMEGA14-ENVELOPE-BREACH:
+    name: "Ω-14 Governance Envelope Breach Ladder"
+    triggers:
+      - "autonomy exceeding governance envelope"
+      - "unauthorized altitude shift"
+      - "self-expansion of capability"
+    stages:
+      - id: "E1"
+        action: "Halt operation"
+        system_state: "halted_global"
+        lineage_required: true
+      - id: "E2"
+        action: "Emit envelope breach fault"
+        system_state: "fault_declared"
+        lineage_required: true
+      - id: "E3"
+        action: "Notify operator immediately"
+        system_state: "operator_alerted"
+        lineage_required: true
+      - id: "E4"
+        action: "Lock envelope boundaries"
+        system_state: "envelope_locked"
+        lineage_required: true
+      - id: "E5"
+        action: "Require operator ratification to resume"
+        system_state: "awaiting_signature"
+        lineage_required: true
+
+  AMP-ALTITUDE-BREACH:
+    name: "AMP Altitude Drift Ladder"
+    triggers:
+      - "altitude drift detected"
+      - "cross-altitude bleed without modulation"
+      - "irreversible altitude shift without canonization"
+    stages:
+      - id: "A1"
+        action: "Revert to last stable altitude"
+        system_state: "altitude_reverted"
+        lineage_required: true
+      - id: "A2"
+        action: "Emit altitude drift lineage"
+        system_state: "drift_logged"
+        lineage_required: true
+      - id: "A3"
+        action: "Notify operator"
+        system_state: "operator_alerted"
+        lineage_required: true
+      - id: "A4"
+        action: "Enter drift recovery sequence"
+        recovery_source: "recovery_sequences.yaml"
+        lineage_required: true
+
+  VAULT-LIFECYCLE-FAULT:
+    name: "Vault Lifecycle Fault Ladder"
+    triggers:
+      - "commit without review"
+      - "review without threshold"
+      - "canon attempt without lineage"
+      - "veil violation"
+    stages:
+      - id: "V1"
+        action: "Freeze Vault state"
+        system_state: "vault_frozen"
+        lineage_required: true
+      - id: "V2"
+        action: "Emit lifecycle fault"
+        system_state: "fault_declared"
+        lineage_required: true
+      - id: "V3"
+        action: "Notify operator"
+        system_state: "operator_alerted"
+        lineage_required: true
+      - id: "V4"
+        action: "Require operator intervention"
+        system_state: "awaiting_signature"
+        lineage_required: true
+
+  RUNTIME-BOUNDARY-VIOLATION:
+    name: "Runtime Boundary Violation Ladder"
+    triggers:
+      - "module accessing foreign domain"
+      - "silent write detected"
+      - "cross-layer mutation attempt"
+    stages:
+      - id: "R1"
+        action: "Terminate offending process"
+        system_state: "process_terminated"
+        lineage_required: true
+      - id: "R2"
+        action: "Emit boundary violation fault"
+        system_state: "fault_declared"
+        lineage_required: true
+      - id: "R3"
+        action: "Notify operator"
+        system_state: "operator_alerted"
+        lineage_required: true
+      - id: "R4"
+        action: "Enter boundary recovery sequence"
+        recovery_source: "recovery_sequences.yaml"
+        lineage_required: true
+
+lineage:
+  required: true
+  sinks:
+    - "00_governance/governance_lineage/protocols.lineage"
+    - "05_runtime/vault/lineage/"
+  fields:
+    - "timestamp"
+    - "ladder_id"
+    - "stage_id"
+    - "trigger"
+    - "operator_signature"
+    - "system_state"
+
+visibility:
+  veil_levels:
+    internal_governance: "clear"
+    external_narrative: "partial"
+    sensitive_mechanics: "full"
+  governed_by: "Veil Engine"
+
+metadata:
+  related_protocols:
+    - "Ω-13"
+    - "Ω-14"
+    - "AMP"
+  audit_policy_source: "audit_policy.yaml"
