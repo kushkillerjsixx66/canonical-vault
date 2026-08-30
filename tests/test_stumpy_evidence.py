@@ -50,6 +50,18 @@ def test_silence_is_distinct_state():
     assert classify_evidence([], observed_conformance=None, explicit_silence=True) is EpistemicState.SILENCE
 
 
+def test_tampered_evidence_cannot_pass():
+    evidence = make_evidence()
+    object.__setattr__(evidence, "payload", {"result": "tampered"})
+    assert not evidence.verify_digest()
+    assert classify_evidence([evidence], observed_conformance=True) is EpistemicState.UNKNOWN
+
+
+def test_assertion_only_cannot_fail_without_independent_evidence():
+    evidence = make_evidence(EvidenceKind.ASSERTION)
+    assert classify_evidence([evidence], observed_conformance=False) is EpistemicState.UNKNOWN
+
+
 def test_finding_requires_evidence_for_pass_or_fail():
     claim = AuditClaim(
         claim_id="CLAIM-001",
