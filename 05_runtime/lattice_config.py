@@ -172,6 +172,19 @@ class VeilConfig:
     priority_order: dict = field(default_factory=lambda: {
         "SENTINEL_INCIDENT": 1,
         "G1_BLOCK":          2,
+        "VARA_HYPOTHESIS":   3,
+        "G2_SOFT_BLOCK":     4,
+        "G3_BLOCK":          5,
+    })
+
+    # Days before an un-reviewed entry is escalated to operator HUD
+    review_escalation_days: int = 7
+
+    # Whether Veil overflow triggers an operator alert
+    overflow_alert_enabled: bool = True
+
+    # Behaviour on overflow
+    overflow_behaviour: str = "alert_and_hold"
 
 # ---------------------------------------------------------------------------
 # § 4  —  VARA CONFIG  (Rank 6)
@@ -317,6 +330,45 @@ class NeuraleseConfig:
 
 # ---------------------------------------------------------------------------
 # § 9  —  PULSE CYCLE CONFIG
+# ---------------------------------------------------------------------------
+
+@dataclass
+class PulseConfig:
+    """
+    Pulse Cycle orchestration configuration.
+    Invariant bindings: I·COH, III·ATT, IV·SIL, V·DEC
+    """
+
+    # Hard upper bound for a complete Pulse cycle
+    cycle_timeout_seconds: int = 300
+
+    # Maximum time allowed for activation binding before evaluation
+    activation_stage_timeout_seconds: int = 60
+
+    # Maximum time allowed for governance gate evaluation
+    evaluation_stage_timeout_seconds: int = 60
+
+    # Required quiet interval between completed cycles
+    silence_interval_seconds: int = 30
+
+    # Activation salience decay applied at cycle closure
+    activation_decay_rate: float = 0.10
+
+    # Lowest activation value preserved before downgrade/prune consideration
+    activation_floor: float = 0.05
+
+    # Number of cycles over which inactive activations decay by default
+    activation_decay_window_cycles: int = 5
+
+    # Maximum active nodes bound into one Pulse cycle
+    max_active_nodes: int = 25
+
+    # Whether cycle boundaries are emitted to runtime logs
+    log_cycle_boundaries: bool = True
+
+    # Cycle identifier format used by runtime logs and HUD output
+    cycle_id_format: str = "uuid"
+
 
 # ---------------------------------------------------------------------------
 # § 10  —  MASTER CONFIG OBJECT
@@ -450,6 +502,30 @@ def validate_config(cfg: Optional[LatticeConfig] = None) -> list[str]:
         violations.append(
             f"Veil max_queue_size must be > 0 (got {cfg.veil.max_queue_size})"
         )
+    if cfg.pulse.cycle_timeout_seconds <= 0:
+        violations.append(
+            f"Pulse cycle_timeout_seconds must be > 0s (got {cfg.pulse.cycle_timeout_seconds})"
+        )
+    if cfg.pulse.silence_interval_seconds < 0:
+        violations.append(
+            f"Pulse silence_interval_seconds must be >= 0s (got {cfg.pulse.silence_interval_seconds})"
+        )
+    if not (0.0 <= cfg.pulse.activation_decay_rate <= 1.0):
+        violations.append(
+            f"Pulse activation_decay_rate must be in [0.0,1.0] (got {cfg.pulse.activation_decay_rate})"
+        )
+    if not (0.0 <= cfg.pulse.activation_floor <= 1.0):
+        violations.append(
+            f"Pulse activation_floor must be in [0.0,1.0] (got {cfg.pulse.activation_floor})"
+        )
+    if cfg.pulse.activation_decay_window_cycles <= 0:
+        violations.append(
+            f"Pulse activation_decay_window_cycles must be > 0 (got {cfg.pulse.activation_decay_window_cycles})"
+        )
+    if cfg.pulse.max_active_nodes <= 0:
+        violations.append(
+            f"Pulse max_active_nodes must be > 0 (got {cfg.pulse.max_active_nodes})"
+        )
 
     return violations
 
@@ -470,25 +546,3 @@ if __name__ == "__main__":
     else:
         print("\n[CONFIG VALID] All thresholds within bounds. Ready for boot.")
 # ---------------------------------------------------------------------------
-
-@dataclass
-class PulseConfig:
-    """Pulse Cycle orchestration configuration."""
-
-    cycle_timeout_seconds: int = 300
-    evaluation_stage_timeout_seconds: int = 60
-    log_cycle_boundaries: bool = True
-    cycle_id_format: str = "uuid"
-        "VARA_HYPOTHESIS":   3,
-        "G2_SOFT_BLOCK":     4,
-        "G3_BLOCK":          5,
-    })
-
-    # Days before an un-reviewed entry is escalated to operator HUD
-    review_escalation_days: int = 7
-
-    # Whether Veil overflow triggers an operator alert
-    overflow_alert_enabled: bool = True
-
-    # Behaviour on overflow
-    overflow_behaviour: str = "alert_and_hold"
