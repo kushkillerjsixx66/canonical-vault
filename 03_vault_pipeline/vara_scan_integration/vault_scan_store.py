@@ -5,21 +5,12 @@ from vara.scan.vara_scan_schema import VaraScanResult
 
 
 class VaultScanStore:
-    """
-    Canonical storage layer for Vara Scan results.
+    """Canonical storage layer for Vara Scan results."""
 
-    Stores:
-    - weak signals
-    - trends
-    - anomalies
-    - unspecified fields
-    - lineage
+    _root = Path("vault/vara_scans")
 
-    Storage format: JSON
-    """
-
-    def __init__(self, root: str = "vault/vara_scans") -> None:
-        self._root = Path(root)
+    def __init__(self, root: str | Path | None = None) -> None:
+        self._root = Path(self._root if root is None else root)
         self._root.mkdir(parents=True, exist_ok=True)
 
     def save(self, scan: VaraScanResult) -> Path:
