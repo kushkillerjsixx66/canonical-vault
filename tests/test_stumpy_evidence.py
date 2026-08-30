@@ -1,11 +1,15 @@
-from 05_runtime.stumpy.classifier import EpistemicState, classify_evidence
-from 05_runtime.stumpy.claims import AuditClaim, AuditFinding
-from 05_runtime.stumpy.evidence import EvidenceKind, EvidenceRecord
+import importlib
 
+stumpy_classifier = importlib.import_module("05_runtime.stumpy.classifier")
+stumpy_claims = importlib.import_module("05_runtime.stumpy.claims")
+stumpy_evidence = importlib.import_module("05_runtime.stumpy.evidence")
 
-# NOTE: package path is intentionally mirrored by the repository runtime layout.
-# Test runners that normalize package names may import this module through their
-# configured runtime package alias.
+EpistemicState = stumpy_classifier.EpistemicState
+classify_evidence = stumpy_classifier.classify_evidence
+AuditClaim = stumpy_claims.AuditClaim
+AuditFinding = stumpy_claims.AuditFinding
+EvidenceKind = stumpy_evidence.EvidenceKind
+EvidenceRecord = stumpy_evidence.EvidenceRecord
 
 
 def make_evidence(kind=EvidenceKind.TEST):
