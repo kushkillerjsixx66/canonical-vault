@@ -22,9 +22,9 @@ class VaraScanPipeline:
     - Emit governance events to Stumpy
     """
 
-    def __init__(self, stumpy_event_queue) -> None:
+    def __init__(self, stumpy_event_queue, vault_root=None) -> None:
         self._trigger = VaraScanTrigger()
-        self._store = VaultScanStore()
+        self._store = VaultScanStore(root=vault_root)
         self._promoter = VaultScanPromoter()
         self._integrity = VaultScanIntegrity()
         self._queue = stumpy_event_queue
@@ -46,19 +46,15 @@ class VaraScanPipeline:
         if result is None:
             return None
 
-        # Integrity enforcement
         if not self._integrity.validate(result):
             self._emit_governance_violation("scan_integrity_failure", result)
             return result
 
-        # Promotion
         if self._promoter.should_promote(result):
             path = self._store.save(result)
             self._emit_promotion_event(result, path)
 
         return result
-
-    # ---- Governance Events ----------------------------------------------------
 
     def _emit_governance_violation(self, violation_type: str, scan: VaraScanResult) -> None:
         self._queue.put({
