@@ -10,12 +10,12 @@ from .field_intel_reporter import FieldIntelReporter
 class FieldIntelScheduler:
     """Canonical Field INTEL Friday Scheduler."""
 
-    _vault_root = "vault"
+    _vault_root = Path("vault")
 
     def __init__(self, stumpy_event_queue, vault_root=None):
-        root = self._vault_root if vault_root is None else vault_root
-        self._pipeline = VaraScanPipeline(stumpy_event_queue)
-        self._chain = VaultChain(root=Path(root) / "chain")
+        root = self._vault_root if vault_root is None else Path(vault_root)
+        self._pipeline = VaraScanPipeline(stumpy_event_queue, vault_root=root / "vara_scans")
+        self._chain = VaultChain(root=root / "chain")
         self._reporter = FieldIntelReporter()
         self._vault_root = root
 
