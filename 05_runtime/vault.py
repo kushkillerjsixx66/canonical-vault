@@ -19,6 +19,7 @@ from .governance.contracts import (
     DestructiveResetProhibitedError,
     GovernanceDecision,
     GovernanceDeniedError,
+    GovernedRequest,
     LineageEvent,
     LineageIntegrityError,
     SchemaCoherenceError,
@@ -62,12 +63,15 @@ class CanonicalVault:
         decision: GovernanceDecision,
         lineage: LineageEvent,
         payload: Dict[str, Any],
+        request: Optional[GovernedRequest] = None,
     ) -> CommitReceipt:
         if decision.decision != "ALLOW":
             raise GovernanceDeniedError(decision)
 
-        if not lineage.is_bound_to(transition, decision):
-            raise LineageIntegrityError("Lineage event is not cryptographically bound to transition and decision.")
+        if request is None or not lineage.is_constitutionally_bound_to(transition, request, decision):
+            raise LineageIntegrityError(
+                "Lineage event is not bound to operator, intent, request, decision, and transition."
+            )
 
         content = payload.get("content") or payload.get("signal") or ""
         classification = payload.get("classification", NodeClassification.STANDARD.value)
@@ -87,6 +91,10 @@ class CanonicalVault:
             operator_note=payload.get("operator_note"),
             transition_id=transition.transition_id,
             lineage_id=lineage.event_id,
+            operator_id=request.operator.operator_id,
+            intent_id=request.intent.intent_id,
+            request_id=request.request_id,
+            decision_hash=decision.decision_hash,
         )
 
         self._nodes.append(node)
@@ -146,6 +154,10 @@ class CanonicalVault:
         operator_note: Optional[str],
         transition_id: str,
         lineage_id: str,
+        operator_id: str,
+        intent_id: str,
+        request_id: str,
+        decision_hash: str,
     ) -> Dict[str, Any]:
         content_text = content if isinstance(content, str) else json.dumps(content, sort_keys=True)
         now = iso_now()
@@ -153,6 +165,10 @@ class CanonicalVault:
         return {
             "node_id": node_id,
             "chain_id": chain_id or f"chain-{node_id}",
+            "operator_id": operator_id,
+            "intent_id": intent_id,
+            "request_id": request_id,
+            "decision_hash": decision_hash,
             "transition_id": transition_id,
             "lineage_id": lineage_id,
             "content": content_text,
