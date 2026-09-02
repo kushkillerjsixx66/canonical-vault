@@ -36,6 +36,7 @@ def _chain():
         lineage_event_id="probe-lineage",
         request_id=request.request_id,
         intent_id=request.intent.intent_id,
+        artifact_hash=request.artifact_hash,
     )
     lineage = contracts.LineageEvent(
         event_id="probe-lineage",
@@ -48,6 +49,7 @@ def _chain():
         evaluator_versions={},
         request_id=request.request_id,
         intent_id=request.intent.intent_id,
+        artifact_hash=request.artifact_hash,
     )
     return request, decision, transition, lineage
 
@@ -71,10 +73,11 @@ def test_tampered_artifact_identity_is_rejected():
         transition_id=lineage.transition_id,
         decision_hash=lineage.decision_hash,
         input_hash=lineage.input_hash,
-        payload_hash=contracts.sha256_digest("tampered"),
+        payload_hash=lineage.payload_hash,
         evaluator_versions=lineage.evaluator_versions,
         request_id=lineage.request_id,
         intent_id=lineage.intent_id,
+        artifact_hash=contracts.sha256_digest("tampered"),
     )
 
     assert not tampered.is_constitutionally_bound_to(transition, request, decision)
