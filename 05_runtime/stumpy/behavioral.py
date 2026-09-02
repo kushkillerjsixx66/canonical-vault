@@ -91,6 +91,7 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
         evidence_refs=(),
         evaluator_versions={},
     )
+    artifact_hash = request.artifact_hash
     transition = contracts.StateTransition(
         transition_id="stumpy-probe-transition",
         prior_refs=(),
@@ -100,6 +101,7 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
         lineage_event_id="stumpy-probe-lineage",
         request_id=request.request_id,
         intent_id=request.intent.intent_id,
+        artifact_hash=artifact_hash,
     )
     valid = contracts.LineageEvent(
         event_id="stumpy-probe-lineage",
@@ -112,6 +114,7 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
         evaluator_versions={},
         request_id=request.request_id,
         intent_id=request.intent.intent_id,
+        artifact_hash=artifact_hash,
     )
     if not valid.is_constitutionally_bound_to(transition, request, decision):
         return False, "valid operator → intent → request → decision → transition → artifact chain failed to bind"
@@ -133,10 +136,11 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
         evaluator_versions=valid.evaluator_versions,
         request_id=valid.request_id,
         intent_id=valid.intent_id,
+        artifact_hash=contracts.sha256_digest("tampered artifact"),
     )
     if tampered.is_constitutionally_bound_to(transition, request, decision):
         return False, "tampered artifact identity was accepted by constitutional lineage binding"
-    return True, "complete lineage bound to committed artifact and tampered artifact identity rejected"
+    return True, "valid lineage bound to committed artifact and tampered artifact identity rejected"
 
 
 def probe_drift_accountability(repository_root: str) -> tuple[bool, str]:
@@ -144,7 +148,6 @@ def probe_drift_accountability(repository_root: str) -> tuple[bool, str]:
     path = Path(repository_root) / "00_governance" / "stumpy" / "stumpy_drift_detector.py"
     module = _load_module("stumpy_drift_detector", path)
     detector = module.DriftDetectorProcess(Queue(), Queue())
-
     altitude_findings = detector.inspect_event({
         "type": "runtime_state",
         "source": "stumpy-probe",
@@ -155,7 +158,6 @@ def probe_drift_accountability(repository_root: str) -> tuple[bool, str]:
         "source": "stumpy-probe",
         "payload": {"state": "UNKNOWN"},
     })
-
     types = {finding.get("type") for finding in altitude_findings + lineage_findings}
     required = {"altitude_drift", "epistemic_drift"}
     if required <= types:
@@ -176,7 +178,6 @@ def probe_authority_hierarchy(repository_root: str) -> tuple[bool, str]:
         return False, "authority graph does not begin at rank 1"
     if len(supreme) != 1 or root not in text:
         return False, "authority graph does not expose exactly one supreme constitutional root"
-
     tampered = text + "\n  - rank: 99\n    authority: SUPREME\n    artifact: attacker\n"
     tampered_supreme = re.findall(r"^    authority: SUPREME$", tampered, re.MULTILINE)
     if len(tampered_supreme) != 2:
