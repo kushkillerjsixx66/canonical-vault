@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
-from .audit import SourceAuditResult
+from .audit import BehavioralAuditResult, SourceAuditResult
 from .classifier import EpistemicState
 
 
@@ -72,6 +72,36 @@ def finding_from_source_audit(
         method="repository-source-audit",
         confidence=1.0 if result.state in {EpistemicState.PASS, EpistemicState.FAIL} else None,
         timestamp=datetime.now(timezone.utc).isoformat(),
+    )
+    finding.validate()
+    return finding
+
+
+def finding_from_behavioral_audit(
+    result: BehavioralAuditResult,
+    *,
+    finding_id: str,
+    domain: str,
+    severity: str,
+) -> StumpyFinding:
+    evidence = result.evidence
+    finding = StumpyFinding(
+        finding_id=finding_id,
+        domain=domain,
+        status=result.state.value,
+        severity=severity,
+        claim=result.claim.requirement,
+        observed_state={"reason": result.reason, **dict(evidence.payload)},
+        expected_state={"behavioral_probe": result.claim.expected_behavior},
+        constitutional_basis=[result.claim.constitutional_basis],
+        evidence_refs=[evidence.evidence_id],
+        source_refs=[result.claim.target],
+        lineage_refs=[evidence.lineage_ref] if evidence.lineage_ref else [],
+        evaluator_id=evidence.evaluator_id,
+        evaluator_version=evidence.evaluator_version,
+        method=evidence.method,
+        confidence=1.0 if result.state in {EpistemicState.PASS, EpistemicState.FAIL} else None,
+        timestamp=evidence.captured_at,
     )
     finding.validate()
     return finding
