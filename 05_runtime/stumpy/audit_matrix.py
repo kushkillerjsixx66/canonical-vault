@@ -103,6 +103,36 @@ CORE_AUDIT_MATRIX = (
         evidence_type="repository_source",
         unknown_condition="A source scan cannot establish semantic enforcement of operator authority.",
     ),
+    MatrixEntry(
+        invariant="reversibility",
+        rule=AuditRule(
+            rule_id="M-REVERSIBILITY-001",
+            domain="reversibility",
+            constitutional_basis="Reversibility",
+            requirement="An existing lineage sequence cannot be overwritten by a later append.",
+            target="03_vault_pipeline/vault_chain/vault_chain.py",
+            expected_behavior="reversibility",
+            predicate="behavioral_probe",
+            severity="HIGH",
+        ),
+        evidence_type="runtime_behavior",
+        unknown_condition="The isolated VaultChain behavioral probe cannot execute or cannot establish the required behavior.",
+    ),
+    MatrixEntry(
+        invariant="constraint_enforcement",
+        rule=AuditRule(
+            rule_id="M-CONSTRAINT-001",
+            domain="constraint_enforcement",
+            constitutional_basis="Constraint Enforcement",
+            requirement="An unsafe runtime state must produce an enforcement finding.",
+            target="00_governance/stumpy/stumpy_enforcement_pipelines.py",
+            expected_behavior="constraint_enforcement",
+            predicate="behavioral_probe",
+            severity="HIGH",
+        ),
+        evidence_type="runtime_behavior",
+        unknown_condition="The isolated enforcement behavioral probe cannot execute or cannot establish the required behavior.",
+    ),
 )
 
 
