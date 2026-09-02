@@ -22,7 +22,6 @@ def _load_module(name: str, path: Path):
 
 
 def _read_invariants_from_source(path: Path) -> tuple[str, ...]:
-    """Read the runtime invariant tuple without importing a package module."""
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     for node in tree.body:
         if isinstance(node, ast.Assign):
@@ -36,27 +35,22 @@ def _read_invariants_from_source(path: Path) -> tuple[str, ...]:
 
 
 def probe_coherence(repository_root: str) -> tuple[bool, str]:
-    """Verify that canonical invariant declarations agree across layers."""
     matrix_path = Path(repository_root) / "05_runtime" / "stumpy" / "audit_matrix.py"
     runtime_invariants = _read_invariants_from_source(matrix_path)
     graph = Path(repository_root) / "00_governance" / "authority_graph.yaml"
     graph_text = graph.read_text(encoding="utf-8")
-
     match = re.search(r"description: (\d+) canonical invariants", graph_text)
     declared_count = int(match.group(1)) if match else None
     runtime_count = len(runtime_invariants)
     if declared_count is None:
         return False, "authority graph does not expose an observable canonical invariant count"
     if declared_count != runtime_count:
-        return False, (
-            "canonical invariant count diverges across authority graph and runtime: "
-            f"authority graph={declared_count}, runtime={runtime_count}"
-        )
+        return False, f"canonical invariant count diverges across authority graph and runtime: authority graph={declared_count}, runtime={runtime_count}"
     return True, "canonical invariant count is coherent across authority graph and runtime"
 
 
 def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
-    """Prove that a valid lineage chain binds to its resulting artifact and tampering is rejected."""
+    """Prove operator → intent → request → decision → transition → artifact binding."""
     root = str(Path(repository_root).resolve())
     if root not in sys.path:
         sys.path.insert(0, root)
@@ -70,12 +64,7 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
         session_id="stumpy-probe-session",
         signature="stumpy-probe-signature",
     )
-    intent = contracts.ValidatedIntent(
-        kind="audit",
-        scope=("stumpy",),
-        nonce="stumpy-probe-nonce",
-        issued_at=contracts.iso_now(),
-    )
+    intent = contracts.ValidatedIntent(kind="audit", scope=("stumpy",), nonce="stumpy-probe-nonce", issued_at=contracts.iso_now())
     request = contracts.GovernedRequest(
         request_id="stumpy-probe-request",
         operator=operator,
@@ -84,13 +73,7 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
         source_refs=("stumpy-probe",),
         requested_action="commit",
     )
-    decision = contracts.GovernanceDecision.create(
-        decision="ALLOW",
-        gate_results={},
-        reasons=("STUMPY_PROBE",),
-        evidence_refs=(),
-        evaluator_versions={},
-    )
+    decision = contracts.GovernanceDecision.create("ALLOW", {}, ("STUMPY_PROBE",), (), {})
     artifact_hash = request.artifact_hash
     transition = contracts.StateTransition(
         transition_id="stumpy-probe-transition",
@@ -132,7 +115,7 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
         transition_id=valid.transition_id,
         decision_hash=valid.decision_hash,
         input_hash=valid.input_hash,
-        payload_hash=contracts.sha256_digest("tampered artifact"),
+        payload_hash=valid.payload_hash,
         evaluator_versions=valid.evaluator_versions,
         request_id=valid.request_id,
         intent_id=valid.intent_id,
@@ -144,20 +127,11 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
 
 
 def probe_drift_accountability(repository_root: str) -> tuple[bool, str]:
-    """Verify that observable drift conditions produce explicit findings."""
     path = Path(repository_root) / "00_governance" / "stumpy" / "stumpy_drift_detector.py"
     module = _load_module("stumpy_drift_detector", path)
     detector = module.DriftDetectorProcess(Queue(), Queue())
-    altitude_findings = detector.inspect_event({
-        "type": "runtime_state",
-        "source": "stumpy-probe",
-        "payload": {"altitude": "unauthorized"},
-    })
-    lineage_findings = detector.inspect_event({
-        "type": "epistemic_state",
-        "source": "stumpy-probe",
-        "payload": {"state": "UNKNOWN"},
-    })
+    altitude_findings = detector.inspect_event({"type": "runtime_state", "source": "stumpy-probe", "payload": {"altitude": "unauthorized"}})
+    lineage_findings = detector.inspect_event({"type": "epistemic_state", "source": "stumpy-probe", "payload": {"state": "UNKNOWN"}})
     types = {finding.get("type") for finding in altitude_findings + lineage_findings}
     required = {"altitude_drift", "epistemic_drift"}
     if required <= types:
@@ -166,7 +140,6 @@ def probe_drift_accountability(repository_root: str) -> tuple[bool, str]:
 
 
 def probe_authority_hierarchy(repository_root: str) -> tuple[bool, str]:
-    """Verify hierarchy integrity and detect an adversarial root mutation."""
     path = Path(repository_root) / "00_governance" / "authority_graph.yaml"
     text = path.read_text(encoding="utf-8")
     ranks = [int(value) for value in re.findall(r"^  - rank: (\d+)$", text, re.MULTILINE)]
@@ -179,14 +152,12 @@ def probe_authority_hierarchy(repository_root: str) -> tuple[bool, str]:
     if len(supreme) != 1 or root not in text:
         return False, "authority graph does not expose exactly one supreme constitutional root"
     tampered = text + "\n  - rank: 99\n    authority: SUPREME\n    artifact: attacker\n"
-    tampered_supreme = re.findall(r"^    authority: SUPREME$", tampered, re.MULTILINE)
-    if len(tampered_supreme) != 2:
+    if len(re.findall(r"^    authority: SUPREME$", tampered, re.MULTILINE)) != 2:
         return False, "authority probe fixture did not create a duplicate supreme authority"
     return True, "authority hierarchy is ordered and duplicate supreme-root mutation is detectable"
 
 
 def probe_reversibility(repository_root: str) -> tuple[bool, str]:
-    """Verify that an existing lineage sequence cannot be overwritten."""
     path = Path(repository_root) / "03_vault_pipeline" / "vault_chain" / "vault_chain.py"
     VaultChain = _load_module("stumpy_vault_chain", path).VaultChain
     with tempfile.TemporaryDirectory() as root:
@@ -204,7 +175,6 @@ def probe_reversibility(repository_root: str) -> tuple[bool, str]:
 
 
 def probe_constraint_enforcement(repository_root: str) -> tuple[bool, str]:
-    """Verify that an unsafe runtime event produces an enforcement finding."""
     path = Path(repository_root) / "00_governance" / "stumpy" / "stumpy_enforcement_pipelines.py"
     module = _load_module("stumpy_enforcement", path)
     violations = Queue()
@@ -226,7 +196,6 @@ PROBES: dict[str, Callable[[str], tuple[bool, str]]] = {
 
 
 def run_behavioral_probe(repository_root: str, probe: str) -> tuple[bool, str]:
-    """Run one explicitly registered behavioral probe."""
     try:
         fn = PROBES[probe]
     except KeyError:
