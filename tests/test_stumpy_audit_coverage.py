@@ -5,25 +5,15 @@ audit_matrix = import_module("05_runtime.stumpy.audit_matrix")
 run_module = import_module("05_runtime.stumpy.run")
 
 
-def test_canonical_invariant_universe_is_fully_accounted_for():
+def test_canonical_invariant_universe_is_fully_mapped_to_audit_rules():
     evaluated = tuple(entry.invariant for entry in audit_matrix.CORE_AUDIT_MATRIX)
-    unevaluated = tuple(
-        invariant
-        for invariant in audit_matrix.INVARIANTS
-        if invariant not in evaluated
-    )
 
-    assert set(evaluated) | set(unevaluated) == set(audit_matrix.INVARIANTS)
-    assert set(evaluated) & set(unevaluated) == set()
-    assert unevaluated == (
-        "coherence",
-        "lineage_binding",
-        "drift_accountability",
-        "authority_hierarchy",
-    )
+    assert set(evaluated) == set(audit_matrix.INVARIANTS)
+    assert len(evaluated) == len(set(evaluated))
+    assert tuple(invariant for invariant in audit_matrix.INVARIANTS if invariant not in evaluated) == ()
 
 
-def test_run_audit_accounts_for_invariants_without_matrix_rules(monkeypatch):
+def test_run_audit_accounts_for_invariants_without_executed_findings(monkeypatch):
     monkeypatch.setattr(
         run_module,
         "resolve_repository_revision",
