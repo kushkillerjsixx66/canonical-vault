@@ -16,13 +16,11 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from runtime.governance.contracts import (
     iso_now,
     sha256_digest,
-    CommitReceipt,
     DestructiveResetProhibitedError,
     GovernanceDecision,
     GovernanceDeniedError,
     GovernedRequest,
     LineageEvent,
-    LineageIntegrityError,
     NonAuthoritativeRuntimeError,
     SchemaCoherenceError,
     StateTransition,
@@ -32,7 +30,6 @@ from runtime.governance.contracts import (
 from runtime.governance.engine import AuthoritativeGovernanceEngine, ContainmentGovernanceEngine
 from runtime.governance.boundary import GovernanceBoundary
 from runtime.vault import CanonicalVault, NodeClassification, NodeState
-from runtime.adapter.canonical_adapter import GovernedRuntimeAdapter
 from runtime.lattice_core import Lattice as LegacyLattice
 
 
@@ -95,8 +92,13 @@ class TestConstitutionalConformance(unittest.TestCase):
         self.assertIsNotNone(resp.receipt)
         self.assertIsNotNone(resp.lineage)
         self.assertEqual(len(self.canonical_vault.nodes), 1)
-        self.assertEqual(self.canonical_vault.nodes[0]["lineage_id"], resp.lineage.event_id)
-        self.assertEqual(self.canonical_vault.nodes[0]["transition_id"], resp.receipt.transition_id)
+        node = self.canonical_vault.nodes[0]
+        self.assertEqual(node["lineage_id"], resp.lineage.event_id)
+        self.assertEqual(node["transition_id"], resp.receipt.transition_id)
+        self.assertEqual(node["operator_id"], req.operator.operator_id)
+        self.assertEqual(node["intent_id"], req.intent.intent_id)
+        self.assertEqual(node["request_id"], req.request_id)
+        self.assertEqual(node["decision_hash"], resp.decision.decision_hash)
 
     def test_04_blocked_g3_transition_does_not_mutate_canonical_vault(self):
         initial_node_count = len(self.canonical_vault.nodes)
@@ -215,7 +217,6 @@ class TestConstitutionalConformance(unittest.TestCase):
         }
         p_hash = sha256_digest(payload)
         decision = GovernanceDecision.create("ALLOW", {}, (), (), {})
-        
         transition = StateTransition(
             transition_id="t1",
             prior_refs=(),
@@ -223,16 +224,28 @@ class TestConstitutionalConformance(unittest.TestCase):
             payload_hash=p_hash,
             decision_hash=decision.decision_hash,
             lineage_event_id="l1",
+            request_id="req-schema",
+            intent_id=self.valid_intent.intent_id,
         )
         lineage = LineageEvent(
             event_id="l1",
             timestamp=iso_now(),
-            operator_id="op1",
+            operator_id=self.authenticated_operator.operator_id,
             transition_id="t1",
             decision_hash=decision.decision_hash,
             input_hash=p_hash,
             payload_hash=p_hash,
             evaluator_versions={},
+            request_id="req-schema",
+            intent_id=self.valid_intent.intent_id,
+        )
+        request = GovernedRequest(
+            request_id="req-schema",
+            operator=self.authenticated_operator,
+            intent=self.valid_intent,
+            input_payload=payload,
+            source_refs=(),
+            requested_action="commit",
         )
 
         with self.assertRaises(SchemaCoherenceError):
@@ -241,6 +254,7 @@ class TestConstitutionalConformance(unittest.TestCase):
                 decision=decision,
                 lineage=lineage,
                 payload=payload,
+                request=request,
             )
 
     def test_12_gate_override_behavior_matches_constitutional_policy(self):
