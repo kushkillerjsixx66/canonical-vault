@@ -101,6 +101,16 @@ class GovernedRequest:
     def payload_hash(self) -> str:
         return sha256_digest(self.input_payload)
 
+    @property
+    def artifact_hash(self) -> str:
+        """Content identity used to bind a resulting canonical artifact."""
+        content = self.input_payload.get("content")
+        if content is None:
+            content = self.input_payload.get("signal")
+        if content is None:
+            content = ""
+        return sha256_digest(content if isinstance(content, (str, bytes)) else json.dumps(content, sort_keys=True))
+
 
 @dataclass(frozen=True)
 class GateResult:
@@ -166,6 +176,11 @@ class StateTransition:
     request_id: str = ""
     intent_id: str = ""
 
+    @property
+    def artifact_hash(self) -> str:
+        """Canonical artifact identity derived from the transition payload."""
+        return self.payload_hash
+
 
 @dataclass(frozen=True)
 class LineageEvent:
@@ -180,12 +195,18 @@ class LineageEvent:
     request_id: str = ""
     intent_id: str = ""
 
+    @property
+    def artifact_hash(self) -> str:
+        """Canonical artifact identity carried through the lineage event."""
+        return self.payload_hash
+
     def is_bound_to(self, transition: StateTransition, decision: GovernanceDecision) -> bool:
         return (
             self.transition_id == transition.transition_id
             and self.decision_hash == decision.decision_hash
             and self.decision_hash == transition.decision_hash
             and self.payload_hash == transition.payload_hash
+            and self.artifact_hash == transition.artifact_hash
         )
 
     def is_constitutionally_bound_to(
@@ -194,7 +215,7 @@ class LineageEvent:
         request: GovernedRequest,
         decision: GovernanceDecision,
     ) -> bool:
-        """Require operator → intent → request → decision → transition binding."""
+        """Require operator → intent → request → decision → transition → artifact binding."""
         return (
             self.is_bound_to(transition, decision)
             and self.operator_id == request.operator.operator_id
@@ -202,6 +223,7 @@ class LineageEvent:
             and self.request_id == request.request_id
             and transition.intent_id == request.intent.intent_id
             and transition.request_id == request.request_id
+            and self.artifact_hash == request.artifact_hash
         )
 
 
