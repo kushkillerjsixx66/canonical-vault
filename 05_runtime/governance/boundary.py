@@ -37,6 +37,7 @@ class GovernanceBoundary:
 
         transition_id = f"trans-{uuid.uuid4()}"
         lineage_id = f"lineage-{uuid.uuid4()}"
+        artifact_hash = request.artifact_hash
 
         transition = StateTransition(
             transition_id=transition_id,
@@ -48,6 +49,7 @@ class GovernanceBoundary:
             committed=False,
             request_id=request.request_id,
             intent_id=request.intent.intent_id,
+            artifact_hash=artifact_hash,
         )
 
         lineage_event = LineageEvent(
@@ -61,6 +63,7 @@ class GovernanceBoundary:
             evaluator_versions=decision.evaluator_versions,
             request_id=request.request_id,
             intent_id=request.intent.intent_id,
+            artifact_hash=artifact_hash,
         )
 
         if decision.decision != "ALLOW":
