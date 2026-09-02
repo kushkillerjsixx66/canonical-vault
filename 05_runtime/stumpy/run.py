@@ -5,7 +5,7 @@ from __future__ import annotations
 import subprocess
 from dataclasses import dataclass
 
-from .audit_matrix import CORE_AUDIT_MATRIX
+from .audit_matrix import CORE_AUDIT_MATRIX, INVARIANTS
 from .manifest import AuditManifest
 from .registry import StumpyAuditRegistry
 from .report import StumpyAuditReport, build_report
@@ -37,15 +37,17 @@ def run_audit(repository_root: str, manifest: AuditManifest | None = None) -> St
     The audit matrix is the execution authority for the default Stumpy audit.
     Coverage must describe evidence acquisition that actually ran, not merely
     declarations present in a manifest or matrix.
+
+    Canonical coverage is always expressed against the complete invariant
+    universe. Invariants without an executed audit rule remain explicitly
+    unevaluated rather than disappearing from the report.
     """
     selected_matrix = CORE_AUDIT_MATRIX
     if manifest is not None:
         manifest.validate()
         selected_rules = manifest.rules
-        matrix_by_rule = {entry.rule.rule_id: entry.invariant for entry in selected_matrix}
     else:
         selected_rules = tuple(entry.rule for entry in selected_matrix)
-        matrix_by_rule = {entry.rule.rule_id: entry.invariant for entry in selected_matrix}
 
     revision = resolve_repository_revision(repository_root)
     registry = StumpyAuditRegistry(repository_root, selected_rules)
@@ -57,14 +59,15 @@ def run_audit(repository_root: str, manifest: AuditManifest | None = None) -> St
         if finding.finding_id.startswith("FIND-")
     }
     evaluated_invariants = tuple(
-        entry.invariant
-        for entry in selected_matrix
-        if entry.rule.rule_id in executed_rule_ids
+        invariant
+        for invariant in INVARIANTS
+        if any(
+            entry.invariant == invariant and entry.rule.rule_id in executed_rule_ids
+            for entry in selected_matrix
+        )
     )
     unevaluated_invariants = tuple(
-        entry.invariant
-        for entry in selected_matrix
-        if entry.rule.rule_id not in executed_rule_ids
+        invariant for invariant in INVARIANTS if invariant not in evaluated_invariants
     )
     rules_not_evaluated = tuple(
         rule.rule_id for rule in selected_rules if rule.rule_id not in executed_rule_ids
