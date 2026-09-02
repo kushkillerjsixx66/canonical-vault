@@ -1,8 +1,4 @@
-"""Deterministic behavioral probes for Stumpy invariant evidence.
-
-Probes run against isolated or repository state. They establish observable
-properties without treating documentation or self-reported status as proof.
-"""
+"""Deterministic behavioral probes for Stumpy invariant evidence."""
 
 from __future__ import annotations
 
@@ -173,13 +169,11 @@ def probe_authority_hierarchy(repository_root: str) -> tuple[bool, str]:
     if len(supreme) != 1 or root not in text:
         return False, "authority graph does not expose exactly one supreme constitutional root"
 
-    # Adversarial fixture: a second supreme authority must invalidate the graph.
-    tampered = text.replace("    authority: SUPREME", "    authority: SUPREME", 1)
-    tampered += "\n  - rank: 99\n    authority: SUPREME\n    artifact: attacker\n"
+    tampered = text + "\n  - rank: 99\n    authority: SUPREME\n    artifact: attacker\n"
     tampered_supreme = re.findall(r"^    authority: SUPREME$", tampered, re.MULTILINE)
-    if len(tampered_supreme) == 1:
-        return False, "authority probe failed to construct its adversarial duplicate-root fixture"
-    return True, "authority hierarchy is ordered and adversarial duplicate-root mutation is detectable"
+    if len(tampered_supreme) != 2:
+        return False, "authority probe fixture did not create a duplicate supreme authority"
+    return True, "authority hierarchy is ordered and duplicate supreme-root mutation is detectable"
 
 
 def probe_reversibility(repository_root: str) -> tuple[bool, str]:
