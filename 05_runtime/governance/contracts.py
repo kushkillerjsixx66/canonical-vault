@@ -11,7 +11,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Literal, Optional, Tuple
+from typing import Any, Dict, Literal, Optional, Tuple
 
 
 def iso_now() -> str:
@@ -74,6 +74,16 @@ class ValidatedIntent:
     scope: Tuple[str, ...]
     nonce: str
     issued_at: str
+
+    @property
+    def intent_id(self) -> str:
+        """Stable identity derived from the immutable validated intent fields."""
+        return sha256_digest({
+            "kind": self.kind,
+            "scope": list(self.scope),
+            "nonce": self.nonce,
+            "issued_at": self.issued_at,
+        })
 
 
 @dataclass(frozen=True)
@@ -153,6 +163,8 @@ class StateTransition:
     decision_hash: str
     lineage_event_id: str
     committed: bool = False
+    request_id: str = ""
+    intent_id: str = ""
 
 
 @dataclass(frozen=True)
@@ -165,6 +177,8 @@ class LineageEvent:
     input_hash: str
     payload_hash: str
     evaluator_versions: Dict[str, str]
+    request_id: str = ""
+    intent_id: str = ""
 
     def is_bound_to(self, transition: StateTransition, decision: GovernanceDecision) -> bool:
         return (
@@ -172,6 +186,22 @@ class LineageEvent:
             and self.decision_hash == decision.decision_hash
             and self.decision_hash == transition.decision_hash
             and self.payload_hash == transition.payload_hash
+        )
+
+    def is_constitutionally_bound_to(
+        self,
+        transition: StateTransition,
+        request: GovernedRequest,
+        decision: GovernanceDecision,
+    ) -> bool:
+        """Require operator → intent → request → decision → transition binding."""
+        return (
+            self.is_bound_to(transition, decision)
+            and self.operator_id == request.operator.operator_id
+            and self.intent_id == request.intent.intent_id
+            and self.request_id == request.request_id
+            and transition.intent_id == request.intent.intent_id
+            and transition.request_id == request.request_id
         )
 
 
