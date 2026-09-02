@@ -42,7 +42,8 @@ def probe_coherence(repository_root: str) -> tuple[bool, str]:
     graph = Path(repository_root) / "00_governance" / "authority_graph.yaml"
     graph_text = graph.read_text(encoding="utf-8")
 
-    declared_count = 6 if "description: Six canonical invariants" in graph_text else None
+    match = re.search(r"description: (\d+) canonical invariants", graph_text)
+    declared_count = int(match.group(1)) if match else None
     runtime_count = len(runtime_invariants)
     if declared_count is None:
         return False, "authority graph does not expose an observable canonical invariant count"
@@ -55,12 +56,13 @@ def probe_coherence(repository_root: str) -> tuple[bool, str]:
 
 
 def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
-    """Prove that a valid lineage chain binds and a tampered chain is rejected."""
+    """Prove that a valid lineage chain binds to its resulting artifact and tampering is rejected."""
     root = str(Path(repository_root).resolve())
     if root not in sys.path:
         sys.path.insert(0, root)
 
     contracts = __import__("05_runtime.governance.contracts", fromlist=["*"])
+    vault_module = __import__("05_runtime.vault", fromlist=["CanonicalVault"])
     operator = contracts.ValidatedOperatorContext(
         operator_id="stumpy-probe-operator",
         credential_id="stumpy-probe-credential",
@@ -80,7 +82,7 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
         intent=intent,
         input_payload={"content": "lineage probe"},
         source_refs=("stumpy-probe",),
-        requested_action="audit",
+        requested_action="commit",
     )
     decision = contracts.GovernanceDecision.create(
         decision="ALLOW",
@@ -92,7 +94,7 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
     transition = contracts.StateTransition(
         transition_id="stumpy-probe-transition",
         prior_refs=(),
-        operation="audit",
+        operation="commit",
         payload_hash=request.payload_hash,
         decision_hash=decision.decision_hash,
         lineage_event_id="stumpy-probe-lineage",
@@ -112,23 +114,29 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
         intent_id=request.intent.intent_id,
     )
     if not valid.is_constitutionally_bound_to(transition, request, decision):
-        return False, "valid operator → intent → request → decision → transition chain failed to bind"
+        return False, "valid operator → intent → request → decision → transition → artifact chain failed to bind"
+
+    vault = vault_module.CanonicalVault()
+    receipt = vault.commit_transition(transition, decision, valid, request.input_payload, request=request)
+    node = vault.nodes[0]
+    if valid.artifact_hash != node["content_hash"] or receipt.node_id != node["node_id"]:
+        return False, "lineage artifact identity did not resolve to the committed canonical artifact"
 
     tampered = contracts.LineageEvent(
         event_id=valid.event_id,
         timestamp=valid.timestamp,
-        operator_id="tampered-operator",
+        operator_id=valid.operator_id,
         transition_id=valid.transition_id,
         decision_hash=valid.decision_hash,
         input_hash=valid.input_hash,
-        payload_hash=valid.payload_hash,
+        payload_hash=contracts.sha256_digest("tampered artifact"),
         evaluator_versions=valid.evaluator_versions,
         request_id=valid.request_id,
         intent_id=valid.intent_id,
     )
     if tampered.is_constitutionally_bound_to(transition, request, decision):
-        return False, "tampered operator identity was accepted by constitutional lineage binding"
-    return True, "valid lineage bound and tampered operator identity rejected"
+        return False, "tampered artifact identity was accepted by constitutional lineage binding"
+    return True, "complete lineage bound to committed artifact and tampered artifact identity rejected"
 
 
 def probe_drift_accountability(repository_root: str) -> tuple[bool, str]:
