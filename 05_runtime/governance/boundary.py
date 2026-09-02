@@ -11,14 +11,11 @@ import uuid
 from typing import Any, Dict, List, Optional
 from .contracts import (
     iso_now,
-    sha256_digest,
     CommitReceipt,
     GovernanceDecision,
-    GovernanceDeniedError,
     GovernedRequest,
     GovernedResponse,
     LineageEvent,
-    LineageIntegrityError,
     NonAuthoritativeRuntimeError,
     StateTransition,
 )
@@ -49,6 +46,8 @@ class GovernanceBoundary:
             decision_hash=decision.decision_hash,
             lineage_event_id=lineage_id,
             committed=False,
+            request_id=request.request_id,
+            intent_id=request.intent.intent_id,
         )
 
         lineage_event = LineageEvent(
@@ -60,6 +59,8 @@ class GovernanceBoundary:
             input_hash=request.payload_hash,
             payload_hash=request.payload_hash,
             evaluator_versions=decision.evaluator_versions,
+            request_id=request.request_id,
+            intent_id=request.intent.intent_id,
         )
 
         if decision.decision != "ALLOW":
@@ -68,6 +69,7 @@ class GovernanceBoundary:
                 "timestamp": iso_now(),
                 "request_id": request.request_id,
                 "operator_id": request.operator.operator_id,
+                "intent_id": request.intent.intent_id,
                 "decision": decision.decision,
                 "reasons": decision.reasons,
                 "gate_results": {g: res.status for g, res in decision.gate_results.items()},
@@ -92,6 +94,7 @@ class GovernanceBoundary:
                 decision=decision,
                 lineage=lineage_event,
                 payload=request.input_payload,
+                request=request,
             )
 
         self.lineage_sink.append(lineage_event)
