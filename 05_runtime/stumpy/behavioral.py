@@ -1,12 +1,13 @@
 """Deterministic behavioral probes for Stumpy invariant evidence.
 
-Probes run against isolated temporary state. They establish observable runtime
-properties without treating source text or documentation as behavioral proof.
+Probes run against isolated or repository state. They establish observable
+properties without treating documentation or self-reported status as proof.
 """
 
 from __future__ import annotations
 
 import importlib.util
+import re
 import tempfile
 from pathlib import Path
 from queue import Queue
@@ -31,14 +32,10 @@ def probe_coherence(repository_root: str) -> tuple[bool, str]:
     graph = Path(repository_root) / "00_governance" / "authority_graph.yaml"
     graph_text = graph.read_text(encoding="utf-8")
 
-    declared_count = None
-    marker = "description: Six canonical invariants"
-    if marker in graph_text:
-        declared_count = 6
-
+    declared_count = 6 if "description: Six canonical invariants" in graph_text else None
     runtime_count = len(matrix.INVARIANTS)
     if declared_count is None:
-        return False, "authority graph does not expose a machine-observable canonical invariant count"
+        return False, "authority graph does not expose an observable canonical invariant count"
     if declared_count != runtime_count:
         return False, (
             "canonical invariant count diverges across authority graph and runtime: "
@@ -48,34 +45,93 @@ def probe_coherence(repository_root: str) -> tuple[bool, str]:
 
 
 def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
-    """Verify that persisted lineage contains the complete constitutional chain."""
-    path = Path(repository_root) / "03_vault_pipeline" / "vault_chain" / "vault_chain.py"
-    VaultChain = _load_module("stumpy_vault_chain_lineage", path).VaultChain
-    required = ("operator", "intent", "request", "decision", "transition", "artifact")
+    """Verify that a committed artifact carries the complete constitutional lineage chain."""
+    path = Path(repository_root) / "05_runtime" / "vault.py"
+    vault_module = _load_module("stumpy_canonical_vault", path)
+    contracts = _load_module(
+        "stumpy_governance_contracts",
+        Path(repository_root) / "05_runtime" / "governance" / "contracts.py",
+    )
 
-    with tempfile.TemporaryDirectory() as root:
-        chain = VaultChain(root=root)
-        entry = {
-            "seq": 1,
-            "operator": "probe-operator",
-            "intent": "probe-intent",
-            "request": "probe-request",
-            "decision": "probe-decision",
-            "transition": "probe-transition",
-            "artifact": "probe-artifact",
-        }
-        chain.append(entry)
-        persisted = chain.load(1)
-        if persisted is None:
-            return False, "lineage entry could not be reloaded"
-        missing = tuple(field for field in required if field not in persisted)
-        if missing:
-            return False, f"persisted lineage is missing required fields: {', '.join(missing)}"
-        return True, "persisted lineage contains operator → intent → request → decision → transition → artifact"
+    operator = contracts.ValidatedOperatorContext(
+        operator_id="probe-operator",
+        credential_id="probe-key",
+        authenticated_at=contracts.iso_now(),
+        session_id="probe-session",
+        signature="probe-signature",
+        roles=("OPERATOR",),
+        verified=True,
+    )
+    intent = contracts.ValidatedIntent(
+        kind="probe.commit",
+        scope=("vault.write",),
+        nonce="probe-nonce",
+        issued_at=contracts.iso_now(),
+    )
+    request = contracts.GovernedRequest(
+        request_id="probe-request",
+        operator=operator,
+        intent=intent,
+        input_payload={"content": "lineage probe"},
+        source_refs=("probe-source",),
+        requested_action="commit",
+    )
+    engine = contracts
+    # Build the same governed transition objects used by the active boundary.
+    governance_engine = _load_module(
+        "stumpy_governance_engine",
+        Path(repository_root) / "05_runtime" / "governance" / "engine.py",
+    ).AuthoritativeGovernanceEngine()
+    decision = governance_engine.evaluate_request(request, [], [])
+    if decision.decision != "ALLOW":
+        return False, f"probe request could not reach commit path: {decision.decision}"
+
+    transition = contracts.StateTransition(
+        transition_id="probe-transition",
+        prior_refs=request.source_refs,
+        operation=request.requested_action,
+        payload_hash=contracts.sha256_digest(request.input_payload),
+        decision_hash=decision.decision_hash,
+        lineage_event_id="probe-lineage",
+        committed=False,
+    )
+    lineage = contracts.LineageEvent(
+        event_id="probe-lineage",
+        timestamp=contracts.iso_now(),
+        operator_id=operator.operator_id,
+        transition_id=transition.transition_id,
+        decision_hash=decision.decision_hash,
+        input_hash=transition.payload_hash,
+        payload_hash=transition.payload_hash,
+        evaluator_versions=decision.evaluator_versions,
+    )
+
+    vault = vault_module.CanonicalVault()
+    receipt = vault.commit_transition(
+        transition=transition,
+        decision=decision,
+        lineage=lineage,
+        payload=request.input_payload,
+    )
+    node = vault.nodes[0]
+
+    # The constitutional chain includes operator → intent → request → decision
+    # → transition → artifact. The current persisted node must expose enough
+    # binding to reconstruct every link, not merely transition/lineage IDs.
+    present = set(node) | {"decision" if "decision_hash" in node else ""}
+    missing = [
+        field for field in ("operator_id", "intent_id", "request_id", "decision_hash", "transition_id", "lineage_id")
+        if field not in present
+    ]
+    if missing:
+        return False, "committed artifact cannot expose complete lineage binding: " + ", ".join(missing)
+    if receipt.lineage_event_id != node["lineage_id"] or receipt.transition_id != node["transition_id"]:
+        return False, "artifact lineage identifiers are not bound to the commit receipt"
+    return True, "committed artifact exposes the complete constitutional lineage binding"
 
 
 def probe_drift_accountability(repository_root: str) -> tuple[bool, str]:
-    """Verify that observable drift conditions produce evidence-bound findings."""
+    """Verify that observable drift conditions produce explicit findings."""
     path = Path(repository_root) / "00_governance" / "stumpy" / "stumpy_drift_detector.py"
     module = _load_module("stumpy_drift_detector", path)
     detector = module.DriftDetectorProcess(Queue(), Queue())
@@ -96,6 +152,22 @@ def probe_drift_accountability(repository_root: str) -> tuple[bool, str]:
     if required <= types:
         return True, "altitude and epistemic drift conditions produced explicit findings"
     return False, f"drift detector missed expected finding types: {', '.join(sorted(required - types))}"
+
+
+def probe_authority_hierarchy(repository_root: str) -> tuple[bool, str]:
+    """Verify that the declared authority graph has one ordered supreme root."""
+    path = Path(repository_root) / "00_governance" / "authority_graph.yaml"
+    text = path.read_text(encoding="utf-8")
+    ranks = [int(value) for value in re.findall(r"^  - rank: (\d+)$", text, re.MULTILINE)]
+    supreme = re.findall(r"^    authority: SUPREME$", text, re.MULTILINE)
+    root = "00_governance/constitution/lattice_constitution.md"
+    if ranks != sorted(ranks) or len(ranks) != len(set(ranks)):
+        return False, "authority graph ranks are not unique and ordered"
+    if ranks and ranks[0] != 1:
+        return False, "authority graph does not begin at rank 1"
+    if len(supreme) != 1 or root not in text:
+        return False, "authority graph does not expose exactly one supreme constitutional root"
+    return True, "authority graph exposes one ordered supreme constitutional root"
 
 
 def probe_reversibility(repository_root: str) -> tuple[bool, str]:
@@ -132,6 +204,7 @@ PROBES: dict[str, Callable[[str], tuple[bool, str]]] = {
     "coherence": probe_coherence,
     "lineage_binding": probe_lineage_binding,
     "drift_accountability": probe_drift_accountability,
+    "authority_hierarchy": probe_authority_hierarchy,
     "reversibility": probe_reversibility,
     "constraint_enforcement": probe_constraint_enforcement,
 }
