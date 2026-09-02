@@ -15,12 +15,11 @@ hierarchy:
     artifact: 00_governance/constitution/invariants.md
     type: TIER_1_INVARIANTS
     authority: CONSTITUTIONALLY_SUBORDINATE_BINDING
-    description: Six canonical invariants (I.COH through VI.SIG).
+    description: Ten canonical invariants (I.COH through X.ARC).
   - rank: 3
     artifact: 00_governance/constitution/amendment_laws.md
     type: AMENDMENT_PROCEDURE
     authority: CONSTITUTIONAL_PROCEDURE
-    description: Governs constitutional and invariant modifications.
   - rank: 4
     artifact: 04_system_spec/Lattice_Unified_Spec.md
     type: INTEGRATED_SYSTEM_SPECIFICATION
