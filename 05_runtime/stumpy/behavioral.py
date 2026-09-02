@@ -6,6 +6,7 @@ properties without treating documentation or self-reported status as proof.
 
 from __future__ import annotations
 
+import ast
 import importlib.util
 import re
 import tempfile
@@ -23,17 +24,34 @@ def _load_module(name: str, path: Path):
     return module
 
 
+def _read_invariants_from_source(path: Path) -> tuple[str, ...]:
+    """Read the runtime invariant tuple without importing a package module.
+
+    Stumpy is allowed to inspect the declaration itself. Importing a module
+    whose relative imports depend on package context would make the probe
+    test the probe harness rather than coherence.
+    """
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            targets = {target.id for target in node.targets if isinstance(target, ast.Name)}
+            if "INVARIANTS" in targets:
+                value = ast.literal_eval(node.value)
+                if not isinstance(value, tuple) or not all(isinstance(item, str) for item in value):
+                    raise ValueError("INVARIANTS must be a tuple of strings")
+                return value
+    raise ValueError("runtime audit matrix does not declare INVARIANTS")
+
+
 def probe_coherence(repository_root: str) -> tuple[bool, str]:
     """Verify that canonical invariant declarations agree across layers."""
-    matrix = _load_module(
-        "stumpy_audit_matrix",
-        Path(repository_root) / "05_runtime" / "stumpy" / "audit_matrix.py",
-    )
+    matrix_path = Path(repository_root) / "05_runtime" / "stumpy" / "audit_matrix.py"
+    runtime_invariants = _read_invariants_from_source(matrix_path)
     graph = Path(repository_root) / "00_governance" / "authority_graph.yaml"
     graph_text = graph.read_text(encoding="utf-8")
 
     declared_count = 6 if "description: Six canonical invariants" in graph_text else None
-    runtime_count = len(matrix.INVARIANTS)
+    runtime_count = len(runtime_invariants)
     if declared_count is None:
         return False, "authority graph does not expose an observable canonical invariant count"
     if declared_count != runtime_count:
@@ -54,8 +72,6 @@ def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
         field for field in required
         if field not in contracts and field not in vault
     ]
-    # Stronger check: each chain element must be representable in the
-    # persisted runtime model, not merely mentioned somewhere in the repo.
     lineage_block = contracts.split("class LineageEvent", 1)[-1].split("class CommitReceipt", 1)[0]
     node_block = vault.split("return {", 1)[-1].split("\n        }", 1)[0]
     missing_runtime = [
