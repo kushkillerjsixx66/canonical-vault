@@ -68,12 +68,8 @@ class CanonicalVault:
         if decision.decision != "ALLOW":
             raise GovernanceDeniedError(decision)
 
-        if request is None or not lineage.is_constitutionally_bound_to(transition, request, decision):
-            raise LineageIntegrityError(
-                "Lineage event is not bound to operator, intent, request, decision, and transition."
-            )
-
-        content = payload.get("content") or payload.get("signal") or ""
+        # Validate the artifact schema before lineage binding so malformed
+        # state is rejected for the reason that is constitutionally primary.
         classification = payload.get("classification", NodeClassification.STANDARD.value)
         state = payload.get("state", NodeState.ACTIVE.value)
 
@@ -81,6 +77,13 @@ class CanonicalVault:
             raise SchemaCoherenceError(f"Invalid classification: {classification}")
         if state not in [s.value for s in NodeState]:
             raise SchemaCoherenceError(f"Invalid state: {state}")
+
+        if request is None or not lineage.is_constitutionally_bound_to(transition, request, decision):
+            raise LineageIntegrityError(
+                "Lineage event is not bound to operator, intent, request, decision, and transition."
+            )
+
+        content = payload.get("content") or payload.get("signal") or ""
 
         node = self._build_canonical_node(
             content=content,
@@ -96,6 +99,11 @@ class CanonicalVault:
             request_id=request.request_id,
             decision_hash=decision.decision_hash,
         )
+
+        # The committed artifact must be the exact artifact represented by
+        # the constitutional lineage binding, not merely a related payload.
+        if node["content_hash"] != request.artifact_hash:
+            raise LineageIntegrityError("Committed artifact does not match constitutional artifact identity.")
 
         self._nodes.append(node)
         self._transitions.append(transition)
