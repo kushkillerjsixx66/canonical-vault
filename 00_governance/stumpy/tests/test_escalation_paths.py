@@ -13,6 +13,5 @@ def test_enforcement_runtime_trigger():
     }
     proc._route_event(event)
 
-    assert not vq.empty()
-    v = vq.get()
+    v = vq.get(timeout=1.0)
     assert v["type"] == "runtime_enforcement_triggered"

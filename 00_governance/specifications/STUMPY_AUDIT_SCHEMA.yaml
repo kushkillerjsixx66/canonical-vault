@@ -1,0 +1,71 @@
+version: 1.0.0
+id: LAT-STUMPY-SCHEMA-001
+status: PROPOSED
+purpose: Evidence-bound schema for constitutional integrity findings
+
+truth_states:
+  - PASS
+  - FAIL
+  - UNKNOWN
+  - ABSTAIN
+  - SILENCE
+  - DECLARED_UNENFORCED
+
+severity:
+  - INFO
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+
+audit_domains:
+  - COHERENCE
+  - REVERSIBILITY
+  - LINEAGE
+  - SOURCE_INTEGRITY
+  - SCORE_HONESTY
+  - DRIFT
+  - SILENCE
+  - OPERATOR_BOUNDARY
+  - AUTHORITY
+  - CONSTRAINT_ENFORCEMENT
+
+finding:
+  required:
+    - finding_id
+    - domain
+    - status
+    - severity
+    - claim
+    - constitutional_basis
+    - evidence_refs
+    - evaluator_id
+    - evaluator_version
+    - timestamp
+  properties:
+    finding_id: string
+    domain: enum:audit_domains
+    status: enum:truth_states
+    severity: enum:severity
+    claim: string
+    observed_state: object
+    expected_state: object
+    constitutional_basis: list[string]
+    evidence_refs: list[string]
+    source_refs: list[string]
+    lineage_refs: list[string]
+    evaluator_id: string
+    evaluator_version: string
+    method: string
+    confidence: number|null
+    timestamp: datetime
+    remediation_refs: list[string]
+
+rules:
+  unsupported_claim: UNKNOWN
+  unsupported_score: ABSTAIN
+  missing_required_lineage_on_commit: FAIL
+  documented_without_enforcement: DECLARED_UNENFORCED
+  silence_is_not_success: true
+  finding_must_be_evidence_bound: true
+  stumpy_cannot_modify_canon: true

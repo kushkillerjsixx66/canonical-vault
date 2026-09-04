@@ -11,9 +11,8 @@ def test_vara_emits_canonical_epistemic_state():
 
     vara.handle_veil_state(identity, runtime)
 
-    assert not eq.empty()
-    event = eq.get()
-
+    # multiprocessing.Queue.empty() is inherently racy immediately after put().
+    event = eq.get(timeout=1)
     assert event["type"] == "epistemic_state"
     assert event["source"] == "vara"
 

@@ -13,9 +13,8 @@ def test_veil_emits_runtime_state():
 
     veil.submit_runtime_update(identity, raw_state)
 
-    assert not eq.empty()
-    event = eq.get()
-
+    # multiprocessing.Queue.empty() is inherently racy immediately after put().
+    event = eq.get(timeout=1)
     assert event["type"] == "runtime_state"
     assert event["source"] == "veil"
     payload = event["payload"]

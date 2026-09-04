@@ -18,6 +18,6 @@ def test_lineage_corruption_detection(tmp_path):
 
     hooks.handle_vault_promotion(event)
 
-    assert not vq.empty()
-    violation = vq.get()
+    # multiprocessing.Queue.empty() is inherently racy immediately after put().
+    violation = vq.get(timeout=1)
     assert violation["payload"]["violation"] == "lineage_corruption"
