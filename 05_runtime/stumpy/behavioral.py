@@ -34,19 +34,48 @@ def _read_invariants_from_source(path: Path) -> tuple[str, ...]:
     raise ValueError("runtime audit matrix does not declare INVARIANTS")
 
 
+def _read_canonical_invariants(graph: Path) -> tuple[str, ...]:
+    """Read the machine-observable canonical invariant universe from authority graph."""
+    text = graph.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    try:
+        start = lines.index("canonical_invariants:") + 1
+    except ValueError as exc:
+        raise ValueError("authority graph does not declare canonical_invariants") from exc
+
+    values: list[str] = []
+    for line in lines[start:]:
+        if line.startswith("  - "):
+            values.append(line[4:].strip())
+            continue
+        if line and not line.startswith(" "):
+            break
+    if not values:
+        raise ValueError("authority graph canonical_invariants is empty")
+    return tuple(values)
+
+
 def probe_coherence(repository_root: str) -> tuple[bool, str]:
     matrix_path = Path(repository_root) / "05_runtime" / "stumpy" / "audit_matrix.py"
-    runtime_invariants = _read_invariants_from_source(matrix_path)
     graph = Path(repository_root) / "00_governance" / "authority_graph.yaml"
-    graph_text = graph.read_text(encoding="utf-8")
-    match = re.search(r"description: (\d+) canonical invariants", graph_text)
-    declared_count = int(match.group(1)) if match else None
-    runtime_count = len(runtime_invariants)
-    if declared_count is None:
-        return False, "authority graph does not expose an observable canonical invariant count"
-    if declared_count != runtime_count:
-        return False, f"canonical invariant count diverges across authority graph and runtime: authority graph={declared_count}, runtime={runtime_count}"
-    return True, "canonical invariant count is coherent across authority graph and runtime"
+    runtime_invariants = _read_invariants_from_source(matrix_path)
+    canonical_invariants = _read_canonical_invariants(graph)
+
+    if canonical_invariants != runtime_invariants:
+        canonical_set = set(canonical_invariants)
+        runtime_set = set(runtime_invariants)
+        missing = sorted(canonical_set - runtime_set)
+        extra = sorted(runtime_set - canonical_set)
+        details = []
+        if missing:
+            details.append(f"missing={missing}")
+        if extra:
+            details.append(f"extra={extra}")
+        if not details:
+            details.append("ordering differs")
+        return False, "canonical invariant universe diverges across authority graph and runtime: " + "; ".join(details)
+
+    return True, "canonical invariant universe is coherent across authority graph and runtime"
 
 
 def probe_lineage_binding(repository_root: str) -> tuple[bool, str]:
