@@ -1,7 +1,7 @@
-"""Read-only comparison of a model branch against canonical Git state.
+"""Read-only comparison of a governed model branch against canonical Git state.
 
-This module deliberately treats Git history as evidence, not authority. It
-never merges, rebases, resets, or writes repository state.
+Git history is evidence, not authority. This module never merges, rebases,
+resets, or writes repository state.
 """
 
 from __future__ import annotations
@@ -9,7 +9,6 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 import subprocess
 from typing import Sequence
-
 
 MODEL_BRANCHES = ("chatgpt", "claude", "gemini", "copilot", "grok")
 
@@ -47,12 +46,11 @@ class BranchAuditReport:
         return bool(self.changes)
 
     def to_dict(self) -> dict[str, object]:
-        return {
-            **asdict(self),
-            "changes": [asdict(change) for change in self.changes],
-            "changed_paths": list(self.changed_paths),
-            "has_changes": self.has_changes,
-        }
+        data = asdict(self)
+        data["changes"] = [asdict(change) for change in self.changes]
+        data["changed_paths"] = list(self.changed_paths)
+        data["has_changes"] = self.has_changes
+        return data
 
 
 def _git(repository_root: str, *args: str) -> str:
@@ -106,12 +104,11 @@ def audit_branch(
     canonical_ref: str = "main",
     allowed_branches: Sequence[str] = MODEL_BRANCHES,
 ) -> BranchAuditReport:
-    """Compare ``branch_ref`` with canonical state without mutating Git.
+    """Compare a model branch with canonical state without mutating Git.
 
-    The canonical commit is resolved first and becomes the fixed comparison
-    baseline. A branch based on an older/different canonical history is
-    reported as ``BASELINE_MISMATCH`` rather than silently rebased or treated
-    as comparable to the current baseline.
+    The current canonical commit is the fixed baseline. If the branch does
+    not descend from that commit, the result is ``BASELINE_MISMATCH`` and no
+    stronger semantic conclusion is inferred.
     """
     if branch_ref == canonical_ref:
         raise BranchAuditError("branch audit requires a model branch distinct from canonical")
@@ -138,13 +135,13 @@ def audit_branch(
     elif not changes:
         state = "COHERENT"
     elif sensitive:
-        state = "SEMANTIC_DRIFT"
+        state = "GOVERNANCE_SENSITIVE_DRIFT"
     elif any(change.status.startswith("D") for change in changes):
         state = "OMISSION"
-    elif any(change.status.startswith("A") for change in changes):
+    elif all(change.status.startswith("A") for change in changes):
         state = "EXTENSION"
     else:
-        state = "CONFLICT"
+        state = "DIVERGENCE"
 
     return BranchAuditReport(
         canonical_ref=canonical_ref,
