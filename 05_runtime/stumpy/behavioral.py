@@ -58,8 +58,16 @@ def _read_canonical_invariants(graph: Path) -> tuple[str, ...]:
 def probe_coherence(repository_root: str) -> tuple[bool, str]:
     matrix_path = Path(repository_root) / "05_runtime" / "stumpy" / "audit_matrix.py"
     graph = Path(repository_root) / "00_governance" / "authority_graph.yaml"
-    runtime_invariants = _read_invariants_from_source(matrix_path)
-    canonical_invariants = _read_canonical_invariants(graph)
+
+    try:
+        runtime_invariants = _read_invariants_from_source(matrix_path)
+    except (OSError, SyntaxError, ValueError) as exc:
+        return False, f"runtime invariant declaration is malformed or unavailable: {exc}"
+
+    try:
+        canonical_invariants = _read_canonical_invariants(graph)
+    except (OSError, ValueError) as exc:
+        return False, f"canonical invariant declaration is malformed or unavailable: {exc}"
 
     if canonical_invariants != runtime_invariants:
         canonical_set = set(canonical_invariants)
