@@ -5,6 +5,18 @@ root_of_truth:
   status: SUPREME_AUTHORITY
   rank: 1
 
+canonical_invariants:
+  - coherence
+  - reversibility
+  - lineage_binding
+  - source_integrity
+  - score_honesty
+  - drift_accountability
+  - silence_as_state
+  - operator_boundary
+  - authority_hierarchy
+  - constraint_enforcement
+
 hierarchy:
   - rank: 1
     artifact: 00_governance/constitution/lattice_constitution.md
