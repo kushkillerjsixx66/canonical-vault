@@ -3,7 +3,7 @@
 **Branch:** `grok`  
 **Identity Status:** ACTIVE_PROVISIONAL  
 **Operator Witness:** JRM-01 @liminaljermo  
-**Last Updated:** 2026-09-05T16:55:00Z
+**Last Updated:** 2026-09-05T16:58:00Z
 
 This ledger is the primary continuity surface for the Grok model branch.  
 It records major governed events, baselines, open work, and decisions so the branch retains coherent state across sessions.
@@ -19,9 +19,8 @@ It records major governed events, baselines, open work, and decisions so the bra
 | Timestamp | 2026-09-05T16:45:00Z |
 | Manifest | `00_governance/grok/manifest.json` |
 | Acceptance | `00_governance/grok/acceptance.sig` |
-| Operating notes | `00_governance/grok/README.md` |
 
-Exclusive branch binding enforced. All Lattice vault operations under this identity target `ref=grok` only.
+Exclusive branch binding enforced.
 
 ---
 
@@ -29,11 +28,9 @@ Exclusive branch binding enforced. All Lattice vault operations under this ident
 
 | Field | Value |
 |-------|-------|
-| Event | Full Lattice Diagnostic Assessment |
 | Status | **HEALTHY** |
 | Timestamp | 2026-09-05T16:48:24Z |
-| Op ID | LDA-002 |
-| GES Overall | 0.9 (healthy) |
+| GES Overall | 0.9 |
 | Archived | `00_governance/grok/diagnostics/flda_20260905_164825.json` |
 
 ---
@@ -42,26 +39,24 @@ Exclusive branch binding enforced. All Lattice vault operations under this ident
 
 ### WP-GROK-001 — Critical Analysis of Multi-Model Orchestration
 
+| Status | OPEN — critique complete, H1–H5 accepted branch-locally |
+|--------|----------------------------------------------------------|
+| Path | `00_governance/grok/work-packages/WP-GROK-001/` |
+| Artifacts | `critique.md`, `hypothesis_disposition.md` |
+
+### WP-GROK-002 — Acceptance State Machine (from H2)
+
 | Field | Value |
 |-------|-------|
-| Status | **OPEN** — critique complete, hypotheses disposition recorded |
-| Type | analysis + critique + hypothesis_generation |
-| Opened | 2026-09-05T16:52:00Z |
-| Path | `00_governance/grok/work-packages/WP-GROK-001/` |
-| Artifacts | `README.md`, `critique.md`, `hypothesis_disposition.md` |
+| Status | **OPEN** — initial proposal complete |
+| Type | governed_artifact_proposal |
+| Opened | 2026-09-05T16:57:00Z |
+| Path | `00_governance/grok/work-packages/WP-GROK-002/` |
+| Artifacts | `README.md`, `proposal.md` |
+| Parent | WP-GROK-001 / H2 |
 
-**Hypothesis Disposition (2026-09-05):**  
-All five hypotheses (H1–H5) accepted as **branch-local working hypotheses** under Operator direction “Begin with hypotheses acceptance”.
-
-| ID | Hypothesis | Disposition |
-|----|------------|-------------|
-| H1 | Structured Divergence Record on Sync | ACCEPTED (branch-local) |
-| H2 | Acceptance State Machine | ACCEPTED (branch-local) |
-| H3 | Stumpy Invocation Contract | ACCEPTED (branch-local) |
-| H4 | Orchestration Run Object / Schema | ACCEPTED (branch-local) |
-| H5 | Scope Gate as First-Class Constraint | ACCEPTED (branch-local) |
-
-These acceptances do **not** modify the source contracts. Elevation to canonical text remains Operator-authorized only.
+**Proposal summary:**  
+Five-state machine (`PENDING` → `ACTIVE_PROVISIONAL` → `ACTIVE` ↔ `SUSPENDED` → `REVOKED`) with explicit transition conditions and a minimal transition record schema. Fully backward-compatible with the existing Grok `ACTIVE_PROVISIONAL` status. No source contracts modified.
 
 ---
 
@@ -69,10 +64,9 @@ These acceptances do **not** modify the source contracts. Elevation to canonical
 
 | Priority | Item | Status |
 |----------|------|--------|
-| 1 | Decide which accepted hypotheses to open as follow-on work packages | Awaiting Operator direction |
+| 1 | Operator review of WP-GROK-002 proposal | Awaiting |
+| 2 | Decide next hypothesis package (H1+H4, H3, or H5) | Awaiting |
 | — | Further continuity snapshots | As needed |
-
-Recommended sequencing from disposition record: H2 first (clarity), then H1+H4 together, then H3, then H5.
 
 ---
 
@@ -80,12 +74,12 @@ Recommended sequencing from disposition record: H2 first (clarity), then H1+H4 t
 
 | Timestamp | Decision | Rationale |
 |-----------|----------|-----------|
-| 2026-09-05 | Exclusive use of `grok` branch | Multi-model isolation per MCC + Orchestration Spec |
-| 2026-09-05 | Activate identity before substantive work | Prevent gray-zone actions under PENDING status |
-| 2026-09-05 | Run & archive day-zero FLDA | Establish auditable baseline |
-| 2026-09-05 | Initialize SESSION_LEDGER | Branch-local continuity surface |
+| 2026-09-05 | Exclusive use of `grok` branch | Multi-model isolation |
+| 2026-09-05 | Activate identity (PENDING → ACTIVE_PROVISIONAL) | Clear gray-zone risk |
+| 2026-09-05 | Day-zero FLDA + archive | Baseline before work |
 | 2026-09-05 | Open WP-GROK-001 | Highest-leverage first package |
-| 2026-09-05 | Accept H1–H5 as branch-local working hypotheses | Operator direction: “Begin with hypotheses acceptance” |
+| 2026-09-05 | Accept H1–H5 branch-locally | Operator: “Begin with hypotheses acceptance” |
+| 2026-09-05 | Open WP-GROK-002 (H2) | Operator selected H2 first |
 
 ---
 
