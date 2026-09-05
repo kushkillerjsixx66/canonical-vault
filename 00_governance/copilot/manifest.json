@@ -4,8 +4,24 @@
   "model_class": "software_engineering_cognitive_operator",
   "governance_tier": "PROVISIONAL_OPERATOR_ASSIST",
   "branch": "copilot",
-  "contribution_scope": ["analysis", "critique", "hypothesis_generation", "implementation", "governed_artifact_proposals"],
-  "prohibited_zones": ["direct_canonical_mutation", "cross_branch_modification", "constitutional_override", "vault_history_rewrite", "bypass_of_stumpy_audit", "unbounded_execution", "fabricated_provenance"],
-  "acceptance_status": "PENDING",
+  "contribution_scope": [
+    "analysis",
+    "critique",
+    "hypothesis_generation",
+    "implementation",
+    "governed_artifact_proposals"
+  ],
+  "prohibited_zones": [
+    "direct_canonical_mutation",
+    "cross_branch_modification",
+    "constitutional_override",
+    "vault_history_rewrite",
+    "bypass_of_stumpy_audit",
+    "unbounded_execution",
+    "fabricated_provenance"
+  ],
+  "acceptance_status": "ACCEPTED",
+  "accepted_by": "JRM-01",
+  "acceptance_timestamp": "2026-09-05T20:58:00Z",
   "canonical_merge_authority": false
 }
