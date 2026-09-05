@@ -7,7 +7,7 @@
 
 ## Purpose
 
-This directory holds the identity, acceptance, and operational surface for the Grok cognitive operator within the multi-model Lattice architecture.
+This directory holds the identity, acceptance, continuity, and diagnostic surface for the Grok cognitive operator within the multi-model Lattice architecture.
 
 ## Exclusive Binding Rule
 
@@ -19,10 +19,12 @@ All Lattice-related vault operations performed under the Grok identity **must** 
 
 ## Files
 
-| File | Role |
-|------|------|
+| File / Path | Role |
+|-------------|------|
 | `manifest.json` | Live model identity, scope, prohibitions, activation record |
 | `acceptance.sig` | Formal MCC acceptance signature |
+| `SESSION_LEDGER.md` | Primary continuity surface — events, baselines, open items, decisions |
+| `diagnostics/` | Archived diagnostic reports (FLDA, etc.) |
 | `README.md` | This operating note |
 
 ## Contribution Scope (authorized)
@@ -51,11 +53,11 @@ All Lattice-related vault operations performed under the Grok identity **must** 
 | Compare branches / classify divergence | — | ✓ | ✓ |
 | Approve canonical mutation | — | — | ✓ |
 
-## Activation
+## Activation & Baseline
 
-- Activated: 2026-09-05
-- Prior status: PENDING
+- Activated: 2026-09-05 (PENDING → ACTIVE_PROVISIONAL)
 - Operator witness: JRM-01 @liminaljermo
+- Day-zero FLDA: **HEALTHY** (GES 0.9) — archived under `diagnostics/`
 - Local lattice-module skill is bound to this branch.
 
 ---
