@@ -1,6 +1,6 @@
 # WP-GROK-001 — Critical Analysis of Multi-Model Orchestration
 
-**Status:** OPEN  
+**Status:** OPEN — critique complete, H1–H5 accepted as branch-local working hypotheses  
 **Type:** analysis + critique + hypothesis_generation  
 **Opened:** 2026-09-05T16:52:00Z  
 **Model:** Grok (ACTIVE_PROVISIONAL)  
@@ -27,16 +27,29 @@ Produce a governed critique of the current multi-model orchestration design (pri
 
 ## Deliverables
 
-1. `critique.md` — primary analysis artifact
-2. Updates to `SESSION_LEDGER.md` reflecting package status
-3. Lineage metadata on all produced artifacts
+1. `critique.md` — primary analysis artifact ✅
+2. `hypothesis_disposition.md` — formal branch-local acceptance of H1–H5 ✅
+3. Updates to `SESSION_LEDGER.md` reflecting package status ✅
+4. Lineage metadata on all produced artifacts ✅
+
+## Hypothesis Status
+
+| ID | Hypothesis | Disposition |
+|----|------------|-------------|
+| H1 | Structured Divergence Record on Sync | ACCEPTED (branch-local) |
+| H2 | Acceptance State Machine | ACCEPTED (branch-local) |
+| H3 | Stumpy Invocation Contract | ACCEPTED (branch-local) |
+| H4 | Orchestration Run Object / Schema | ACCEPTED (branch-local) |
+| H5 | Scope Gate as First-Class Constraint | ACCEPTED (branch-local) |
+
+These acceptances are branch-local only. They do not modify the source contracts.
 
 ## Success Criteria
 
-- Clear separation of observation / inference / hypothesis
-- At least three concrete, reversible hypotheses for improvement
-- Explicit residual risks and open questions listed
-- Artifact remains fully reconstructable to this branch and identity
+- Clear separation of observation / inference / hypothesis ✅
+- At least three concrete, reversible hypotheses for improvement ✅ (five offered and accepted)
+- Explicit residual risks and open questions listed ✅
+- Artifact remains fully reconstructable to this branch and identity ✅
 
 ## Prohibitions Observed
 
