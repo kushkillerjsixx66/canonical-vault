@@ -3,7 +3,7 @@
 **Branch:** `grok`  
 **Identity Status:** ACTIVE_PROVISIONAL  
 **Operator Witness:** JRM-01 @liminaljermo  
-**Last Updated:** 2026-09-05T16:53:00Z
+**Last Updated:** 2026-09-05T16:55:00Z
 
 This ledger is the primary continuity surface for the Grok model branch.  
 It records major governed events, baselines, open work, and decisions so the branch retains coherent state across sessions.
@@ -20,7 +20,6 @@ It records major governed events, baselines, open work, and decisions so the bra
 | Manifest | `00_governance/grok/manifest.json` |
 | Acceptance | `00_governance/grok/acceptance.sig` |
 | Operating notes | `00_governance/grok/README.md` |
-| Commits | `514a24c…` (manifest), `de03812…` (acceptance), `f5072bd…` (README) |
 
 Exclusive branch binding enforced. All Lattice vault operations under this identity target `ref=grok` only.
 
@@ -36,9 +35,6 @@ Exclusive branch binding enforced. All Lattice vault operations under this ident
 | Op ID | LDA-002 |
 | GES Overall | 0.9 (healthy) |
 | Archived | `00_governance/grok/diagnostics/flda_20260905_164825.json` |
-| Commit | `6269fca…` |
-
-All 8 probes passed. Notable day-zero readings: Drift 0.833, Coherence/Alignment 1.0, Risk 0.05, Operator Impact 0.0.
 
 ---
 
@@ -48,18 +44,24 @@ All 8 probes passed. Notable day-zero readings: Drift 0.833, Coherence/Alignment
 
 | Field | Value |
 |-------|-------|
-| Status | **OPEN** (initial deliverable complete) |
+| Status | **OPEN** — critique complete, hypotheses disposition recorded |
 | Type | analysis + critique + hypothesis_generation |
 | Opened | 2026-09-05T16:52:00Z |
 | Path | `00_governance/grok/work-packages/WP-GROK-001/` |
-| Primary artifact | `critique.md` |
-| Commits | `3e03f01…` (open), `634546c…` (critique) |
+| Artifacts | `README.md`, `critique.md`, `hypothesis_disposition.md` |
 
-**Summary of critique findings:**
-- Strengths: clean authority partition, branch sovereignty, failure-as-evidence, Stumpy classification vocabulary, acceptance ≠ authority.
-- Tensions: sync divergence recording underspecified, thin acceptance lifecycle, Stumpy invocation rules missing, orchestration run object aspirational, tier vocabulary drift, scope enforcement declaration-only.
-- Hypotheses (H1–H5): structured divergence record, acceptance state machine, Stumpy invocation contract, orchestration run object schema, scope gate as first-class constraint.
-- Residual risks and open questions recorded in the artifact.
+**Hypothesis Disposition (2026-09-05):**  
+All five hypotheses (H1–H5) accepted as **branch-local working hypotheses** under Operator direction “Begin with hypotheses acceptance”.
+
+| ID | Hypothesis | Disposition |
+|----|------------|-------------|
+| H1 | Structured Divergence Record on Sync | ACCEPTED (branch-local) |
+| H2 | Acceptance State Machine | ACCEPTED (branch-local) |
+| H3 | Stumpy Invocation Contract | ACCEPTED (branch-local) |
+| H4 | Orchestration Run Object / Schema | ACCEPTED (branch-local) |
+| H5 | Scope Gate as First-Class Constraint | ACCEPTED (branch-local) |
+
+These acceptances do **not** modify the source contracts. Elevation to canonical text remains Operator-authorized only.
 
 ---
 
@@ -67,8 +69,10 @@ All 8 probes passed. Notable day-zero readings: Drift 0.833, Coherence/Alignment
 
 | Priority | Item | Status |
 |----------|------|--------|
-| 1 | WP-GROK-001 disposition (Operator review of hypotheses) | Awaiting |
+| 1 | Decide which accepted hypotheses to open as follow-on work packages | Awaiting Operator direction |
 | — | Further continuity snapshots | As needed |
+
+Recommended sequencing from disposition record: H2 first (clarity), then H1+H4 together, then H3, then H5.
 
 ---
 
@@ -78,9 +82,10 @@ All 8 probes passed. Notable day-zero readings: Drift 0.833, Coherence/Alignment
 |-----------|----------|-----------|
 | 2026-09-05 | Exclusive use of `grok` branch | Multi-model isolation per MCC + Orchestration Spec |
 | 2026-09-05 | Activate identity before substantive work | Prevent gray-zone actions under PENDING status |
-| 2026-09-05 | Run & archive day-zero FLDA | Establish auditable baseline before first work package |
-| 2026-09-05 | Initialize this SESSION_LEDGER | Provide branch-local continuity surface |
-| 2026-09-05 | Open WP-GROK-001 (Candidate A) | Highest-leverage first package: critique the protocol that governs this branch |
+| 2026-09-05 | Run & archive day-zero FLDA | Establish auditable baseline |
+| 2026-09-05 | Initialize SESSION_LEDGER | Branch-local continuity surface |
+| 2026-09-05 | Open WP-GROK-001 | Highest-leverage first package |
+| 2026-09-05 | Accept H1–H5 as branch-local working hypotheses | Operator direction: “Begin with hypotheses acceptance” |
 
 ---
 
