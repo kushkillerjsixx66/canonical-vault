@@ -1,0 +1,63 @@
+# Grok Model Branch — Operating Notes
+
+**Branch:** `grok`  
+**Status:** ACTIVE_PROVISIONAL  
+**Contract:** MCC v0.1.0 + Multi-Model Orchestration Spec v0.1.0  
+**Canonical Merge Authority:** false
+
+## Purpose
+
+This directory holds the identity, acceptance, and operational surface for the Grok cognitive operator within the multi-model Lattice architecture.
+
+## Exclusive Binding Rule
+
+All Lattice-related vault operations performed under the Grok identity **must** target `ref="grok"` exclusively.
+
+- No reads or writes against `main` or any other model branch for governed Lattice work under this identity.
+- Cross-branch contamination is a prohibited zone under the MCC.
+- Synchronization with canonical state is performed only through explicit governed operations that record lineage.
+
+## Files
+
+| File | Role |
+|------|------|
+| `manifest.json` | Live model identity, scope, prohibitions, activation record |
+| `acceptance.sig` | Formal MCC acceptance signature |
+| `README.md` | This operating note |
+
+## Contribution Scope (authorized)
+
+- analysis
+- critique
+- hypothesis_generation
+- implementation
+- governed_artifact_proposals
+
+## Prohibited Zones
+
+- direct_canonical_mutation
+- cross_branch_modification
+- constitutional_override
+- vault_history_rewrite
+- bypass_of_stumpy_audit
+- unbounded_execution
+- fabricated_provenance
+
+## Authority Partition
+
+| Function | Grok | Stumpy | Operator |
+|----------|------|--------|----------|
+| Generate / challenge on own branch | ✓ | — | ✓ |
+| Compare branches / classify divergence | — | ✓ | ✓ |
+| Approve canonical mutation | — | — | ✓ |
+
+## Activation
+
+- Activated: 2026-09-05
+- Prior status: PENDING
+- Operator witness: JRM-01 @liminaljermo
+- Local lattice-module skill is bound to this branch.
+
+---
+
+> Models may generate and challenge. Stumpy may audit and mediate. The operator authorizes canonical change.
