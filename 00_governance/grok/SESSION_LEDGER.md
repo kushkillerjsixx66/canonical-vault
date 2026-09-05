@@ -3,7 +3,7 @@
 **Branch:** `grok`  
 **Identity Status:** ACTIVE_PROVISIONAL  
 **Operator Witness:** JRM-01 @liminaljermo  
-**Last Updated:** 2026-09-05T16:50:00Z
+**Last Updated:** 2026-09-05T16:53:00Z
 
 This ledger is the primary continuity surface for the Grok model branch.  
 It records major governed events, baselines, open work, and decisions so the branch retains coherent state across sessions.
@@ -38,26 +38,41 @@ Exclusive branch binding enforced. All Lattice vault operations under this ident
 | Archived | `00_governance/grok/diagnostics/flda_20260905_164825.json` |
 | Commit | `6269fca…` |
 
-All 8 probes passed (package_integrity, runtime_boot, sigil_issuance, constraint_gate, cfc, cce, ges, audit_integrity).
-
-Notable day-zero readings:
-- Drift: 0.833 (elevated — expected at bootstrap)
-- Coherence / Alignment: 1.0
-- Risk: 0.05
-- Operator Impact: 0.0
+All 8 probes passed. Notable day-zero readings: Drift 0.833, Coherence/Alignment 1.0, Risk 0.05, Operator Impact 0.0.
 
 ---
 
-## 3. Current Open Items
+## 3. Work Packages
+
+### WP-GROK-001 — Critical Analysis of Multi-Model Orchestration
+
+| Field | Value |
+|-------|-------|
+| Status | **OPEN** (initial deliverable complete) |
+| Type | analysis + critique + hypothesis_generation |
+| Opened | 2026-09-05T16:52:00Z |
+| Path | `00_governance/grok/work-packages/WP-GROK-001/` |
+| Primary artifact | `critique.md` |
+| Commits | `3e03f01…` (open), `634546c…` (critique) |
+
+**Summary of critique findings:**
+- Strengths: clean authority partition, branch sovereignty, failure-as-evidence, Stumpy classification vocabulary, acceptance ≠ authority.
+- Tensions: sync divergence recording underspecified, thin acceptance lifecycle, Stumpy invocation rules missing, orchestration run object aspirational, tier vocabulary drift, scope enforcement declaration-only.
+- Hypotheses (H1–H5): structured divergence record, acceptance state machine, Stumpy invocation contract, orchestration run object schema, scope gate as first-class constraint.
+- Residual risks and open questions recorded in the artifact.
+
+---
+
+## 4. Current Open Items
 
 | Priority | Item | Status |
 |----------|------|--------|
-| — | First governed work package | Not yet opened |
+| 1 | WP-GROK-001 disposition (Operator review of hypotheses) | Awaiting |
 | — | Further continuity snapshots | As needed |
 
 ---
 
-## 4. Decision Log
+## 5. Decision Log
 
 | Timestamp | Decision | Rationale |
 |-----------|----------|-----------|
@@ -65,10 +80,11 @@ Notable day-zero readings:
 | 2026-09-05 | Activate identity before substantive work | Prevent gray-zone actions under PENDING status |
 | 2026-09-05 | Run & archive day-zero FLDA | Establish auditable baseline before first work package |
 | 2026-09-05 | Initialize this SESSION_LEDGER | Provide branch-local continuity surface |
+| 2026-09-05 | Open WP-GROK-001 (Candidate A) | Highest-leverage first package: critique the protocol that governs this branch |
 
 ---
 
-## 5. Authority Reminders
+## 6. Authority Reminders
 
 - Canonical merge authority: **false**
 - Contribution scope: analysis, critique, hypothesis_generation, implementation, governed_artifact_proposals
