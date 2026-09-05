@@ -5,6 +5,7 @@
 **Origin Branch:** grok  
 **Parent Package:** WP-GROK-001 (H3)  
 **Timestamp:** 2026-09-05T17:08:00Z  
+**Revised:** 2026-09-05T17:11:00Z (minor clarity items applied)  
 **Governance Signature:** SIG:Grok-ACTIVE_PROVISIONAL-2026-09-05  
 **Lineage:** model=Grok → branch=grok → WP-GROK-001/H3 → WP-GROK-004 → this artifact
 
@@ -30,10 +31,10 @@ Without these rules, Stumpy remains powerful but unpredictable — risking both 
 | Actor | May invoke Stumpy? | Notes |
 |-------|--------------------|-------|
 | Operator | Yes (any scope) | Full authority |
-| Authorized automation acting under prior Operator approval | Yes (scoped) | Must record the authorizing decision |
+| Authorized automation acting under prior Operator approval | Yes (scoped) | The authorizing decision MUST be referenceable (commit SHA, Orchestration Run id, or explicit governance sigil) |
 | Model in `ACTIVE` acceptance state | Yes — limited to requesting comparison of **its own branch** against canonical or against other branches for analysis | Does not grant classification authority |
 | Model in `ACTIVE_PROVISIONAL` or lower | No (may request Operator to invoke) | Aligns with WP-GROK-002 ACTIVE rights |
-| Stumpy itself | May self-trigger only for continuous monitoring if explicitly configured by Operator | Default is on-demand |
+| Stumpy itself | May self-trigger only for continuous monitoring if explicitly configured by Operator | Default is on-demand. Any continuous/background mode MUST still obey the minimum evidence threshold and MUST record results into an Orchestration Run or equivalent |
 
 ### 2.2 Mandatory vs Advisory Comparison Points
 
@@ -46,7 +47,7 @@ Without these rules, Stumpy remains powerful but unpredictable — risking both 
 **Advisory (SHOULD run):**
 
 1. At the close of a significant Orchestration Run that produced substantive new artifacts.
-2. When multiple model branches independently surface the same challenge to canonical material (convergence detection).
+2. When multiple model branches independently surface the same challenge to canonical material (convergence detection). Stumpy or the Operator may flag apparent independent convergence for advisory review; no automatic escalation is implied.
 3. On Operator or `ACTIVE`-model request for diagnostic purposes.
 
 **Not required:**
@@ -78,6 +79,29 @@ If any of the above are missing or unverifiable, the required output is `UNVERIF
 - The `stumpy` block defined in WP-GROK-003 is the preferred recording surface.
 - Advisory comparisons MAY run without an Orchestration Run; if they later become material they can be linked retrospectively.
 
+### 2.6 Example Invocation Record (illustrative)
+
+```yaml
+stumpy_invocation:
+  requested_by: Grok
+  acceptance_state: ACTIVE_PROVISIONAL   # would be rejected under current rules; shown for contrast
+  # Under ACTIVE the same request would be permitted
+  target:
+    branch: grok
+    tip: "f0b07e0e9335c8e21aa2872d18fe2189e8333d95"
+  canonical_ref: main
+  canonical_commit: "8bdf686e47f74c34d1d594efbb13314433f0bb9e"
+  evidence_present:
+    branch_tip: true
+    canonical_commit: true
+    manifest_scope: true
+    divergence_records: false
+    orchestration_run: false
+  classification: UNVERIFIED          # missing linked run/divergence metadata → cannot go beyond UNVERIFIED
+  recorded_in_orchestration_run: null
+  notes: "Illustrative — provisional identity correctly blocked from direct invocation"
+```
+
 ---
 
 ## 3. Classification Vocabulary (restated for clarity)
@@ -102,7 +126,7 @@ This proposal does not add or remove classifications. It only constrains when no
 
 | ID | Item | Notes |
 |----|------|-------|
-| R1 | Continuous / background Stumpy monitoring | Left optional and Operator-configured to avoid surprise load |
+| R1 | Continuous / background Stumpy monitoring | Left optional and Operator-configured; must still obey evidence threshold and record into a Run |
 | R2 | Cross-model comparison requested by one ACTIVE model about another | Permitted as analysis; does not imply authority over the peer branch |
 | Q1 | Exact automated failure threshold that triggers mandatory re-audit after SUSPENDED | Deferred to future policy |
 | Q2 | Whether Stumpy audit records themselves require a separate lineage object beyond the Orchestration Run block | Recommended to keep them inside the Run for minimality |
@@ -129,6 +153,8 @@ origin.branch         = grok
 origin.work_package   = WP-GROK-004
 origin.parent         = WP-GROK-001 / H3
 origin.timestamp      = 2026-09-05T17:08:00Z
+origin.revised        = 2026-09-05T17:11:00Z
+revision.reason       = "Apply minor clarity items: automation authorization reference, convergence trigger note, continuous-mode constraints, example invocation record"
 governance.signature  = SIG:Grok-ACTIVE_PROVISIONAL-2026-09-05
 operator.witness      = JRM-01 @liminaljermo
 contracts.referenced  = multi-model-orchestration.md v0.1.0 (§6)
