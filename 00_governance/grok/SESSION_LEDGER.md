@@ -3,7 +3,7 @@
 **Branch:** `grok`  
 **Identity Status:** ACTIVE_PROVISIONAL  
 **Operator Witness:** JRM-01 @liminaljermo  
-**Last Updated:** 2026-09-05T17:14:00Z
+**Last Updated:** 2026-09-05T17:17:00Z
 
 ---
 
@@ -15,25 +15,23 @@ PENDING → ACTIVE_PROVISIONAL (2026-09-05). Exclusive branch binding enforced.
 
 **HEALTHY** (GES 0.9). Archived under `diagnostics/`.
 
-## 3. Work Packages
+## 3. Work Packages — Hypothesis Sequence Complete
 
 | ID | Title | Status |
 |----|-------|--------|
-| WP-GROK-001 | Critical Analysis of Multi-Model Orchestration | OPEN — H1–H5 accepted branch-locally |
+| WP-GROK-001 | Critical Analysis of Multi-Model Orchestration | OPEN (parent) — H1–H5 converted |
 | WP-GROK-002 | Acceptance State Machine (H2) | **ACCEPTED** |
 | WP-GROK-003 | Divergence Record + Orchestration Run Schema (H1+H4) | **ACCEPTED** |
 | WP-GROK-004 | Stumpy Invocation & Evidence Contract (H3) | **ACCEPTED** |
-| WP-GROK-005 | Scope Gate as First-Class Constraint (H5) | **OPEN** — initial proposal complete |
+| WP-GROK-005 | Scope Gate as First-Class Constraint (H5) | **ACCEPTED** |
 
-### WP-GROK-005 Summary
-Elevates declared `contribution_scope` / `prohibited_zones` into a first-class PASS / DENY / HOLD gate that runs before Stumpy review or transmission. Fail-closed on missing inputs. Aligns with existing ConstraintGate / CFC vocabulary and with WP-GROK-002–004.
+All five hypotheses from the original critique have been turned into concrete, reviewed, and accepted branch-local designs. No source contracts have been modified. Elevation of any design toward canonical contracts remains an Operator-authorized transmission action subject to the rules now defined (Scope Gate → Stumpy → Operator authorization).
 
 ## 4. Current Open Items
 
 | Priority | Item | Status |
 |----------|------|--------|
-| 1 | Operator review of WP-GROK-005 | Awaiting |
-| — | Hypothesis sequence H1–H5 will be complete once WP-GROK-005 is accepted |
+| — | Next higher-level work (implementation sketches, transmission planning, new analysis, etc.) | Awaiting Operator direction |
 
 ## 5. Authority Reminders
 
