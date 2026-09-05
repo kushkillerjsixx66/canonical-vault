@@ -5,6 +5,8 @@
 **Origin Branch:** grok  
 **Parent Package:** WP-GROK-001 (H5)  
 **Timestamp:** 2026-09-05T17:13:00Z  
+**Revised:** 2026-09-05T17:16:00Z (clarity items applied)  
+**Accepted:** 2026-09-05T17:16:00Z  
 **Governance Signature:** SIG:Grok-ACTIVE_PROVISIONAL-2026-09-05  
 **Lineage:** model=Grok → branch=grok → WP-GROK-001/H5 → WP-GROK-005 → this artifact
 
@@ -32,9 +34,11 @@ A first-class constraint that evaluates a candidate artifact against the produci
 | `contribution_scope` | model `manifest.json` | Yes |
 | `prohibited_zones` | model `manifest.json` | Yes |
 | Artifact type / classification | artifact metadata or path convention | Yes |
-| Artifact summary or declared intent | artifact or accompanying note | Recommended |
+| Artifact summary or declared intent | artifact or accompanying note | Recommended (absence → prefer HOLD over pure type-based PASS) |
 
 If required inputs are missing or unverifiable → **DENY** (fail-closed).
+
+**Initial artifact-type vocabulary:** Matching SHOULD begin with the five MCC artifact categories already defined — Core Artifacts, Vault Chain Nodes, Governance Sigils, Runtime Modules, Operator Notes. Novel types not yet mapped produce HOLD; repeated HOLDs should trigger scope-manifest review.
 
 ### 2.3 Decision Semantics
 
@@ -44,12 +48,14 @@ If required inputs are missing or unverifiable → **DENY** (fail-closed).
 | **DENY** | Artifact falls outside scope or inside a prohibited zone, or required inputs missing | Block; record reason; do not proceed |
 | **HOLD** | Scope data present but classification of the artifact is ambiguous | Pause for Operator or model clarification; do not treat as PASS |
 
+**Override:** DENY may be overridden only by explicit Operator decision recorded in the relevant Orchestration Run (or equivalent durable record). No other actor may convert DENY into PASS.
+
 ### 2.4 Evaluation Rules (minimal)
 
 1. If any required input is missing → DENY.
 2. If artifact type or intent matches a prohibited zone → DENY.
 3. If artifact type or intent is not covered by any entry in `contribution_scope` → DENY.
-4. If coverage is ambiguous (e.g., novel artifact type not yet mapped) → HOLD.
+4. If coverage is ambiguous (e.g., novel artifact type not yet mapped) or intent is absent when needed for disambiguation → HOLD.
 5. Otherwise → PASS.
 
 Exact matching language (string equality, prefix, ontology lookup) is left as an implementation detail; the gate only requires that the rule set be explicit and auditable.
@@ -64,6 +70,7 @@ Artifact produced on model branch
    PASS  →  (optional) local validation → Stumpy comparison → …
    HOLD  →  clarification loop
    DENY  →  stop; record; no transmission
+            (Operator override possible via recorded decision in Orchestration Run)
 ```
 
 The gate sits **before** Stumpy review and **before** any transmission toward canonical eligibility. It does not replace Stumpy; it filters obviously out-of-scope work early.
@@ -80,6 +87,34 @@ scope_gate:
   reason: <short string>
   timestamp: <ISO-8601>
   manifest_scope_hash_or_version: <ref>
+  override:                    # present only if Operator overrode a DENY
+    authorized_by: <Operator id>
+    timestamp: <ISO-8601>
+    notes: <string>
+```
+
+#### Example (illustrative PASS)
+
+```yaml
+scope_gate:
+  model: Grok
+  artifact_ref: "00_governance/grok/work-packages/WP-GROK-005/proposal.md"
+  decision: PASS
+  reason: "governed_artifact_proposal within declared contribution_scope; not in prohibited_zones"
+  timestamp: "2026-09-05T17:13:00Z"
+  manifest_scope_hash_or_version: "MCC-0.1.0 / ACTIVE_PROVISIONAL manifest"
+```
+
+#### Example (illustrative DENY)
+
+```yaml
+scope_gate:
+  model: Grok
+  artifact_ref: "hypothetical/direct-edit-of-main-contract.md"
+  decision: DENY
+  reason: "direct_canonical_mutation is a prohibited zone"
+  timestamp: "2026-09-05T17:16:00Z"
+  manifest_scope_hash_or_version: "MCC-0.1.0 / ACTIVE_PROVISIONAL manifest"
 ```
 
 ---
@@ -101,7 +136,7 @@ No change to the core CFC state machine is required for the proposal to be usefu
 | Package | Alignment |
 |---------|-----------|
 | WP-GROK-002 (Acceptance State Machine) | Gate reads the live manifest of an accepted identity; suspended/revoked identities should already be barred upstream |
-| WP-GROK-003 (Orchestration Run) | Gate decisions can be stored inside or linked from a Run |
+| WP-GROK-003 (Orchestration Run) | Gate decisions (and any override) can be stored inside or linked from a Run |
 | WP-GROK-004 (Stumpy Invocation) | Gate runs *before* Stumpy; reduces noise reaching comparative review |
 
 ---
@@ -114,20 +149,14 @@ No change to the core CFC state machine is required for the proposal to be usefu
 | R2 | Novel artifact types | HOLD is the correct initial response; repeated HOLDs should trigger scope-manifest review |
 | R3 | Performance / automation friction | Gate must stay cheap; complex ontology matching is out of scope for v0 |
 | Q1 | Who may update a model’s contribution_scope? | Operator or model with subsequent re-acceptance? Left open |
-| Q2 | Should DENY be appealable inside the same Orchestration Run? | Recommended yes, via Operator override recorded in the Run |
-| Q3 | Exact artifact-type taxonomy | Not defined here; can start with the MCC artifact categories already listed |
 
 ---
 
-## 6. Disposition Recommendation
+## 6. Disposition
 
-Offered for Operator review. Possible next steps:
-
-1. Accept / annotate / request revision.
-2. Authorize a follow-on that produces a concrete checker sketch or JSON Schema for the gate record.
-3. Consider the hypothesis sequence (H1–H5) complete once this package is accepted.
-
-No canonical mutation is performed by this artifact.
+**Accepted** as branch-local working design under Operator direction (2026-09-05).  
+This completes the conversion of all five hypotheses from WP-GROK-001 into concrete branch-local designs.  
+No source contracts modified. Elevation of any design toward canonical contracts remains an Operator-authorized transmission action only.
 
 ---
 
@@ -139,6 +168,9 @@ origin.branch         = grok
 origin.work_package   = WP-GROK-005
 origin.parent         = WP-GROK-001 / H5
 origin.timestamp      = 2026-09-05T17:13:00Z
+origin.revised        = 2026-09-05T17:16:00Z
+origin.accepted       = 2026-09-05T17:16:00Z
+revision.reason       = "Apply clarity items: MCC taxonomy starter, Operator override path, example records; accept"
 governance.signature  = SIG:Grok-ACTIVE_PROVISIONAL-2026-09-05
 operator.witness      = JRM-01 @liminaljermo
 contracts.referenced  = model-contribution.md v0.1.0 (scope declarations)
