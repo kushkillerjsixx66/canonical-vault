@@ -5,6 +5,7 @@
 **Origin Branch:** grok  
 **Parent Package:** WP-GROK-001 (H1 + H4)  
 **Timestamp:** 2026-09-05T17:03:00Z  
+**Revised:** 2026-09-05T17:06:00Z (improvements applied)  
 **Governance Signature:** SIG:Grok-ACTIVE_PROVISIONAL-2026-09-05  
 **Lineage:** model=Grok → branch=grok → WP-GROK-001/H1+H4 → WP-GROK-003 → this artifact
 
@@ -46,10 +47,10 @@ divergence_record:
   divergence:
     commits_only_on_branch:          # list of shas or short summaries
       - <sha>
-      - ...
     artifacts_only_on_branch:        # optional paths or artifact ids
       - <path>
     carried_forward: true | false | partial
+    carried_forward_notes: <string>  # MUST be present when carried_forward is partial
     discarded_or_overlaid:
       - description: <short>
         disposition: retained_in_history | explicitly_dropped | folded_into_merge_commit | unknown
@@ -63,9 +64,39 @@ divergence_record:
 ```
 
 **Rules**
-- MUST be produced for any non-trivial sync (i.e., when pre-sync tip ≠ source tip).
-- SHOULD be produced even for pure fast-forwards (for completeness).
+- MUST be produced for any sync where pre-sync tip ≠ source tip.
+- SHOULD be produced for pure fast-forwards (empty `commits_only_on_branch` is valid). Automated fast-forward syncs MAY emit a minimal record so downstream Orchestration Runs can still link to them.
+- When `carried_forward: partial`, `carried_forward_notes` is mandatory.
 - MUST NOT claim that discarded work is irrecoverable if Git history still contains it; the record only documents the sync-time disposition.
+
+#### Example (illustrative)
+
+```yaml
+divergence_record:
+  schema_version: "DR-0.1.0"
+  id: "dr-grok-20260905-sync01"
+  timestamp: "2026-09-04T22:15:17Z"
+  model: Grok
+  branch: grok
+  sync:
+    source_ref: main
+    source_commit: "8bdf686e47f74c34d1d594efbb13314433f0bb9e"
+    pre_sync_branch_tip: "cc4bac46149d19458021dcca963102939c3e73f2"
+    post_sync_branch_tip: "37f344c90c0b325c8c458756f90c7199857763a8"
+    method: merge
+  divergence:
+    commits_only_on_branch: []
+    artifacts_only_on_branch: []
+    carried_forward: true
+    discarded_or_overlaid: []
+  operator:
+    actor: Grok
+    witness: JRM-01 @liminaljermo
+    notes: "Initial sync of lagging grok branch to current main via PR merge"
+  lineage:
+    related_orchestration_run: null
+    related_commits: ["37f344c90c0b325c8c458756f90c7199857763a8"]
+```
 
 ### 2.2 Orchestration Run
 
@@ -75,8 +106,9 @@ A durable record of one governed multi-model (or single-model) cognitive cycle.
 orchestration_run:
   schema_version: "OR-0.1.0"
   id: <uuid or deterministic id>
+  status: open | closed | abandoned
   timestamp_start: <ISO-8601>
-  timestamp_end: <ISO-8601 or null if still open>
+  timestamp_end: <ISO-8601 or null if open>
   intent: <short string>
   canonical_starting_commit: <sha>
   participating_models:
@@ -84,7 +116,7 @@ orchestration_run:
       branch: <name>
       branch_commit_observed: <sha>
   constraints_applied: [<string>, ...]
-  divergence_records: [<id>, ...]          # references to DR objects
+  divergence_records: [<id>, ...]
   stumpy:
     audit_result: <classification or null>
     findings: [<string>, ...]
@@ -106,6 +138,40 @@ orchestration_run:
 - One Orchestration Run SHOULD be opened for any significant governed effort that may later seek transmission or Stumpy review.
 - Divergence Records produced during the run SHOULD be linked via `divergence_records`.
 - `governance_disposition` and `operator_authorization` remain null until explicitly set; absence of authorization is not authorization.
+- `status` must be kept consistent with `timestamp_end` (null end ⇒ open).
+
+#### Example (illustrative)
+
+```yaml
+orchestration_run:
+  schema_version: "OR-0.1.0"
+  id: "or-grok-wp001-20260905"
+  status: open
+  timestamp_start: "2026-09-05T16:52:00Z"
+  timestamp_end: null
+  intent: "WP-GROK-001 critical analysis of multi-model orchestration"
+  canonical_starting_commit: "8bdf686e47f74c34d1d594efbb13314433f0bb9e"
+  participating_models:
+    - model: Grok
+      branch: grok
+      branch_commit_observed: "634546c8b9e7a78261643d8e1bbfebad8457994c"
+  constraints_applied: ["MCC-0.1.0", "no_canonical_mutation"]
+  divergence_records: []
+  stumpy:
+    audit_result: null
+    findings: []
+    audit_commit_or_path: null
+  conflicts_and_open_questions: []
+  governance_disposition: null
+  operator_authorization:
+    authorized: null
+    witness: null
+    timestamp: null
+  resulting_canonical_commit: null
+  lineage:
+    model_origin: Grok
+    related_work_packages: ["WP-GROK-001"]
+```
 
 ---
 
@@ -128,14 +194,14 @@ A sync that occurs outside a formal Orchestration Run still produces a Divergenc
 
 ---
 
-## 4. Suggested Storage Locations (Non-Authoritative)
+## 4. Recommended Storage Locations
 
-| Object | Suggested path pattern |
-|--------|------------------------|
-| Divergence Record | `00_governance/<model>/divergence/<id>.yaml` or under an orchestration run directory |
-| Orchestration Run | `00_governance/orchestration/runs/<id>.yaml` (shared) or `00_governance/<model>/runs/<id>.yaml` |
+| Object | Recommended path pattern |
+|--------|--------------------------|
+| Divergence Record | `00_governance/<model>/divergence/<id>.yaml` |
+| Orchestration Run | `00_governance/orchestration/runs/<id>.yaml` (shared across models) |
 
-Exact layout is left open; the schemas are the primary contribution of this package.
+These are starting conventions, not yet normative contract requirements.
 
 ---
 
@@ -161,15 +227,10 @@ Exact layout is left open; the schemas are the primary contribution of this pack
 
 ---
 
-## 7. Disposition Recommendation
+## 7. Disposition
 
-This proposal is offered for Operator review. Possible next steps:
-
-1. Annotate / accept / request revision of the two schemas.
-2. Authorize a follow-on package that emits concrete JSON Schema or YAML Schema files.
-3. Authorize later transmission toward Orchestration Spec §4 and §13 (still subject to full merge rules and Stumpy audit).
-
-No canonical mutation is requested or performed by this artifact.
+**Accepted** as branch-local working design under Operator direction (2026-09-05).  
+No source contracts modified. Elevation toward Orchestration Spec §4 / §13 remains an Operator-authorized transmission action only.
 
 ---
 
@@ -181,6 +242,8 @@ origin.branch         = grok
 origin.work_package   = WP-GROK-003
 origin.parent         = WP-GROK-001 / H1 + H4
 origin.timestamp      = 2026-09-05T17:03:00Z
+origin.revised        = 2026-09-05T17:06:00Z
+revision.reason       = "Apply review improvements: partial notes, fast-forward guidance, status field, examples, recommended storage"
 governance.signature  = SIG:Grok-ACTIVE_PROVISIONAL-2026-09-05
 operator.witness      = JRM-01 @liminaljermo
 contracts.referenced  = multi-model-orchestration.md v0.1.0 (§4, §13)
