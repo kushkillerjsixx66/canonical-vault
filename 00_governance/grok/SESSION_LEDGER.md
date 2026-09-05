@@ -3,7 +3,7 @@
 **Branch:** `grok`  
 **Identity Status:** ACTIVE_PROVISIONAL  
 **Operator Witness:** JRM-01 @liminaljermo  
-**Last Updated:** 2026-09-05T16:58:00Z
+**Last Updated:** 2026-09-05T17:01:00Z
 
 This ledger is the primary continuity surface for the Grok model branch.  
 It records major governed events, baselines, open work, and decisions so the branch retains coherent state across sessions.
@@ -42,21 +42,24 @@ Exclusive branch binding enforced.
 | Status | OPEN — critique complete, H1–H5 accepted branch-locally |
 |--------|----------------------------------------------------------|
 | Path | `00_governance/grok/work-packages/WP-GROK-001/` |
-| Artifacts | `critique.md`, `hypothesis_disposition.md` |
 
 ### WP-GROK-002 — Acceptance State Machine (from H2)
 
 | Field | Value |
 |-------|-------|
-| Status | **OPEN** — initial proposal complete |
+| Status | **OPEN** — proposal revised (tightenings applied) |
 | Type | governed_artifact_proposal |
 | Opened | 2026-09-05T16:57:00Z |
+| Revised | 2026-09-05T17:00:00Z |
 | Path | `00_governance/grok/work-packages/WP-GROK-002/` |
 | Artifacts | `README.md`, `proposal.md` |
 | Parent | WP-GROK-001 / H2 |
 
-**Proposal summary:**  
-Five-state machine (`PENDING` → `ACTIVE_PROVISIONAL` → `ACTIVE` ↔ `SUSPENDED` → `REVOKED`) with explicit transition conditions and a minimal transition record schema. Fully backward-compatible with the existing Grok `ACTIVE_PROVISIONAL` status. No source contracts modified.
+**Tightenings applied:**
+1. `ACTIVE` given two concrete additional capabilities (cross-model comparison requests + tier-promotion eligibility).
+2. Transition records elevated to MUST for critical transitions.
+3. Major MCC version bump → automatic `SUSPENDED` made normative.
+4. Concrete example transition record added.
 
 ---
 
@@ -64,7 +67,7 @@ Five-state machine (`PENDING` → `ACTIVE_PROVISIONAL` → `ACTIVE` ↔ `SUSPEND
 
 | Priority | Item | Status |
 |----------|------|--------|
-| 1 | Operator review of WP-GROK-002 proposal | Awaiting |
+| 1 | Operator review of revised WP-GROK-002 proposal | Awaiting |
 | 2 | Decide next hypothesis package (H1+H4, H3, or H5) | Awaiting |
 | — | Further continuity snapshots | As needed |
 
@@ -78,8 +81,9 @@ Five-state machine (`PENDING` → `ACTIVE_PROVISIONAL` → `ACTIVE` ↔ `SUSPEND
 | 2026-09-05 | Activate identity (PENDING → ACTIVE_PROVISIONAL) | Clear gray-zone risk |
 | 2026-09-05 | Day-zero FLDA + archive | Baseline before work |
 | 2026-09-05 | Open WP-GROK-001 | Highest-leverage first package |
-| 2026-09-05 | Accept H1–H5 branch-locally | Operator: “Begin with hypotheses acceptance” |
+| 2026-09-05 | Accept H1–H5 branch-locally | Operator direction |
 | 2026-09-05 | Open WP-GROK-002 (H2) | Operator selected H2 first |
+| 2026-09-05 | Apply review tightenings to WP-GROK-002 | Operator: “Apply tightenings” |
 
 ---
 
