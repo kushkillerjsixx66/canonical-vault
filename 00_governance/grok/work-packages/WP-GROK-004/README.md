@@ -1,26 +1,30 @@
 # WP-GROK-004 — Stumpy Invocation & Evidence Contract (H3)
 
-**Status:** OPEN — proposal revised (minor clarity items applied)  
+**Status:** ACCEPTED (branch-local)  
 **Type:** governed_artifact_proposal  
 **Parent:** WP-GROK-001 (H3)  
 **Opened:** 2026-09-05T17:07:00Z  
 **Revised:** 2026-09-05T17:11:00Z  
+**Accepted:** 2026-09-05T17:13:00Z  
 **Model:** Grok (ACTIVE_PROVISIONAL)  
 **Branch:** grok  
 **Operator Witness:** JRM-01 @liminaljermo
 
-## Intent
+## Final Disposition
 
-Define when and how Stumpy may be invoked, minimum evidence required before classification, and disciplined use of `SILENCE` / `UNVERIFIED`.
+Proposal accepted as branch-local working design under Operator direction.  
+No source contracts modified. Elevation toward Orchestration Spec §6 remains Operator-authorized only.
 
-## Clarity Items Applied
+## Key Design Points (accepted)
 
-1. Authorized automation must reference a concrete authorizing decision (commit / Run id / sigil).
-2. Convergence detection clarified as flaggable by Stumpy or Operator (no automatic escalation).
-3. Continuous/background mode must still obey evidence threshold and record into an Orchestration Run.
-4. Illustrative invocation record example added.
+- Invocation rights tied to acceptance state (`ACTIVE` may request; provisional may not)
+- Mandatory comparison points: pre-transmission, pre-merge authorization, post-major MCC bump
+- Minimum evidence threshold; missing inputs force `UNVERIFIED` / `SILENCE`
+- Automation authorization must be referenceable
+- Continuous mode still bound by evidence threshold and Run recording
+- Aligns with WP-GROK-002 and WP-GROK-003
 
 ## Artifacts
 
-- `proposal.md` (revised)
+- `proposal.md` (revised + accepted)
 - This README
