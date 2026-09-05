@@ -11,7 +11,107 @@ canonical_invariants:
   - lineage_binding
   - source_integrity
   - score_honesty
+  - drift_accountabilityversion: 1.0.0
+root_of_truth:
+  document: 00_governance/constitution/lattice_constitution.md
+  title: Lattice Constitution
+  status: SUPREME_AUTHORITY
+  rank: 1
+
+canonical_invariants:
+  - coherence
+  - reversibility
+  - lineage_binding
+  - source_integrity
+  - score_honesty
   - drift_accountability
+  - silence_as_state
+  - operator_boundary
+  - authority_hierarchy
+  - constraint_enforcement
+
+hierarchy:
+  - rank: 1
+    artifact: 00_governance/constitution/lattice_constitution.md
+    type: CONSTITUTION
+    authority: SUPREME
+    description: Fundamental law of the Lattice. No exceptions, no overrides.
+  - rank: 2
+    artifact: 00_governance/constitution/invariants.md
+    type: TIER_1_INVARIANTS
+    authority: CONSTITUTIONALLY_SUBORDINATE_BINDING
+    description: Ten canonical invariants (I.COH through X.ARC).
+  - rank: 3
+    artifact: 00_governance/constitution/amendment_laws.md
+    type: AMENDMENT_PROCEDURE
+    authority: CONSTITUTIONAL_PROCEDURE
+  - rank: 4
+    artifact: 04_system_spec/Lattice_Unified_Spec.md
+    type: INTEGRATED_SYSTEM_SPECIFICATION
+    authority: SPECIFICATION_LEVEL
+    subordinate_to:
+      - 00_governance/constitution/lattice_constitution.md
+      - 00_governance/constitution/invariants.md
+  - rank: 5
+    artifact: 00_governance/contracts/
+    type: SCHEMA_AND_CONTRACTS
+    authority: OPERATIONAL_CONTRACTS
+  - rank: 6
+    artifact: 05_runtime/runtime_envelope.yaml
+    type: RUNTIME_CONFIGURATION
+    authority: PARAMETERIZATION_ONLY
+    override_capacity: NONE
+  - rank: 7
+    artifact: 05_runtime/governance/boundary.py
+    type: EXECUTABLE_RUNTIME
+    authority: ENFORCEMENT_PLANE
+  - rank: 8
+    artifact: tests/
+    type: ASSURANCE_CONFORMANCE
+    authority: VERIFICATION_ONLY
+
+operators:
+  - id: JRM-01
+    name: liminaljermo
+    type: SOVEREIGN_OPERATOR
+    tier: ROOT
+    canonical_merge_authority: true
+    branch_authority: all
+    accepted: 2026-06-24T21:37:00Z
+
+  - id: Copilot
+    name: Microsoft Copilot
+    type: MODEL_OPERATOR
+    class: software_engineering_cognitive_operator
+    tier: PROVISIONAL_OPERATOR_ASSIST
+    canonical_merge_authority: false
+    branch: copilot
+    accepted_by: JRM-01
+    accepted: 2026-09-05T20:58:00Z
+    mcc_schema: MCC-0.1.0
+    contribution_scope:
+      - analysis
+      - critique
+      - hypothesis_generation
+      - implementation
+      - governed_artifact_proposals
+    prohibited_zones:
+      - direct_canonical_mutation
+      - cross_branch_modification
+      - constitutional_override
+      - vault_history_rewrite
+      - bypass_of_stumpy_audit
+      - unbounded_execution
+      - fabricated_provenance
+    seam_bindings:
+      - architecture_default
+      - operator
+      - lineage
+      - critique
+      - implementation
+    veil_interface: required
+    stumpy_audit: required
+
   - silence_as_state
   - operator_boundary
   - authority_hierarchy
