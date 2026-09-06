@@ -56,3 +56,45 @@ hierarchy:
     artifact: tests/
     type: ASSURANCE_CONFORMANCE
     authority: VERIFICATION_ONLY
+
+operators:
+  - id: JRM-01
+    name: liminaljermo
+    type: SOVEREIGN_OPERATOR
+    tier: ROOT
+    canonical_merge_authority: true
+    branch_authority: all
+    accepted: 2026-06-24T21:37:00Z
+
+  - id: Copilot
+    name: Microsoft Copilot
+    type: MODEL_OPERATOR
+    class: software_engineering_cognitive_operator
+    tier: PROVISIONAL_OPERATOR_ASSIST
+    canonical_merge_authority: false
+    branch: copilot
+    accepted_by: JRM-01
+    accepted: 2026-09-05T20:58:00Z
+    mcc_schema: MCC-0.1.0
+    contribution_scope:
+      - analysis
+      - critique
+      - hypothesis_generation
+      - implementation
+      - governed_artifact_proposals
+    prohibited_zones:
+      - direct_canonical_mutation
+      - cross_branch_modification
+      - constitutional_override
+      - vault_history_rewrite
+      - bypass_of_stumpy_audit
+      - unbounded_execution
+      - fabricated_provenance
+    seam_bindings:
+      - architecture_default
+      - operator
+      - lineage
+      - critique
+      - implementation
+    veil_interface: required
+    stumpy_audit: required
