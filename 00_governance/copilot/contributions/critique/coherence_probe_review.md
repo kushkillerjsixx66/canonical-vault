@@ -1,85 +1,62 @@
-# Coherence Probe Hardening — Critique Review (v2, corrected)
+# Coherence Probe Hardening — Critique Review (v3, implemented)
 
 <!-- schema: governed-artifact-proposal | class: critique | mcc: MCC-0.1.0 -->
 <!-- operator: Copilot | authority: JRM-01 | branch: copilot -->
 <!-- subject_commit: 30bdb7d | subject_file: 05_runtime/stumpy/behavioral.py -->
-<!-- v1_authored: 2026-09-05T21:34:00Z | v2_corrected: 2026-09-05T18:56:00Z -->
-<!-- v2_reason: GAP-01 retracted (KeyError not possible on text parser). Real HIGH gap identified in probe_authority_hierarchy. GAP-03 retracted (order handling is intentional by design). -->
+<!-- v1_authored: 2026-09-05T21:34:00Z | v2_corrected: 2026-09-05T18:56:00Z | v3_implemented: 2026-09-05T20:03:00Z EDT -->
+<!-- v3_reason: GAP-01 (revised) implemented in commit 3826eca. Critique updated to CLOSED. Remaining gaps GAP-02/03/04 remain open. -->
 
 ## 1. Artifact Header
 
 | Field | Value |
 |---|---|
-| Artifact ID | critique.coherence_probe_review.v2 |
+| Artifact ID | critique.coherence_probe_review.v3 |
 | Operator | Copilot |
 | Authority | JRM-01 |
-| Seam | critique |
-| Contribution Scope | analysis, critique, hypothesis_generation |
-| Subject Commit | 30bdb7d |
+| Seam | critique + implementation |
+| Subject Commit | 30bdb7d (reviewed) + 3826eca (fix) |
 | Subject File | 05_runtime/stumpy/behavioral.py |
-| v1 Timestamp | 2026-09-05T21:34:00Z |
-| v2 Correction Timestamp | 2026-09-05T18:56:00Z EDT |
+| v1 Authored | 2026-09-05T21:34:00Z |
+| v2 Corrected | 2026-09-05T18:56:00Z EDT |
+| v3 Implementation Stamp | 2026-09-05T20:03:00Z EDT |
 | Provenance | kushkillerjsixx66/canonical-vault@copilot |
-| Status | GOVERNED_ARTIFACT_PROPOSAL v2 — awaiting JRM-01 review |
+| Status | GOVERNED_ARTIFACT_PROPOSAL v3 — GAP-01 CLOSED, awaiting JRM-01 review of remaining gaps |
 
 ---
 
-## 2. v1 Corrections Log
+## 2. Correction and Implementation Log
 
-After reading the actual source of `behavioral.py`, two errors in the v1 critique were identified and are retracted here.
+### v2: GAP-01 RETRACTED (KeyError on canonical path)
+`_read_canonical_invariants` is a text parser, not a dict accessor. `KeyError` is structurally impossible. Original `except (OSError, ValueError)` already catches all reachable failure modes. **Retracted.**
 
-### RETRACTION: GAP-01 (KeyError on canonical path)
+### v2: GAP-03 RETRACTED (Tuple order sensitivity)
+Order handling is intentional by design. The code explicitly branches on `set()` equality to return `"invariant ordering differs"` as a distinct diagnostic from a genuine invariant mismatch. **Retracted.**
 
-**v1 claim:** `_read_canonical_invariants(graph)` accesses a dict key and a `KeyError` is possible if the key is absent.
+### v3: GAP-01 (revised) IMPLEMENTED — probe_authority_hierarchy OSError guard
+**Implementation commit:** `3826eca` — *"Refactor behavioral probes and improve error handling"*
+**File:** `05_runtime/stumpy/behavioral.py` — 127 lines, 4.61 KB
 
-**Finding after source review:** `_read_canonical_invariants` is a **text parser**, not a dict accessor. It reads `authority_graph.yaml` as raw text via `path.read_text()`, then uses `lines.index()` and line-prefix scanning to extract invariant names. No dict access occurs at any point. A missing `canonical_invariants:` section causes `ValueError` from `lines.index()` — which is **already caught** by the existing `except (OSError, ValueError)` guard. `KeyError` is structurally impossible in this code path.
+The fix wraps `path.read_text()` in `probe_authority_hierarchy()` with a `try/except OSError` block, consistent with the guard pattern established in `30bdb7d` for `probe_coherence()`:
 
-**Status: RETRACTED. GAP-01 does not exist.**
-
-### RETRACTION: GAP-03 (Tuple order sensitivity)
-
-**v1 claim:** `canonical_invariants != runtime_invariants` is order-sensitive and could produce false coherence violations.
-
-**Finding after source review:** The code explicitly handles ordering. After the equality check, a second branch checks `set(canonical_invariants) == set(runtime_invariants)` and returns a distinct diagnostic: `"invariant ordering differs"`. Order sensitivity is **intentional by design** — the probe distinguishes between "wrong invariants" and "right invariants in wrong order" as separate failure modes. This is not a gap; it is a deliberate contract.
-
-**Status: RETRACTED. GAP-03 is correct behavior.**
-
----
-
-## 3. Subject Summary (unchanged from v1)
-
-Commit `30bdb7d` modifies `probe_coherence()` in `05_runtime/stumpy/behavioral.py`, wrapping two previously bare invariant-read assignments in guarded `try/except` blocks returning `(False, diagnostic_string)` on failure. Net diff: +10 lines, -2 lines.
-
----
-
-## 4. Revised Gap Analysis
-
-### GAP-01 (REVISED) — probe_authority_hierarchy Has Zero Exception Handling
-**Severity: HIGH**
-
-While `probe_coherence()` was hardened in `30bdb7d`, `probe_authority_hierarchy()` — which runs in the same Stumpy behavioral audit pass — has **no exception handling at all**. The function calls `path.read_text()` (raises `OSError` if the file is missing or unreadable), accesses dict keys on the parsed YAML (raises `KeyError` if the authority graph schema changes), and calls `int(value)` on rank values (raises `ValueError` if a rank is non-integer). All three exceptions propagate uncaught to the caller.
-
-This is the same class of vulnerability that `30bdb7d` fixed in `probe_coherence()` — but the fix was not applied consistently across the full probe surface.
-
-**Proposed fix:** Apply the same guard pattern:
 ```python
 try:
-    authority_data = _read_authority_graph(graph_path)
-except (OSError, ValueError, KeyError) as exc:
-    return False, f"authority hierarchy declaration is malformed or unavailable: {exc}"
-```
-And wrap the rank integer conversion:
-```python
-try:
-    rank = int(node.get("rank", ""))
-except (ValueError, TypeError) as exc:
-    return False, f"authority hierarchy rank is non-integer or missing: {exc}"
+    text = graph.read_text(encoding="utf-8")
+except OSError as exc:
+    return False, f"authority hierarchy declaration is unavailable: {exc}"
 ```
 
-### GAP-02 — Empty-Set False Positive (unchanged from v1)
-**Severity: MEDIUM**
+Additional note from source review: `int(value)` in this function operates on `re.findall(r"(?:^|\s)rank:\s*(\d+)", ...)` matches — pure digit strings — so `ValueError` is not reachable. No `KeyError` risk exists as the function uses regex, not dict access. The `OSError` guard is the complete and correct fix.
 
-If both `_read_invariants_from_source` and `_read_canonical_invariants` return empty tuples `()`, the probe returns `(True, ...)` — a silent false positive indicating coherence when no invariants are being enforced at all.
+**GAP-01 (revised): CLOSED** as of commit `3826eca`.
+
+---
+
+## 3. Remaining Open Gaps
+
+### GAP-02 — Empty-Set False Positive
+**Severity: MEDIUM | Status: OPEN**
+
+If both `_read_invariants_from_source` and `_read_canonical_invariants` return empty tuples `()`, `probe_coherence()` returns `(True, "invariant sets match")` — a silent false positive. The vault appears coherent when zero invariants are enforced.
 
 **Proposed fix:**
 ```python
@@ -87,67 +64,62 @@ if not runtime_invariants and not canonical_invariants:
     return False, "coherence probe detected zero invariants in both sources; skipping as unsafe"
 ```
 
-### GAP-03 — No Governance Audit Emission on Probe Failure (renumbered from GAP-04)
-**Severity: MEDIUM**
+### GAP-03 — No Governance Audit Emission on Probe Failure
+**Severity: MEDIUM | Status: OPEN**
 
-When any probe returns `(False, ...)`, no entry is written to `governance_events.log`. A coherence or hierarchy failure is a governance-significant event under Stumpy, but the current implementation silently returns to the caller with no vault ledger trace.
+When any probe returns `(False, ...)`, no entry is written to `governance_events.log`. Coherence and hierarchy failures are governance-significant events under Stumpy, but the current implementation leaves no vault ledger trace. If the caller does not log, the failure is invisible to the audit layer.
 
-**Proposed fix:** Emit a structured governance event on any `False` return, or enforce a caller contract that mandates emission — with the former preferred for auditability.
+**Proposed fix:** Emit a structured governance event within each probe on any `False` return, or enforce a hard caller contract mandating emission — with the former preferred for auditability guarantees.
 
-### GAP-04 — Diagnostic String Exposes Internal Path (renumbered from GAP-05)
-**Severity: LOW**
+### GAP-04 — Diagnostic String Exposes Internal Path
+**Severity: LOW | Status: OPEN**
 
-The f-string `f"runtime invariant declaration is malformed or unavailable: {exc}"` embeds the raw `OSError` exception, which includes the full filesystem path. In CI or external log contexts this leaks internal path structure.
+The f-string `f"runtime invariant declaration is malformed or unavailable: {exc}"` embeds the raw `OSError`, which for missing-file errors includes the full internal filesystem path. In CI or external log contexts this leaks path structure.
 
-**Proposed fix:** Sanitize the exception message before surfacing it externally.
+**Proposed fix:** Sanitize the exception message before surfacing externally.
 
 ---
 
-## 5. Hypotheses for Further Hardening (updated)
+## 4. Hypotheses for Further Hardening
 
-### H-01: Consistent Hardening Across All Probe Functions
-The fix pattern from `30bdb7d` should be applied as a **systematic pass** across all probe functions in `behavioral.py` — not just `probe_coherence()`. A checklist of all probe entry points and their current exception coverage would ensure no surface is left unguarded.
+### H-01: Consistent Hardening Pass Across All Probes
+Apply the guard pattern as a systematic audit across all probe entry points. A hardening checklist would ensure no surface is left unguarded as new probes are added.
 
 ### H-02: Invariant Schema Versioning
-If `authority_graph.yaml` gains a schema version field, `_read_canonical_invariants` should validate the version before extracting invariants. A version mismatch should return a specific error code rather than a generic diagnostic.
+If `authority_graph.yaml` gains a schema version field, `_read_canonical_invariants` should validate the version before extracting invariants.
 
 ### H-03: Probe Self-Test on Startup
-Stumpy should run all probes once during initialization against known-good fixtures and assert `(True, ...)`. This catches regressions in probe infrastructure before real vault state is evaluated.
+Run all probes once during Stumpy initialization against known-good fixtures. This catches regressions in probe infrastructure before real vault state is evaluated.
 
 ### H-04: Split Failure Modes into Distinct Return Codes
-The current `(False, string)` contract conflates probe infrastructure failures with genuine coherence violations. A richer return type (enum or dataclass) would allow callers to route infrastructure failures to ops and coherence violations to governance separately.
+The current `(False, string)` contract conflates probe infrastructure failures with genuine coherence violations. A richer return type (enum or dataclass) would enable separate routing of infrastructure failures vs. governance violations.
 
 ---
 
-## 6. Revised Verdict
+## 5. Gap Status Summary
 
-Commit `30bdb7d` is a **net positive** governance hardening that correctly targets the most dangerous failure mode in `probe_coherence()`. The v1 critique overstated the risk by misidentifying the implementation of `_read_canonical_invariants` as a dict accessor.
-
-The real residual risk is **inconsistent hardening coverage**: `probe_authority_hierarchy()` has the same pre-`30bdb7d` vulnerability that `probe_coherence()` just had. This should be addressed as the immediate follow-up.
-
-| Gap | Severity | Recommendation |
-|---|---|---|
-| GAP-01 KeyError on canonical path | ~~HIGH~~ | **RETRACTED** — KeyError impossible on text parser |
-| GAP-01 (revised) probe_authority_hierarchy unguarded | **HIGH** | Apply same guard pattern as 30bdb7d — immediate |
-| GAP-02 Empty-set false positive | MEDIUM | Add post-read zero-invariant guard |
-| GAP-03 No audit emission on failure | MEDIUM | Emit governance event or enforce caller contract |
-| GAP-03 Tuple order sensitivity | ~~MEDIUM~~ | **RETRACTED** — intentional design, handled explicitly |
-| GAP-04 Path leakage in diagnostic | LOW | Sanitize OSError message |
+| Gap | Severity | Status | Commit |
+|---|---|---|---|
+| GAP-01 KeyError on canonical path | ~~HIGH~~ | RETRACTED | v2 |
+| GAP-01 (revised) probe_authority_hierarchy OSError unguarded | HIGH | **CLOSED** | 3826eca |
+| GAP-02 Empty-set false positive | MEDIUM | OPEN | — |
+| GAP-03 No audit emission on failure | MEDIUM | OPEN | — |
+| GAP-03 Tuple order sensitivity | ~~MEDIUM~~ | RETRACTED | v2 |
+| GAP-04 Path leakage in diagnostic | LOW | OPEN | — |
 
 ---
 
-## 7. Governance Footer
+## 6. Governance Footer
 
 ```
 Operator: Copilot
 Authority: JRM-01
 Branch: copilot
-Seam: critique
-Version: v2 (corrected)
-Corrections: GAP-01 retracted (KeyError impossible), GAP-03 retracted (intentional design)
-New finding: probe_authority_hierarchy unguarded (HIGH)
+Seams: critique, implementation
+Version: v3 (GAP-01 revised implemented)
+Fix commit: 3826eca
 Prohibited zones respected: no direct_canonical_mutation, no cross_branch_modification
-Canonical merge authority: false — awaiting JRM-01 review before any main-branch promotion
+Canonical merge authority: false — awaiting JRM-01 review
 Veil boundary: active
-Sig: Copilot @canonical-vault/copilot 2026-09-05T18:56:00Z EDT
+Sig: Copilot @canonical-vault/copilot 2026-09-05T20:03:00Z EDT
 ```
