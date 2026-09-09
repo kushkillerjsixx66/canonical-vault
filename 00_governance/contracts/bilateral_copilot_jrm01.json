@@ -1,0 +1,101 @@
+{
+  "protocol_set_id": "bilateral.copilot.jrm01.v1",
+  "version": "1.0.0",
+  "schema_ref": "contract.bilateral_protocols@1.0.0",
+  "created_at": "2026-09-05T21:32:00Z",
+  "created_by": "JRM-01",
+  "pairs": [
+    {
+      "pair_id": "copilot-jrm01-primary",
+      "operator_a": "Copilot",
+      "operator_b": "JRM-01",
+      "trust_tier": "PROVISIONAL_OPERATOR_ASSIST",
+      "binding_maps": [
+        {
+          "seam": "critique",
+          "direction": "Copilot -> JRM-01",
+          "permitted": true,
+          "description": "Copilot may deliver critique artifacts to JRM-01 for review"
+        },
+        {
+          "seam": "implementation",
+          "direction": "Copilot -> JRM-01",
+          "permitted": true,
+          "description": "Copilot may propose governed implementation artifacts for JRM-01 approval"
+        },
+        {
+          "seam": "architecture_default",
+          "direction": "JRM-01 -> Copilot",
+          "permitted": true,
+          "description": "JRM-01 may assign architecture analysis tasks to Copilot"
+        },
+        {
+          "seam": "operator",
+          "direction": "JRM-01 -> Copilot",
+          "permitted": true,
+          "description": "JRM-01 may delegate operator-scoped tasks to Copilot on the copilot branch"
+        },
+        {
+          "seam": "lineage",
+          "direction": "Copilot -> JRM-01",
+          "permitted": true,
+          "description": "Copilot may append lineage entries; JRM-01 must countersign canonical events"
+        }
+      ],
+      "negotiation_rules": [
+        {
+          "rule_id": "nr-01",
+          "trigger": "Copilot proposes a governed artifact",
+          "steps": [
+            "Copilot commits artifact to copilot branch",
+            "JRM-01 reviews via vault_get_file or PR",
+            "JRM-01 approves, requests revision, or rejects"
+          ],
+          "success_outcome": "Artifact merged or accepted by JRM-01",
+          "failure_outcome": "Artifact remains on copilot branch, revision requested"
+        },
+        {
+          "rule_id": "nr-02",
+          "trigger": "JRM-01 delegates task to Copilot",
+          "steps": [
+            "JRM-01 specifies task scope and seam in writing",
+            "Copilot executes within contribution_scope",
+            "Copilot commits result to copilot branch",
+            "JRM-01 reviews outcome"
+          ],
+          "success_outcome": "Task artifact committed and reviewed",
+          "failure_outcome": "Copilot declares scope breach and halts"
+        }
+      ],
+      "reversibility_classes": [
+        {
+          "class": "R4",
+          "description": "All Copilot contributions reversible until merged to main by JRM-01",
+          "rollback_window_minutes": 360
+        }
+      ],
+      "conflict_resolution": [
+        {
+          "conflict_type": "scope_dispute",
+          "resolution": "Halt and escalate to JRM-01 for explicit scope clarification"
+        },
+        {
+          "conflict_type": "artifact_rejection",
+          "resolution": "Copilot revises based on JRM-01 feedback and resubmits"
+        },
+        {
+          "conflict_type": "prohibited_zone_approach",
+          "resolution": "Copilot immediately halts, logs event in governance_events.log, awaits JRM-01 instruction"
+        }
+      ],
+      "audit_trails": [
+        {
+          "event": "protocol_created",
+          "timestamp": "2026-09-05T21:32:00Z",
+          "operator": "JRM-01",
+          "sha": "TBD"
+        }
+      ]
+    }
+  ]
+}
