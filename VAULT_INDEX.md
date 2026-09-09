@@ -34,9 +34,20 @@ The index is governed. The Canonical Vault Self-Audit observes divergence and re
 | Contracts | `contracts/` | Cross-module contracts |
 | Vault Runtime | `vault/` | Vault specifications, runtime, lineage, governance and state |
 | Versions | `versions/` | Versioned module and policy registries |
-| Legacy / Compatibility | `governance/` · `runtime/` | Existing compatibility and legacy surfaces retained in repository state |
+| Legacy / Compatibility | `governance` · `runtime` | Existing compatibility and legacy surfaces retained in repository state |
 | Test Suite | `tests/` | Repository-wide integration, adversarial, constitutional and Stumpy tests |
 | Exports | `exports/` | Export surface |
+
+## Root / Compatibility Artifacts
+
+The following tracked root-level and compatibility artifacts are intentionally represented explicitly because they are not covered by the primary numbered domain directories:
+
+- `conftest.py` — repository test configuration
+- `lattice_initiation.md` — initiation / orientation artifact
+- `llms-full.txt` — expanded machine-readable repository context
+- `llms.txt` — compact machine-readable repository context
+- `governance` — legacy governance compatibility surface
+- `runtime` — legacy runtime compatibility surface
 
 ## Canonical Anchors
 
@@ -100,7 +111,9 @@ Automatic audit behavior is limited to enumeration, comparison, detection and re
 
 The v0.1 audit of revision `31bebf184b84c38eee387bdc4625664c44ed4c35` produced `REQUIRES_OPERATOR` with three findings: `IDX-002`, `IDX-003`, and `HY-001`. The machine-readable report was retrieved from GitHub Actions before remediation. The audit record is preserved at `05_runtime/audit/reports/2026-09-09_self_audit_v0.1.md`.
 
-Tracked `.patch_backup_*` trees are intentionally excluded from canonical coverage and remain a separate hygiene finding until removed through governed change.
+The v0.2 re-audit of remediation revision `e36bccea1e6b7c154ed5c920d9dbffca129c09d0` reduced the remaining index divergence to six explicitly unrepresented root/compatibility artifacts: `conftest.py`, `governance`, `lattice_initiation.md`, `llms-full.txt`, `llms.txt`, and `runtime`. These are classified as repository infrastructure or legacy/compatibility surfaces and are explicitly represented above.
+
+Tracked `.patch_backup_*` trees were removed through governed change. Their historical commits remain preserved in Git history.
 
 ---
 
