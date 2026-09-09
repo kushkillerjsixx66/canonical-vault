@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Canonical Vault repository/index self-audit.
 
-Version 0.1 intentionally observes and reports. It never mutates canonical state.
+Version 0.2 observes and reports. It never mutates canonical state.
+Directory entries in VAULT_INDEX.md provide coverage for tracked files beneath
+that directory; backup trees remain separately classified as hygiene findings.
 """
 
 from __future__ import annotations
@@ -14,12 +16,11 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
-VERSION = "0.1"
+VERSION = "0.2"
 DEFAULT_INDEX = "VAULT_INDEX.md"
 PATH_RE = re.compile(r"`([^`]+)`")
-STATUS_RE = re.compile(r"\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|", re.MULTILINE)
 IGNORED_DECLARATION_PREFIXES = ("http://", "https://")
-DIRECTORY_NAMES = {"dir", "directory"}
+BACKUP_PREFIX = ".patch_backup_"
 
 
 @dataclass(frozen=True)
@@ -52,34 +53,41 @@ def revision(repo: Path) -> str:
     return run_git(repo, "rev-parse", "HEAD")
 
 
-def indexed_paths(index_text: str, files: set[str]) -> set[str]:
+def declared_paths(index_text: str) -> set[str]:
     paths: set[str] = set()
     for match in PATH_RE.findall(index_text):
         candidate = match.strip()
-        if not candidate or candidate.startswith(IGNORED_DECLARATION_PREFIXES):
-            continue
-        if candidate in files:
+        if candidate and not candidate.startswith(IGNORED_DECLARATION_PREFIXES):
             paths.add(candidate)
     return paths
 
 
-def declared_missing_paths(index_text: str, files: set[str]) -> set[str]:
-    missing: set[str] = set()
-    for match in PATH_RE.findall(index_text):
-        candidate = match.strip()
-        if not candidate or candidate.startswith(IGNORED_DECLARATION_PREFIXES):
-            continue
+def indexed_paths(index_text: str, files: set[str]) -> set[str]:
+    """Return tracked files covered by exact file or directory declarations."""
+    declarations = declared_paths(index_text)
+    indexed: set[str] = set()
+    for candidate in declarations:
         if candidate.endswith("/"):
+            prefix = candidate
+            indexed.update(p for p in files if p.startswith(prefix))
+        elif candidate in files:
+            indexed.add(candidate)
+    return indexed
+
+
+def declared_missing_paths(index_text: str, files: set[str]) -> set[str]:
+    """Return declarations that look like missing file paths, not directory claims."""
+    missing: set[str] = set()
+    for candidate in declared_paths(index_text):
+        if candidate.endswith("/") or candidate.startswith(BACKUP_PREFIX):
             continue
-        if candidate not in files and not candidate.startswith(".patch_backup_"):
-            # Only treat path-like declarations as filesystem claims.
-            if "/" in candidate or "." in Path(candidate).name:
-                missing.add(candidate)
+        if candidate not in files and ("/" in candidate or "." in Path(candidate).name):
+            missing.add(candidate)
     return missing
 
 
 def backup_files(files: set[str]) -> set[str]:
-    return {p for p in files if p.startswith(".patch_backup_")}
+    return {p for p in files if p.startswith(BACKUP_PREFIX)}
 
 
 def build_findings(repo: Path, index_name: str = DEFAULT_INDEX) -> list[Finding]:
@@ -103,21 +111,23 @@ def build_findings(repo: Path, index_name: str = DEFAULT_INDEX) -> list[Finding]
         return findings
 
     undiscovered = sorted(files - indexed)
-    # Exclude the index itself and common repository metadata from discovery noise.
-    undiscovered = [p for p in undiscovered if p != index_name and not p.startswith(".git/")]
+    undiscovered = [
+        p for p in undiscovered
+        if p != index_name and not p.startswith(BACKUP_PREFIX) and not p.startswith(".git/")
+    ]
 
     if undiscovered:
         findings.append(Finding(
-            "IDX-002", "DISCOVERED", "canonical-index", "VAULT_INDEX.md", tuple(undiscovered),
-            "Tracked repository artifacts are represented by the canonical index.",
-            f"{len(undiscovered)} tracked artifacts are not represented by an exact indexed path.",
+            "IDX-002", "DISCOVERED", "canonical-index", index_name, tuple(undiscovered),
+            "Tracked repository artifacts are represented by the canonical index through exact or directory coverage.",
+            f"{len(undiscovered)} tracked artifacts are not represented by an exact indexed path or indexed directory.",
             tuple(undiscovered[:50]), "MEDIUM",
             "Classify each artifact and update the index only after governed review.", True, rev,
         ))
 
     if missing:
         findings.append(Finding(
-            "IDX-003", "MISSING", "canonical-index", "VAULT_INDEX.md", tuple(sorted(missing)),
+            "IDX-003", "MISSING", "canonical-index", index_name, tuple(sorted(missing)),
             "Indexed filesystem claims resolve to tracked repository artifacts.",
             f"{len(missing)} indexed path claims do not resolve to tracked files.",
             tuple(sorted(missing)[:50]), "MEDIUM",
@@ -126,9 +136,9 @@ def build_findings(repo: Path, index_name: str = DEFAULT_INDEX) -> list[Finding]
 
     if backups:
         findings.append(Finding(
-            "HY-001", "DISCOVERED", "hygiene", ".patch_backup_*", tuple(sorted(backups)),
+            "HY-001", "DISCOVERED", "hygiene", BACKUP_PREFIX, tuple(sorted(backups)),
             "Repository state contains intentional canonical artifacts rather than unmanaged backup trees.",
-            f"{len(backups)} tracked files live under .patch_backup_* trees.",
+            f"{len(backups)} tracked files live under {BACKUP_PREFIX}* trees.",
             tuple(sorted(backups)[:50]), "LOW",
             "Review backup retention and remove only through an explicit governed change.", True, rev,
         ))
