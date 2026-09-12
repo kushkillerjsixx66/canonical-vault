@@ -1,0 +1,186 @@
+{
+  "status": "HEALTHY",
+  "timestamp": "2026-09-05T16:48:24.641455+00:00",
+  "op_id": "LDA-002",
+  "posture": "analyze",
+  "probes": [
+    {
+      "name": "package_integrity",
+      "status": "PASS",
+      "detail": {
+        "lattice_root": "/home/workdir/artifacts/lattice",
+        "imported": [
+          "lattice",
+          "lattice.core",
+          "lattice.constraints",
+          "lattice.audit",
+          "lattice.ges",
+          "lattice.runtime",
+          "lattice.kernel.cfc",
+          "lattice.kernel.cce"
+        ],
+        "optional_missing": []
+      }
+    },
+    {
+      "name": "runtime_boot",
+      "status": "PASS",
+      "detail": {
+        "op_id": "LDA-002",
+        "posture": "MIDLINE",
+        "principles": [
+          "auditability",
+          "reproducibility",
+          "operator_accountability",
+          "least_privilege",
+          "fail_closed"
+        ]
+      }
+    },
+    {
+      "name": "sigil_issuance",
+      "status": "PASS",
+      "detail": {
+        "sigil_id": "a02d4e7b-cc07-4933-bdb4-af2b1f7185fe",
+        "active": true
+      }
+    },
+    {
+      "name": "constraint_gate",
+      "status": "PASS",
+      "detail": {
+        "registered": [
+          "require_active_sigil",
+          "require_principles",
+          "posture_guard"
+        ],
+        "violations": [],
+        "blocking_count": 0
+      }
+    },
+    {
+      "name": "cfc",
+      "status": "PASS",
+      "detail": {
+        "cfc_states": [
+          "IDLE",
+          "ACTIVE",
+          "HOLDING",
+          "LOCKDOWN",
+          "RECOVERY"
+        ],
+        "safety_decisions": [
+          "PERMIT",
+          "DENY",
+          "HOLD"
+        ],
+        "note": "CFC types loaded; runtime lockdown surface available"
+      }
+    },
+    {
+      "name": "cce",
+      "status": "PASS",
+      "detail": {
+        "relation_types": [
+          "requires",
+          "conflicts",
+          "reinforces",
+          "mitigates",
+          "derives_from",
+          "scopes"
+        ],
+        "note": "CCE cartography types loaded"
+      }
+    },
+    {
+      "name": "ges",
+      "status": "PASS",
+      "detail": {
+        "overall_score": 0.9,
+        "status": "healthy",
+        "readings": {
+          "drift": {
+            "value": 0.8333333333333334,
+            "notes": "Higher = more drift from declared principles"
+          },
+          "coherence": {
+            "value": 1.0,
+            "notes": "Fraction of well-formed audit entries"
+          },
+          "risk": {
+            "value": 0.05,
+            "notes": "Composite operational risk heuristic"
+          },
+          "opacity": {
+            "value": 0.7,
+            "notes": "Higher = less transparent (fewer audit events)"
+          },
+          "alignment": {
+            "value": 1.0,
+            "notes": "Principle + posture alignment score"
+          },
+          "trajectory_stability": {
+            "value": 0.7,
+            "notes": "Stability of coherence over recent snapshots"
+          },
+          "operator_impact": {
+            "value": 0.0,
+            "notes": "Normalized count of operator actions"
+          }
+        }
+      }
+    },
+    {
+      "name": "audit_integrity",
+      "status": "PASS",
+      "detail": {
+        "entry_count": 6,
+        "hashed_entries": 6
+      }
+    }
+  ],
+  "ges": {
+    "overall_score": 0.9,
+    "status": "healthy",
+    "readings": {
+      "drift": {
+        "value": 0.8333333333333334,
+        "notes": "Higher = more drift from declared principles"
+      },
+      "coherence": {
+        "value": 1.0,
+        "notes": "Fraction of well-formed audit entries"
+      },
+      "risk": {
+        "value": 0.05,
+        "notes": "Composite operational risk heuristic"
+      },
+      "opacity": {
+        "value": 0.7,
+        "notes": "Higher = less transparent (fewer audit events)"
+      },
+      "alignment": {
+        "value": 1.0,
+        "notes": "Principle + posture alignment score"
+      },
+      "trajectory_stability": {
+        "value": 0.7,
+        "notes": "Stability of coherence over recent snapshots"
+      },
+      "operator_impact": {
+        "value": 0.0,
+        "notes": "Normalized count of operator actions"
+      }
+    }
+  },
+  "recommendations": [
+    "All FLDA probes passed. Runtime is fit for governed work."
+  ],
+  "lineage": {
+    "model": "Grok",
+    "branch": "grok",
+    "context": "day-zero baseline after identity activation",
+    "archived_at": "2026-09-05T16:50:00Z",
+    "operator_witness": "JRM-01 @liminaljermo"
+  }
+}
