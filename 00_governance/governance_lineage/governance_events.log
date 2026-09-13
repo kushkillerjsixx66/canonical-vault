@@ -1,6 +1,6 @@
 # governance_events.log
 # Canonical Governance Event Ledger
-# Append‑only. Immutable. Machine‑parseable. Sovereign‑anchored.
+# Append-only. Immutable. Machine-parseable. Sovereign-anchored.
 
 2026-06-24T21:37:00Z | INIT | GOVERNANCE_LAYER_INITIALIZED | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
 
@@ -25,3 +25,5 @@
 2026-06-24T21:37:41Z | CREATE | INVARIANTS:invariants_map.yaml | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
 
 2026-06-24T21:37:50Z | READY | GOVERNANCE_LAYER_COMPLETE | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
+
+2026-09-05T21:12:00Z | ACCEPT | OPERATOR:Copilot | branch=copilot | authority=JRM-01 | sha=4570856 | op=JRM-01 | sig=SIG: JRM-01 @liminaljermo
