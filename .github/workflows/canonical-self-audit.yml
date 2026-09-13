@@ -1,0 +1,27 @@
+name: Canonical Vault Self-Audit
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  self-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run canonical self-audit
+        run: |
+          python3 05_runtime/audit/canonical_self_audit.py --repo . --json > canonical-self-audit.json
+          python3 05_runtime/audit/canonical_self_audit.py --repo .
+
+      - name: Publish audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-self-audit
+          path: canonical-self-audit.json
