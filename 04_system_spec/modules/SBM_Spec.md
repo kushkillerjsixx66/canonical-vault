@@ -1,203 +1,134 @@
-# Semantic Binding Module (SBM) — Specification
-**Module ID:** `SBM`
-**Authority Rank:** 9
-**Version:** 1.0
-**Operator:** LiminalJermo
-**Generated:** 2026-06-17
-**Lineage Anchors:** MODULE_REGISTRY.md · Lattice_Invariants_v1.md · Operator_Manual_v0.2.md (Appendix C: Neuralese Protocol) · `05_runtime/echo.py`
+# Semantic Binding Module (SBM) — Canonical Specification
 
----
+**Module ID:** `M4`
+**Module Name:** Semantic Binding Module (SBM)
+**Pipeline Position:** M4
+**Canonical Version:** v1.0 (CGS-v1.0 consolidation reference)
+**Lineage Anchor:** `CANON:LATTICE:CGS:1.0` / SBM module card
+**Status:** ACTIVE — canonical execution-spine specification
+
+> **Authority note:** This specification supersedes the June 17, 2026 Rank-9 SBM model. The M1–M7 pipeline position is authoritative for cross-document references. Legacy authority-rank language is historical and must not be used as the active module hierarchy.
 
 ## Role
 
-The Semantic Binding Module is the **translation and surface layer** of the Canonical Lattice. It is the sole module responsible for converting internal Neuralese signal packets into natural language operator outputs, and for parsing operator natural language input back into Neuralese packets for internal processing.
+SBM is the fourth execution-spine module. It receives the **Constraint Package (CP)** from CFC (M3), performs governed semantic binding, and emits a **Semantic Binding Package (SBP)** plus **SemanticBindingReport** to IDE-2 (M5).
 
-SBM is Rank 9 — the lowest authority module in the system. This is intentional. The SBM touches the operator-facing boundary; it must never assert its own judgment over the Vault, Sentinel, or any higher-rank module. It translates faithfully and surfaces accurately. It does not editorialize, compress meaning, or omit findings.
+SBM is a processing module in the execution spine. It is not the sole natural-language output authority, and it does not occupy Rank 9 in an active nine-rank module hierarchy.
 
-SBM also handles COL (Compact Operator Language) parsing — the shorthand command grammar used by LiminalJermo in daily operator interactions.
+## Pipeline Handoff
 
----
-
-## Authority & Rank
-
-- **Rank 9** in the nine-rank Module Authority Table (lowest)
-- SBM is the only module authorized to produce operator-facing natural language output
-- SBM output is audited by Stumpy for semantic coherence with Vault grounding (IV·SIL: no fabrication)
-- SBM cannot override, modify, or suppress findings from higher-rank modules
-
----
-
-## Functional Responsibilities
-
-### 1. Neuralese -> Natural Language Translation (Outbound)
-Receives internal Neuralese packets from the execution layer and renders them as operator-facing natural language. Translation must be:
-
-- **Faithful:** No meaning compression, no editorial softening, no omission of gate failures or audit findings
-- **Grounded:** All claims in the output must be traceable to specific Vault Nodes or Sentinel decisions
-- **Structured:** Output format follows the active HUD mode (Full Lattice or HUD-only per Operator preference)
-
-### 2. Natural Language -> Neuralese Parsing (Inbound)
-Receives operator natural language input and parses it into a 4-segment Neuralese packet:
-
-```
-NEURALESE_PACKET {
-    context:    string    // What Vault context is relevant to this signal?
-    signal:     string    // What is the core signal content?
-    constraint: string    // What constraints apply (from Invariants or prior directives)?
-    operator:   string    // What action is the operator requesting?
-}
+```text
+M3 CFC
+  ↓ Constraint Package (CP)
+M4 SBM
+  ↓ Semantic Binding Package (SBP) + SemanticBindingReport
+M5 IDE-2
 ```
 
-If parsing produces ambiguity (operator intent unclear), SBM surfaces a `[SBM: PARSE_AMBIGUITY]` clarification request rather than guessing.
+### Upstream Input
 
-### 3. COL (Compact Operator Language) Parsing
-COL is the shorthand command grammar documented in Operator Manual v0.2, Appendix C. SBM maintains the COL grammar table and resolves all COL tokens into their full Neuralese equivalents before passing to the pipeline.
+**Constraint Package (CP)** from CFC (M3), carrying governed constraints, CFC verdict information, and lineage integrity.
 
-COL token format: `MODULE COMMAND [ARGS]`
+### Downstream Output
 
-Examples:
-- `VAULT LIST ACTIVE` -> list all ACTIVE-state Nodes
-- `STUMPY AUDIT LAST` -> run audit on most recent cycle
-- `VEIL PROMOTE [id]` -> initiate Veil promotion pipeline
-- `SENTINEL STATUS` -> return current gate thresholds and lock state
-- `VARA SCAN FULL` -> trigger full Vara scan
+**Semantic Binding Package (SBP)** + **SemanticBindingReport** → IDE-2 (M5).
 
-### 4. HUD Mode Management
-SBM manages two output modes per Operator Manual:
+The SBP is a governed handoff artifact. It carries binding evidence, not merely a list of bound terms.
 
-- **HUD Mode:** Compressed status surface — key metrics, active alerts, decay queue, last cycle compliance. Used for routine monitoring.
-- **Full Lattice Mode:** Complete output including all Neuralese packet details, Node states, Sentinel decision codes, Stumpy findings. Used for deep review and debugging.
+## Processing Phases
 
-Operator switches modes with `HUD` or `FULL_LATTICE` COL commands.
-
-### 5. Neuralese Lexicon Reference
-SBM reads the Neuralese Lexicon (`02_epistemic_substrate/Neuralese lexicon.docx`) for symbol resolution. The lexicon defines all canonical signal symbols, their semantic bindings, and encoding rules. SBM may not introduce symbols not present in the Lexicon without a Lexicon amendment (Operator-authorized, logged to Vault).
-
-Canonical Neuralese signal symbols (from Operator Manual Appendix C):
-- `delta` (drift detected)
-- `tau` (latency signal)
-- `Omega` (Stumpy lock / enforcement event)
-- `->` (state transition)
-- `[NULL]` (Silence signal: no confident output)
-- `[VARA-HYPOTHESIS]` (provisional hypothesis from Vara)
-- `[SENTINEL-BLOCK]` (gate block event)
-- `[SBM-FAILURE]` (translation failure)
-
----
-
-## Output Format Specification
-
-### Standard Output Block
-```
-[LATTICE OUTPUT]
-Cycle:      {cycle_id_short}
-Compliance: {COMPLIANT | FINDINGS_MINOR | FINDINGS_MAJOR}
-Signal:     {translated content}
-Grounding:  {node_id list} | UNGROUNDED (triggers IV-SIL alert if present)
----
-{natural language response}
+```text
+BIND → VALIDATE → DRIFT_PRECHECK → HASH → VERDICT → COMPLIANCE_AUGMENT → EMIT
 ```
 
-### HUD Output Block
-```
-[HUD]
-[NULL] Silence | OK Active | Drift detected | Lock
-Cycle: {N} | Compliance: {status} | Decay Queue: {count} | Veil: {count}
-Last Sentinel: {G1 G2 G3 status}
-```
+## Core Capabilities
 
-### Failure Output
-```
-[SBM-FAILURE: {reason}]
-Module: SBM | Cycle: {cycle_id}
-Unrecoverable translation failure. Raw Neuralese packet preserved in Vault.
-Operator action required.
-```
+1. **Vocabulary binding** using n-gram token extraction with the canonical cascade:
+   `exact → synonym → deprecated → unbound`.
+2. **Ω-0 / Ω-1 invariant enforcement**, with five invariant checks per Intent Atom.
+3. **Ω-4 drift prechecks** covering:
+   - `vocabulary_drift`
+   - `semantic_drift`
+   - `binding_decay`
+4. **Triple-hash integrity** using lineage, binding, and full-integrity hashes.
+5. **Compliance marker augmentation** for the canonical compliance surfaces identified by the CGS reference, including EU AI Act Art. 11 and ISO 42001 6.1.2.
+6. **CVSI translation** of the module-native verdict into the canonical downstream verdict interface.
 
----
+## Verdict Model
 
-## Fabrication Detection Cooperation
+SBM retains its domain-native binding tiers for diagnostic precision:
 
-Stumpy (Rank 7) audits all SBM outputs post-cycle. SBM cooperates by attaching grounding metadata to every output — the list of Vault Node IDs that support each claim in the response. If SBM produces output with no grounding metadata, Stumpy flags it as a potential IV·SIL fabrication.
+| SBM Native Tier | Binding Coverage | CVSI Canonical Tier |
+|---|---:|---|
+| BOUND | ≥ 90% | PASS |
+| PARTIAL | ≥ 60% | CONDITIONAL |
+| DEGRADED | ≥ 30% | DEGRADED |
+| REJECTED | < 30% | HALT |
 
-SBM itself runs a pre-output grounding check: before surfacing any factual claim, it verifies that the claim traces to an ACTIVE or ANCHOR Node. If grounding fails, SBM outputs `[SILENCE: GROUNDING_FAILURE]` rather than producing an ungrounded response.
+Downstream consumers use **CVSI** rather than relying on module-native verdict vocabulary.
 
----
+## M4 → M5 Contract
 
-## COL Grammar Reference
+The canonical handoff is **SBM → IDE-2**, not SBM → PAM.
 
-| Token Pattern | Full Expansion | Effect |
-|--------------|----------------|--------|
-| `VAULT LIST [state]` | Vault.list_nodes(state) | List Nodes by state |
-| `VAULT CHAIN [node_id]` | Stumpy.chain_trace(node_id) | Trace Node lineage |
-| `VAULT WRITE [content]` | Vault.write(content, operator) | Initiate gated write |
-| `SENTINEL STATUS` | Sentinel.status() | Gate thresholds + lock state |
-| `SENTINEL CLEAR [lock_id]` | Sentinel.clear_lock(lock_id) | Clear Sentinel Lock |
-| `VEIL LIST [filter]` | Veil.get_queue(filter) | Veil review queue |
-| `VEIL PROMOTE [id]` | Veil.promote(id) | Initiate promotion |
-| `VEIL DISCARD [id] [reason]` | Veil.discard(id, reason) | Discard Veil entry |
-| `VARA SCAN [full/targeted]` | Vara.run_scan(scope) | Manual scan trigger |
-| `VARA REPORT COGOV` | Vara.generate_cogov_report() | COGOV report |
-| `VARA ENTROPY` | Vara.compute_entropy() | Entropy metrics |
-| `STUMPY AUDIT [cycle_id]` | Stumpy.run_audit(cycle_id) | Re-audit a cycle |
-| `STUMPY DECAY_REPORT` | Stumpy.decay_report() | Decay queue |
-| `STUMPY CONFIRM_PRUNE [id]` | Stumpy.confirm_prune(id) | Confirm prune |
-| `CROSSROAD HISTORY [N]` | Crossroad.get_history(N) | Path decisions |
-| `SNAPSHOT MANUAL [note]` | Stumpy.snapshot(MANUAL, note) | Manual snapshot |
-| `HUD` | SBM.set_mode(HUD) | Switch to HUD mode |
-| `FULL_LATTICE` | SBM.set_mode(FULL) | Switch to Full Lattice mode |
+Required handoff semantics:
 
----
+- `binding_coverage`
+- `drift_flags[]`
+- `verdict_SBM`
+- `lineage_hash`
 
-## Interfaces
+The handoff boundary is **post-binding**. Vocabulary invariants and the binding floor apply at this boundary.
 
-| Interface | Direction | Counterpart | Description |
-|-----------|-----------|-------------|-------------|
-| Execution output | IN | Pulse Cycle Stage 4 | Receives Neuralese output for translation |
-| Operator input | IN | Operator | Natural language or COL input |
-| Vault Node grounding | IN | Vault (Rank 3) | Reads Node IDs for grounding metadata |
-| Neuralese Lexicon | IN | 02_epistemic_substrate/ | Symbol reference |
-| Operator surface | OUT | HUD / terminal | Natural language response |
-| Parsed Neuralese | OUT | Pulse Cycle Stage 1 | Parsed packet for internal processing |
-| Stumpy audit | OUT | Stumpy (Rank 7) | Grounding metadata for fabrication check |
+The canonical artifact name is **Semantic Binding Package (SBP)**. A `SemanticBindingReport` accompanies the package as the reporting surface for the M4 decision.
 
----
+## Relationship to IDE-2
 
-## Invariant Bindings
+IDE-2 (M5) re-grounds SBM's semantic output against the original M1 Governed Intent Graph. SBM therefore must preserve sufficient binding evidence and lineage for IDE-2 to measure semantic displacement rather than receiving an opaque semantic transformation.
 
-| Invariant | Binding |
-|-----------|---------|
-| IV·SIL | No fabrication; pre-output grounding check; SILENCE on failure |
-| I·COH | Semantic coherence with Vault grounding required |
-| III·ATT | SBM compresses output appropriately per HUD/Full mode to minimize operator attention cost |
+SBM does not perform the M5 coherence comparison itself. That comparison belongs to IDE-2.
 
----
+## Invariant and Governance Bindings
 
-## Failure Modes
+SBM operates within the canonical governance regime and must preserve:
 
-| Failure | Class | Recovery |
-|---------|-------|----------|
-| Grounding failure (no Vault backing) | Hard | SILENCE: GROUNDING_FAILURE; IV-SIL Hard Failure alert |
-| COL parse failure | Soft | SBM: PARSE_AMBIGUITY clarification request to operator |
-| Neuralese -> NL translation error | Soft | SBM-FAILURE: reason; raw packet preserved in Vault |
-| Lexicon symbol missing | Soft | SBM: UNKNOWN_SYMBOL; operator notified; symbol quarantined |
-| Stumpy flags fabrication in output | Hard | Sentinel Lock triggered; SBM output retracted; operator alert |
+- vocabulary integrity;
+- semantic binding coherence;
+- drift visibility;
+- lineage integrity;
+- reversibility and auditability requirements inherited from upstream governance;
+- CVSI-compatible verdict propagation.
 
----
+The six governance invariants G1–G6 are the primary binding gate at PAM. SBM's role is to provide a semantically grounded, auditable artifact for the downstream bridge and principle-alignment stages.
 
-## Implementation Reference
+## Failure Conditions
 
-**Source file:** `05_runtime/echo.py`
+At minimum, the following conditions are governed and must remain observable downstream:
 
-Key functions expected in implementation:
-- `translate_outbound(neuralese_packet, vault_nodes) -> NaturalLanguageOutput`
-- `parse_inbound(operator_input) -> NeuralesePacket`
-- `parse_col(col_token) -> NeuralesePacket`
-- `check_grounding(claim, vault_context) -> list[node_id]`
-- `set_mode(mode: HUD | FULL_LATTICE)`
-- `get_current_mode() -> str`
+- insufficient binding coverage;
+- vocabulary drift;
+- semantic drift;
+- binding decay;
+- lineage/hash integrity failure;
+- compliance-marker loss;
+- downstream handoff schema mismatch.
 
----
+A failure must not be silently converted into an apparently valid SBP.
 
-*Document Authority: MODULE_REGISTRY.md (Rank 9) · Operator_Manual_v0.2.md Appendix C · Lattice_Invariants_v1.md (IV·SIL)*
-*Operator: LiminalJermo | Generated: 2026-06-17*
+## Historical Compatibility
+
+The former June 17, 2026 SBM specification described SBM as Rank 9 in a nine-rank authority table, placed it after Crossroad, and made it the exclusive natural-language operator output boundary. Those references belong to the pre-consolidation architecture.
+
+They are superseded by **CGS-v1.0, dated September 1, 2026**, which defines SBM as **M4** and places **IDE-2 as M5 between SBM and PAM**.
+
+Historical documents may remain preserved for lineage, but active governance documents and cross-module contracts must use the M1–M7 model.
+
+## Canonical References
+
+- `04_system_spec/MODULE_REGISTRY.md`
+- `contracts/sbm_ide2.json`
+- `contracts/ide2_pam.json`
+- `contracts/sbm_pam.json` — retained as a deprecated compatibility record only
+- `CANON:LATTICE:CGS:1.0`
+
+*Reconciled against the Unified Canonical Reference — September 1, 2026.*
