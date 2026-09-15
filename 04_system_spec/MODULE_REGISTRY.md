@@ -1,183 +1,222 @@
 # Canonical Lattice — Module Registry
-**Version:** 1.0
-**Authority Rank:** Informational (derived from Constitution §Module Authority Table)
-**Operator:** LiminalJermo
-**Generated:** 2026-06-17
-**Lineage Anchors:** Lattice_Cognitive_Constitution_v1.1.md · Lattice_Unified_Spec.md · Lattice_Invariants_v1.md
+**Version:** 2.0
+**Status:** CANONICAL PROPOSED UPDATE
+**Operator:** JRM-01 | LiminalJermo
+**Updated:** 2026-09-15
+**Authority:** Derived registry; constitutional authority remains external to this index
+**Primary Canonical Source:** `CANON:LATTICE:CGS:1.0` — Unified Canonical Reference, September 1, 2026
 
 ---
 
-## Overview
+## 1. Purpose
 
-The Module Registry is the canonical index of all system modules, their authority ranks, functional roles, interface contracts, and invariant bindings. Every module that participates in the Lattice runtime must have an entry here. Modules not listed in this registry are not authorized for execution.
+This registry indexes the current Lattice module architecture, its execution spine, module lineage, handoff position, and governance relationship.
 
-**Total Registered Modules:** 9
-**Authority Ladder:** Rank 1 (highest) → Rank 9 (lowest)
+The previous registry (v1.0, 2026-06-17) reflected an earlier architecture and listed SBM as the only execution-spine module. It is superseded by this registry for current module topology.
+
+The current canonical execution spine is a **seven-module pipeline**:
+
+**IDE → CCE → CFC → SBM → IDE-2 → PAM → MTM → Runtime/WDA/Executor**
+
+Canonical pipeline position (`M1–M7`) is authoritative for cross-module references. Internal specification identifiers such as `MOD-IDE-01` are implementation-layer identifiers and must not replace M1–M7 in governance documents, handoff contracts, or CVSI routing.
 
 ---
 
-## Registry Entries
+## 2. Execution Spine Registry
 
----
-
-### RANK 1 — Constitution
+### M1 — Intent Decomposition Engine (IDE)
 
 | Field | Value |
-|-------|-------|
-| **Module ID** | `CONSTITUTION` |
-| **Rank** | 1 |
-| **File** | `00_governance/constitution/Lattice_Cognitive_Constitution_v1.1.md` |
-| **Role** | Supreme authority document. Defines all axioms, principles, module authority table, operator rights, and the amendment protocol. Cannot be overridden by any runtime event or module output. |
-| **Interfaces** | Read-only by all modules. Written only by Operator via Amendment Protocol. |
-| **Invariant Bindings** | All six invariants derive authority from this document. |
-| **Activation Condition** | Always active. Not a runtime module; functions as the root constraint layer. |
-| **Failure Mode** | N/A — Constitution is never executed; it is referenced. |
-| **Owner** | LiminalJermo |
+|---|---|
+| **Module ID** | `IDE` |
+| **Pipeline Position** | M1 |
+| **Namespace** | `core.intent_decomposition_engine` / `lattice.core.intent_decomposition_engine` |
+| **Version** | v0.4.0 |
+| **Lineage Anchor** | `CANON:LATTICE:IDE:0.4.0` |
+| **Upstream** | Raw Intent Payload (RIP) + optional Context Frame Zero (CF-0) |
+| **Downstream** | Governed Intent Graph (IG-G) / DecompositionResult → CCE (M2) |
+| **Processing** | INGEST → NORMALIZE → ATOMIZE → STRUCTURE → DRIFT-PRECHECK → HASH → EMIT |
+| **Primary Function** | Decompose operator intent into governed, ordered task structures while preserving operator intent and structural integrity. |
+| **Canonical Source** | CGS-v1.0 §2.1 |
 
----
-
-### RANK 2 — Invariants
-
-| Field | Value |
-|-------|-------|
-| **Module ID** | `INVARIANTS` |
-| **Rank** | 2 |
-| **File** | `00_governance/invariants/Lattice_Invariants_v1.md` |
-| **Role** | Defines the six structural constraints (I·COH through VI·SIG) that all runtime modules must obey. Acts as the enforcement specification that Sentinel reads when evaluating gate decisions. |
-| **Interfaces** | Read by Sentinel (Rank 4) at every gate check. Referenced by Stumpy (Rank 7) during audit. |
-| **Invariant Bindings** | Self-defining. Invariants constrain everything below Rank 2. |
-| **Activation Condition** | Always active. Evaluated at every G1, G2, G3 gate. |
-| **Failure Mode** | Invariant violation → Hard Failure or Soft Failure per individual invariant spec. |
-| **Owner** | LiminalJermo |
-
----
-
-### RANK 3 — Vault
+### M2 — Constraint Cartography Engine (CCE)
 
 | Field | Value |
-|-------|-------|
-| **Module ID** | `VAULT` |
-| **Rank** | 3 |
-| **File** | `05_runtime/vault.py` |
-| **Role** | Sovereign persistent memory. Stores all canonical knowledge, operator-ratified entries, Vara distillations, and audit anchors. All writes are append-only (II·REV). All reads are mediated by coherence check (I·COH). |
-| **Interfaces** | **Write:** Sentinel-gated. Chain link created on every write. **Read:** Available to all modules. Returns entry + metadata. **Decay:** Stumpy triggers decay state transitions. |
-| **Invariant Bindings** | II·REV (append-only), V·DEC (decay by default), I·COH (coherence on read) |
-| **Activation Condition** | Active for every Pulse cycle that involves memory read or write. |
-| **Node States** | `Latent`, `Active`, `Decaying`, `Pruned` |
-| **Failure Mode** | Coherence violation on write → Veil quarantine. Chain break → Hard Failure + operator escalation. |
-| **Owner** | LiminalJermo |
+|---|---|
+| **Module ID** | `CCE` |
+| **Pipeline Position** | M2 |
+| **Namespace** | `core.constraint_cartography_engine` / `lattice.core.constraint_cartography_engine` |
+| **Version** | v0.4.0 |
+| **Lineage Anchor** | `CANON:LATTICE:CCE:0.4.0` |
+| **Upstream** | DecompositionResult from IDE (M1) |
+| **Downstream** | ConstraintResolutionResult + CCEValidationReport → CFC (M3) |
+| **Primary Function** | Extract, classify, map, and resolve intent-level and task-level constraints, including conflict and scope analysis. |
+| **Canonical Source** | CGS-v1.0 §2.2 |
 
----
-
-### RANK 4 — Sentinel
+### M3 — Crash-Free Constraint Engine (CFC)
 
 | Field | Value |
-|-------|-------|
-| **Module ID** | `SENTINEL` |
-| **Rank** | 4 |
-| **File** | `05_runtime/sentinel.py` |
-| **Role** | Hard-gate enforcement module. Evaluates all signals against the three Governance Gates (G1: Coherence, G2: Attention Cost, G3: Reversibility) before allowing execution to proceed. |
-| **Interfaces** | **Input:** All signals before execution. **Output:** PASS / BLOCK / ESCALATE + reason code. **Reads:** Invariants (Rank 2), Vault state (Rank 3). |
-| **Invariant Bindings** | I·COH (G1), III·ATT (G2), II·REV (G3), IV·SIL (Hard Failure on fabrication) |
-| **Governance Gates** | G1 (Coherence), G2 (Attention Budget), G3 (Reversibility) |
-| **Activation Condition** | Active on every signal entering the Constrain phase of the Pulse Cycle. |
-| **Failure Mode** | BLOCK → execution halted. ESCALATE → operator notified. Sentinel never fails silently (IV·SIL). |
-| **Owner** | LiminalJermo |
+|---|---|
+| **Module ID** | `CFC` |
+| **Pipeline Position** | M3 |
+| **Version** | v2.0.0 |
+| **Lineage Anchor** | `CANON:LATTICE:CFC:2.0.0` |
+| **Upstream** | ConstraintResolutionResult + CCEValidationReport from CCE (M2) |
+| **Downstream** | Constraint Package (CP) + CFCReport → SBM (M4) |
+| **Processing** | INGEST → NORMALIZE → VALIDATE → VOCABULARY → DRIFT → INTEGRITY → VERDICT → EMIT |
+| **Primary Function** | Structural constraint validation, Ω-1 vocabulary enforcement, drift detection, lineage integrity, and governed verdict generation. |
+| **Canonical Source** | CGS-v1.0 §2.3 |
 
----
-
-### RANK 5 — Veil
+### M4 — Semantic Binding Module (SBM)
 
 | Field | Value |
-|-------|-------|
-| **Module ID** | `VEIL` |
-| **Rank** | 5 |
-| **File** | `05_runtime/veil.py` |
-| **Role** | Mediation and quarantine layer. Holds signals that have failed Sentinel gates or are weak-signal hypotheses from Vara. Provides the operator a review surface before signals are promoted to Vault or discarded. |
-| **Interfaces** | **Input:** Blocked signals from Sentinel, Vara hypotheses. **Output:** Promoted entry (to Vault) or Discarded entry. **Operator interface:** Review queue visible on HUD. |
-| **Invariant Bindings** | VI·SIG (holds weak signals), I·COH (promotes only coherent signals), II·REV (all Veil entries logged) |
-| **Activation Condition** | Activated when Sentinel issues BLOCK or when Vara outputs a `[VARA-HYPOTHESIS]`. |
-| **Failure Mode** | Veil overflow → Operator Alert. Veil cannot auto-promote. |
-| **Owner** | LiminalJermo |
-
----
-
-### RANK 6 — Vara
-
-| Field | Value |
-|-------|-------|
-| **Module ID** | `VARA` |
-| **Rank** | 6 |
-| **File** | `05_runtime/vara.py` |
-| **Role** | Weak-signal scanner and edge-detection module. Monitors for low-confidence, high-salience signals. Vara outputs are always hypothesis-flagged and routed to Veil, never directly to Vault. |
-| **Interfaces** | **Input:** Raw signal stream, Vault entropy feed. **Output:** `[VARA-HYPOTHESIS]` routed to Veil. **Reports:** VARA-COGOV, VARA-GAP formatted reports. |
-| **Invariant Bindings** | VI·SIG (weak signal parity), IV·SIL (hypotheses only), I·COH (coherence before Veil routing) |
-| **Activation Condition** | Runs in parallel with primary Pulse cycle. Activates on entropy spikes or signal-to-noise anomalies. |
-| **Failure Mode** | Vara generating assertions → Sentinel blocks. Vara scan failure → logged to Stumpy; execution continues. |
-| **Owner** | LiminalJermo |
-
----
-
-### RANK 7 — Stumpy
-
-| Field | Value |
-|-------|-------|
-| **Module ID** | `STUMPY` |
-| **Rank** | 7 |
-| **File** | `05_runtime/stumpy.py` |
-| **Role** | Integrity audit, enforcement critic, and reversibility monitor. Runs after every Pulse cycle. Reviews all Vault writes, Veil promotions, Sentinel decisions, and Vara outputs for invariant compliance. Maintains the canonical audit trail. |
-| **Interfaces** | **Input:** Pulse cycle completion event, Vault write log, Sentinel decision log, Veil state. **Output:** Audit record (to Vault), Compliance report, Operator alert (on violation). |
-| **Invariant Bindings** | I·COH (coherence audit), II·REV (reversibility audit), V·DEC (decay transitions), VI·SIG (weak signal audit) |
-| **Activation Condition** | Triggered at Pulse Cycle Stage 5 (Silence/Audit). Also triggered on operator request. |
-| **Failure Mode** | Hard Failure found in completed cycle → retroactive Operator escalation. Stumpy cannot be silenced (IV·SIL). |
-| **Owner** | LiminalJermo |
-| **Owner** | LiminalJermo |
-
----
-
-### RANK 9 — Semantic Binding Module (SBM)
-
-| Field | Value |
-|-------|-------|
+|---|---|
 | **Module ID** | `SBM` |
-| **Rank** | 9 |
-| **File** | `05_runtime/echo.py` |
-| **Role** | Semantic translation and binding layer. Converts Neuralese signal packets into natural language operator outputs and vice versa. Maintains the semantic bridge between internal Lattice representation and human-readable surfaces. Also handles COL (Compact Operator Language) parsing. |
-| **Interfaces** | **Input:** Internal Neuralese signal packet (4-segment: context/signal/constraint/operator). **Output:** Natural language response or structured HUD entry. **Reads:** Neuralese Lexicon, COL grammar. |
-| **Invariant Bindings** | IV·SIL (no noise generation), I·COH (semantic coherence with Vault entries) |
-| **Activation Condition** | Active at Execute and Audit phases of every Pulse cycle that produces operator-facing output. |
-| **Failure Mode** | Semantic binding failure → returns `[SBM-FAILURE: reason]` to operator. Never silently outputs garbled text. |
-| **Owner** | LiminalJermo |
+| **Pipeline Position** | M4 |
+| **Upstream** | Constraint Package (CP) from CFC (M3) |
+| **Downstream** | Semantic Binding Package (SBP) + SemanticBindingReport → IDE-2 (M5) |
+| **Processing** | BIND → VALIDATE → DRIFT_PRECHECK → HASH → VERDICT → COMPLIANCE_AUGMENT → EMIT |
+| **Primary Function** | Bind governed semantic outputs to canonical vocabulary and produce auditable semantic-binding evidence. |
+| **Canonical Source** | CGS-v1.0 §2.4 |
 
----
-
-## Unregistered Module Handling
-
-Any module or process not listed in this registry that attempts to write to Vault, interact with Sentinel, or produce operator-facing output is considered an **unauthorized agent**. Sentinel will issue an automatic BLOCK. The event is logged to Stumpy with classification `UNAUTHORIZED_MODULE_ATTEMPT`.
-
----
-
-## Registry Changelog
-
-| Version | Date | Change | Operator |
-|---------|------|--------|----------|
-| 1.0 | 2026-06-17 | Initial registry — all 9 modules catalogued from Constitution §Module Authority Table | LiminalJermo |
-
----
-
-*Document Authority: Lattice_Cognitive_Constitution_v1.1.md §Module Authority Table*
-*Operator: LiminalJermo | Generated: 2026-06-17*
----
-
-### RANK 8 — Crossroad
+### M5 — Intent Signal Bridge (IDE-2)
 
 | Field | Value |
-|-------|-------|
-| **Module ID** | `CROSSROAD` |
-| **Rank** | 8 |
-| **File** | `05_runtime/rift.py` |
-| **Role** | Routing and transition management. Evaluates competing signal pathways and selects the canonical execution path. Does not evaluate content — evaluates structural routing only. |
-| **Interfaces** | **Input:** Competing signal paths from Veil, Vara, CCE. **Output:** Single canonical path selection with reason code. **Defers to:** Sentinel (Rank 4) for gate decisions; Stumpy (Rank 7) for coherence audit. |
-| **Invariant Bindings** | I·COH (selects most coherent path), III·ATT (selects lowest attention-cost path when coherence is equal) |
-| **Activation Condition** | Activated when Pulse cycle generates more than one candidate execution path. |
-| **Failure Mode** | Tie-break failure → defaults to most conservative path. Logged to Stumpy. |
+|---|---|
+| **Module ID** | `IDE-2` |
+| **Pipeline Position** | M5 |
+| **Upstream** | SemanticBindingReport from SBM (M4) |
+| **Downstream** | Governed Semantic-Intent Bridge Packet → PAM (M6) |
+| **Primary Function** | Re-ground SBM output against the original M1 intent graph, measure semantic displacement, and emit governed drift information before principle alignment. |
+| **Architectural Exception** | IDE-2 is the only pipeline module with a read-only backward reference to M1 output. This is an intentional governed exception to the non-adjacent-coupling rule. |
+| **Canonical Source** | CGS-v1.0 §2.5 |
+
+### M6 — Principle Alignment Module (PAM)
+
+| Field | Value |
+|---|---|
+| **Module ID** | `PAM` |
+| **Pipeline Position** | M6 |
+| **Namespace** | `lattice.core.principle_alignment` |
+| **Version** | v0.4.0 |
+| **Lineage Anchor** | `CANON:LATTICE:PAM:0.4.0` |
+| **Upstream** | Governed Semantic-Intent Bridge Packet from IDE-2 (M5) |
+| **Downstream** | Principle-Anchored Intent Graph (PA-IG) + PrincipleAlignmentReport → MTM (M7) |
+| **Processing** | INGEST → BIND → VALIDATE → DRIFT → EVIDENCE → EMIT |
+| **Primary Function** | Anchor governed intent to the canonical principle hierarchy, validate alignment, detect drift, and emit evidence-bearing principle alignment results. |
+| **Primary Gate Set** | G1 Coherence; G2 Reversibility; G3 Epistemic Humility; G4 Permission Boundaries; G5 Auditability; G6 Containment |
+| **WDA Output** | 12 WDA Evidence Records per PA-IG in standard operation |
+| **Canonical Source** | CGS-v1.0 §2.6 |
+
+### M7 — Mechanism Translation Module (MTM)
+
+| Field | Value |
+|---|---|
+| **Module ID** | `MTM` |
+| **Pipeline Position** | M7 |
+| **Upstream** | Principle-Anchored Intent Graph (PA-IG) + PrincipleAlignmentReport from PAM (M6) |
+| **Downstream** | Mechanism Execution Contract (MEC) → Runtime/WDA/Executor |
+| **Primary Function** | Translate principle-aligned intent into an executable, governed mechanism contract while preserving lineage, compliance, and reversibility information. |
+| **Canonical Source** | CGS-v1.0 §2.7 |
+
+---
+
+## 3. Canonical Handoff Chain
+
+| From | Artifact | To |
+|---|---|---|
+| IDE (M1) | Governed Intent Graph / DecompositionResult | CCE (M2) |
+| CCE (M2) | ConstraintResolutionResult + CCEValidationReport | CFC (M3) |
+| CFC (M3) | Constraint Package + CFCReport | SBM (M4) |
+| SBM (M4) | Semantic Binding Package + SemanticBindingReport | IDE-2 (M5) |
+| IDE-2 (M5) | Governed Semantic-Intent Bridge Packet | PAM (M6) |
+| PAM (M6) | Principle-Anchored Intent Graph + PrincipleAlignmentReport | MTM (M7) |
+| MTM (M7) | Mechanism Execution Contract | Runtime / WDA / Executor |
+
+Every stage produces a governed handoff artifact. Inter-module communication is adjacent by default and transits the governed Bus; direct non-adjacent coupling is forbidden except for the explicitly governed, read-only IDE-2 → M1 reference.
+
+---
+
+## 4. Meta-Module / Governance Layer
+
+The execution spine above is distinct from the Lattice's governance and meta-module layer. These systems should not be conflated with M1–M7.
+
+| Component | Function | Architectural Layer |
+|---|---|---|
+| **Constitution** | Supreme constitutional boundary and authority source | Constitutional |
+| **Vault** | Persistent lineage-anchored memory substrate | Persistence |
+| **Veil** | Liminal boundary regulator / containment surface | Runtime / Governance |
+| **Vara** | Disconfirmation and weak-signal scanning | Epistemic |
+| **Stumpy** | Enforcement, audit, and survival-side governance | Governance |
+| **Sentinel** | Gate / enforcement surface where applicable | Governance |
+| **WDA** | Walking Data Audit and evidence production | Audit / Evidence |
+| **Operator Layer** | Operator interface, posture, authority, and manual | Operator |
+
+These components may participate in or govern the execution spine but are not substitutes for M1–M7.
+
+---
+
+## 5. Canonical Artifacts and Verdict Interface
+
+The execution spine's principal governed artifacts are:
+
+- IDE → Governed Intent Graph (IG-G)
+- CCE → ConstraintResolutionResult + CCEValidationReport
+- CFC → Constraint Package (CP) + CFCReport
+- SBM → Semantic Binding Package (SBP) + SemanticBindingReport
+- IDE-2 → Governed Semantic-Intent Bridge Packet
+- PAM → Principle-Anchored Intent Graph (PA-IG) + PrincipleAlignmentReport
+- MTM → Mechanism Execution Contract (MEC)
+
+The **Canonical Verdict Severity Interface (CVSI)** provides the unified downstream verdict vocabulary:
+
+**PASS / CONDITIONAL / DEGRADED / HALT**
+
+Native module verdicts must translate to CVSI before downstream consumption.
+
+---
+
+## 6. Registry Governance Rules
+
+1. M1–M7 are the authoritative canonical pipeline positions.
+2. A module entry must identify its lineage anchor or canonical source.
+3. Module specifications may be detailed in separate source documents; this registry indexes them and does not replace their full specifications.
+4. The September 1, 2026 CGS-v1.0 consolidation pass supersedes conflicting earlier pipeline references.
+5. The registry must not silently collapse IDE-2 into IDE, PAM, or SBM. They are distinct governed stages.
+6. Governance/meta-modules must not be represented as execution-spine replacements merely because they existed earlier in the Vault.
+7. Changes to this registry require the normal governed proposal / review / merge process.
+
+---
+
+## 7. Drift Resolution
+
+### DR-MOD-001 — Stale Module Registry
+**Observed:** Registry v1.0, generated 2026-06-17, listed only SBM as the execution-spine module and reported nine total registered modules.
+
+**Resolution:** Replace the obsolete single-SBM execution representation with the current seven-module canonical execution spine M1–M7 and explicitly separate the execution spine from governance/meta-modules.
+
+### DR-MOD-002 — Pipeline Position Collision
+**Observed:** Drive specifications use internal identifiers `MOD-IDE-01` through `MOD-MTM-06` that do not correspond to canonical pipeline position.
+
+**Resolution:** M1–M7 are authoritative for governance and cross-module references. Internal specification identifiers remain implementation-layer metadata only.
+
+### DR-MOD-003 — IDE-2 / PAM Omission
+**Observed:** Earlier registry material did not register the post-SBM intent bridge or principle-alignment stage.
+
+**Resolution:** Register IDE-2 as M5 and PAM as M6, preserving their distinct contracts and lineage.
+
+---
+
+## 8. Registry Status
+
+**Current state:** Updated on `chatgpt` branch for governed review.
+
+**Proposed change:** Registry v1.0 → v2.0.
+
+**Required review:** Operator approval before merge to `main`.
+
+**Canonical source authority:** `CANON:LATTICE:CGS:1.0` and its integrated module specifications.
+
+---
+
+*This registry is an index and routing reference. Full module behavior remains governed by the individual module specifications and the Cognitive Governance Substrate.*
