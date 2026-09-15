@@ -944,4 +944,44 @@ The first implementation boundary is Mutation Envelope creation and persistence 
 
 Subsequent implementations MAY connect the envelope to Veil, Vara, Stumpy, and canonical proposal routing.
 
+---
+
+36. MCP Mutation Boundary
+
+The Canonical Vault MCP server is an execution interface for governed mutation proposal. It does not possess authority to canonicalize a mutation.
+
+When a model invokes `vault_propose_change`:
+
+1. The requested mutation is validated against the configured model-branch write boundary.
+2. The mutation is committed to the originating model branch.
+3. The resulting Git commit becomes the captured implementation event for that mutation.
+4. The mutation remains provisional and non-canonical.
+
+When a model invokes `vault_open_pr`:
+
+1. The model branch becomes the proposal head.
+2. `main` remains the canonical target.
+3. The pull request formalizes the proposed canonical transition.
+4. No merge or canonicalization authority is exercised by the MCP server.
+
+The authority boundary is therefore:
+
+MODEL → MODEL BRANCH → MCP PROPOSAL → PR → HUMAN AUTHORITY → MAIN
+
+The MCP server MUST NOT:
+
+- write directly to `main`;
+- merge pull requests;
+- treat a model-branch commit as canonical state;
+- infer human authorization from successful execution;
+- collapse proposal, audit, approval, and canonicalization into a single state.
+
+A successful MCP mutation is therefore evidence that a governed proposal was created, not evidence that the proposed state has become canonical.
+
+Git commit state and semantic mutation state remain distinct. The commit records the implementation event; the Mutation Envelope records the governed semantic event and its lineage.
+
+The human merge action remains the authoritative transition into canonical state.
+
+---
+
 End of Specification
