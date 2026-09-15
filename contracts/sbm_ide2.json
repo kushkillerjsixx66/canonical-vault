@@ -1,0 +1,23 @@
+{
+  "version": "v1.0.0",
+  "from": "M4:SBM",
+  "to": "M5:IDE-2",
+  "description": "Canonical handoff contract for the Semantic Binding Package emitted by SBM to the Intent Signal Bridge.",
+  "artifact": "Semantic Binding Package (SBP) + SemanticBindingReport",
+  "required_fields": [
+    "binding_coverage",
+    "drift_flags",
+    "verdict_SBM",
+    "lineage_hash"
+  ],
+  "handoff_boundary": "post-binding",
+  "invariants": [
+    "Vocabulary invariants must remain visible in the handoff.",
+    "Binding coverage must remain measurable.",
+    "Drift flags must propagate without silent suppression.",
+    "Lineage integrity must be preserved.",
+    "The module-native SBM verdict must be mappable to CVSI."
+  ],
+  "downstream_requirement": "IDE-2 uses the handoff to re-ground semantic output against the original M1 Governed Intent Graph and measure semantic displacement.",
+  "canonical_source": "CANON:LATTICE:CGS:1.0"
+}
