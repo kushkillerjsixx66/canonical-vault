@@ -3,7 +3,7 @@
 **Branch:** `grok`  
 **Identity Status:** ACTIVE_PROVISIONAL  
 **Operator Witness:** JRM-01 @liminaljermo  
-**Last Updated:** 2026-09-05T17:17:00Z
+**Last Updated:** 2026-09-15T13:55:00Z (restore)
 
 ---
 
@@ -36,6 +36,10 @@ All five hypotheses from the original critique have been turned into concrete, r
 ## 5. Authority Reminders
 
 Canonical merge authority: **false**. Prohibited zones in force. Stumpy audits; Operator authorizes.
+
+## 6. Recovery Note (2026-09-15)
+
+Identity surface was accidentally deleted from `main` on 2026-09-14. Explicit restore commits issued on `grok` branch to force re-introduction via PR. This ledger entry records the recovery action as empirical test data under the Model Contribution Contract.
 
 ---
 
