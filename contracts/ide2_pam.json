@@ -1,0 +1,21 @@
+{
+  "version": "v1.0.0",
+  "from": "M5:IDE-2",
+  "to": "M6:PAM",
+  "description": "Canonical handoff contract for the Governed Semantic-Intent Bridge Packet emitted by IDE-2 to the Principle Alignment Module.",
+  "artifact": "Governed Bridge Packet",
+  "required_fields": [
+    "original_IG-G_ref",
+    "semantic_delta",
+    "coherence_score"
+  ],
+  "handoff_boundary": "bridge-gate",
+  "invariants": [
+    "The original M1 IG-G reference is read-only and traceable.",
+    "Semantic displacement must be represented explicitly.",
+    "Coherence must be measurable at the bridge boundary.",
+    "Drift alerts must propagate to PAM without silent suppression."
+  ],
+  "downstream_requirement": "PAM uses the governed bridge packet as its upstream input for principle alignment and clearance evaluation.",
+  "canonical_source": "CANON:LATTICE:CGS:1.0"
+}
